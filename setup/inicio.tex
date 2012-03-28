@@ -1,0 +1,144 @@
+\documentclass{beamer}
+
+
+\usetheme{CambridgeUS}
+%\usetheme{Singapore}
+\usefonttheme[onlylarge]{structurebold}
+\setbeamerfont*{frametitle}{size=\normalsize,series=\bfseries}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}
+
+
+%\usefoottemplate{%
+%\tinycolouredline{structure}%
+%{\color{white}\textbf{Company Name\hfill Company Proprietary}}%
+%}
+
+\setbeamertemplate{footline} {%
+  \hbox{%
+  \begin{beamercolorbox}[wd=.20\paperwidth,ht=2.25ex,dp=1ex,center]{author in head/foot}%
+    \usebeamerfont{author in head/foot}\insertshortinstitute, \the \year
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.70\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+    \usebeamerfont{title in head/foot}\insertshorttitle
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.10\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+    \usebeamerfont{date in head/foot}
+    \insertframenumber{} / \inserttotalframenumber\hspace*{2ex} 
+  \end{beamercolorbox}
+  }
+}
+
+
+
+\setbeamercolor*{author in head/foot}{parent=palette tertiary}
+\setbeamercolor*{title in head/foot}{parent=palette secondary}
+\setbeamercolor*{date in head/foot}{parent=palette primary}
+
+
+% Standard packages
+%\usepackage[brazil]{babel}
+\usepackage{latexsym}
+\usepackage{verbatim}
+\usepackage{comment}
+\usepackage[T1]{fontenc}
+\usepackage{datetime}
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{orange}{rgb}{1,0.5,0}
+
+	%fontes:
+%\usepackage{tgschola}
+%\usepackage{venturisold}
+\usepackage{bookman}
+\usepackage{datetime}
+%\usepackage{mathptmx}
+%\usepackage{times}
+%\usepackage{lmodern}
+%\usepackage{fourier}
+%\usepackage[scaled]{berasans}
+%\usepackage[default]{gfsbodoni}
+%\renewcommand*\familydefault{\sfdefault}  %% Only if the base font of the document is to be sans serif
+
+
+\usepackage[latin1]{inputenc} %para utilizar acentos
+
+%\usepackage[dvips]{graphicx}
+
+
+
+\usepackage{tikz}
+\usetikzlibrary{arrows}
+\tikzstyle{block}=[draw opacity=0.7,line width=1.4cm]
+
+
+
+\newcommand{\aspas}[1]{{``#1''}}
+
+\newcommand{\aspassimples}[1]{{`#1'}}
+
+\newcommand{\variavel}[1]{{\texttt{\textbf{#1}}}}
+\newcommand{\var}[1]{{\texttt{\textbf{#1}}}}
+
+\newcommand{\variaveldestaque}[1]{{\textcolor{blue}{\texttt{\textbf{#1}}}}}
+
+
+% The main document
+
+\begin{document}
+
+\lstset{language=C,
+        format=C,
+        numbers=left,
+        numberstyle=\Tiny, 
+        stepnumber=2,
+        numberfirstline=auto,
+        firstnumber=auto,
+        numbersep=5pt,
+        captionpos=b,
+        xleftmargin=0.3cm,
+        xrightmargin=0cm,
+        framexbottommargin=0cm,
+        framextopmargin=0cm,
+        tabsize=4,
+        boxpos=c,
+        frame=no,
+        basicstyle=\scriptsize,
+        commentstyle=\it\color{gray},
+        showstringspaces=false
+}
+
+\let\olditemize=\itemize
+\let\endolditemize=\enditemize
+\renewenvironment{itemize}{%
+    \begin{olditemize}%
+      \setlength{\itemsep}{0.3cm}%
+  }%
+  {%
+    \end{olditemize}%
+  }
+  
+  \newenvironment{itemize2}{%
+    \begin{olditemize}%
+      \setlength{\itemsep}{0.2cm}%
+  }%
+  {%
+    \end{olditemize}%
+  }
+
+\AtBeginSection % Do nothing for \section* 
+{ 
+\begin{frame}{}
+\frametitle{} 
+%\tableofcontents[currentsection,subsectionstyle=show/show/hide,square]
+\begin{block}
+
+\centering{\usebeamerfont{title}\usebeamercolor[fg]{title}\insertsectionhead}
+\end{block}
+
+\end{frame} 
+}
+
+
+%\input{capa}

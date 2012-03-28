@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         id="dclBuilder"
+         name="DCL Suite Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            hasNature="true">
+         <run
+               class="dclsuite.builder.DCLBuilder">
+         </run>
+      </builder>
+   </extension>
+   <extension
+         id="dclNature"
+         name="DCL Suite Nature"
+         point="org.eclipse.core.resources.natures">
+      <runtime>
+         <run
+               class="dclsuite.builder.DCLNature">
+         </run>
+      </runtime>
+      <builder
+            id="dclsuite.dclBuilder">
+      </builder>
+   </extension>
+      <extension point="org.eclipse.ui.ide.projectNatureImages">
+      <image icon="icons/dclcheck.gif" id="dclsuite.dclNature.img" natureId="dclsuite.dclNature" />
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+      <objectContribution
+            adaptable="true"
+            objectClass="org.eclipse.core.resources.IProject"
+            nameFilter="*"
+            id="dclsuite.contribution1">
+         <action
+               label="Enable/Disable dclcheck"
+               class="dclsuite.builder.ToggleNatureAction"
+               menubarPath="additions"
+               enablesFor="1"
+               id="dclsuite.addRemoveNatureAction">
+         </action>
+      </objectContribution>
+   </extension>
+   <extension
+         id="violation"
+         name="Architectural Violation"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <attribute name="detailedMessage"/>
+      <attribute name="violatedConstraint"/>
+      <attribute name="dependencyType"/>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>
+      <extension
+         id="error"
+         name="dclsuite error"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+         <startup class="dclsuite.Activator"/>
+   </extension>
+   <extension
+		 point="org.eclipse.ui.ide.markerResolution">
+		 <markerResolutionGenerator
+		 	markerType="dclsuite.violation"
+			class="dclcheck.popup.actions.RefactoringRecommendationGenerator">
+		 </markerResolutionGenerator>
+   </extension>  
+	
+   <extension
+		 point="org.eclipse.ui.ide.markerResolution">
+		 <markerResolutionGenerator
+		 	markerType="dclsuite.violation"
+		 	class="dclsuite.resolution.MarkerResolution">
+		 </markerResolutionGenerator>
+   </extension>
+
+ <extension
+       point="org.eclipse.ui.propertyPages">
+    <page
+          class="dclsuite.properties.MoreInfoPage"
+          id="dclsuite.properties.samplePropertyPage"
+          name="Violation Details">
+       <enabledWhen>
+          <adapt
+                  type="org.eclipse.core.resources.IMarker">
+            </adapt>
+       </enabledWhen>
+    </page>
+ </extension>
+ <extension
+       point="org.eclipse.ui.editors">
+    <editor
+          class="dclsuite.editor.DCLEditor"
+          contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+          extensions="dcl"
+          icon="icons/dclcheck.gif"
+          id="dclsuite.editor.DCLEditor"
+          name="DCL Editor">
+    </editor>
+ </extension>
+</plugin>

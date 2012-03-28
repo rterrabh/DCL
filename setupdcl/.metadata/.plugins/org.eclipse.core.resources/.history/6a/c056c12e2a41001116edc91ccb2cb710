@@ -1,0 +1,4 @@
+module Math: com.terra.math.*
+
+
+only $system cannot-depend java.lang.Math

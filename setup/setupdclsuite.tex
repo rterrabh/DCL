@@ -1,0 +1,136 @@
+\input{inicio} %Abre documento
+
+\title[Setting up $\bf dclsuite$] 
+{%
+  Setting up $\bf dclsuite$%
+}
+
+\author[Evento (rodapé)]
+{%
+  Evento%
+}
+
+\institute[DCL]
+{%
+DCL%
+}
+
+%\date[\monthname,  \the \year, \today ]
+\date[Mês, Ano]
+
+
+\input{capa} %Insere capa
+
+
+\begin{frame}{\inserttitle}
+	\begin{block}{\tiny Extract the contents of $\tt dclsuite.zip$ into Eclipse directory}
+		\centering\includegraphics[width=12cm]{images/1.png}
+	\end{block}
+\end{frame}
+
+
+\begin{frame}{\inserttitle}
+	\begin{block}{\tiny After, check if the file $\tt dclsuite\_*.jar$ is inside directory $\tt eclipse/plugins$}
+		\centering\includegraphics[width=12cm]{images/2.png}
+	\end{block}
+\end{frame}
+
+
+\begin{frame}{\inserttitle}
+	\begin{block}{\tiny Open Eclipse and, in the target Java Project, select $\tt Enable\; dclcheck$}
+		\centering\includegraphics<1>[width=11.5cm]{images/3.png}
+		\centering\includegraphics<2>[width=11.5cm]{images/3b.png}
+	\end{block}
+\end{frame}
+
+\begin{frame}{\inserttitle}
+	\begin{block}{\tiny A file $\tt architecture.dcl$ is created and opened}
+		\centering\includegraphics[width=11.5cm]{images/4.png}
+	\end{block}
+\end{frame}
+
+\begin{frame}{\inserttitle}
+	\begin{block}{\tiny For example, change the constraints and see the view $\tt Problems$}
+		\centering\includegraphics[width=11.5cm]{images/5.png}
+	\end{block}
+\end{frame}
+
+
+\begin{frame}{\inserttitle}
+	\begin{block}{\tiny Double click on an error goes to the location of the violation in the source code}
+		\centering\includegraphics[width=11.5cm]{images/6.png}
+	\end{block}
+\end{frame}
+
+\begin{frame}{\inserttitle}
+	\begin{block}{\tiny You can access detailed informations about the violation}
+		\centering\includegraphics<1>[width=11.5cm]{images/7.png}
+		\centering\includegraphics<2>[width=10.9cm]{images/7b.png}
+		\centering\includegraphics<3>[width=10.9cm]{images/7c.png}
+	\end{block}
+\end{frame}
+
+
+\begin{frame}{\inserttitle}
+	\begin{block}{\tiny As soon you save the file, new violations are detected (incremental building)}
+		\centering\includegraphics[width=11.5cm]{images/9.png}
+	\end{block}
+\end{frame}
+
+
+
+\begin{frame}{\inserttitle}
+	\begin{block}{\tiny Now, $\tt dclsuite$ is ready for use.\\~\\Moreover, a module to assist developers in fixing the detected violations is being developed.}
+	\end{block}
+\end{frame}
+
+%
+%
+%
+%
+%
+%
+%
+%
+%
+
+
+
+
+  
+
+
+%\begin{frame}[t]
+%	\begin{figure}
+%		\includegraphics<1>[width=1cm]{a.jpeg}
+%		\includegraphics<2>[width=1cm]{b.jpeg}
+%	\end{figure}
+%
+%	\only<1>{\frametitle{Exemplo A}
+%	
+%	\begin{block}{Bloco A}
+%		\begin{itemize}
+%			\item Azinho
+%			\item Azinho
+%			\item Azinho
+%		\end{itemize}
+%	   \end{block}
+%	
+%	}
+%	\only<2>{\frametitle{Exemplo B}
+%	\begin{block}{Bloco B}
+%		\begin{itemize}
+%			\item Bezinho
+%			\item Bezinho
+%			\item Bezinho
+%		\end{itemize}
+%	   \end{block}
+%	
+%	
+%	}	
+%	
+%
+%\end{frame}
+
+
+\input{termino} %Insere agradecimento e fecha documento

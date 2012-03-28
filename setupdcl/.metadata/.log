@@ -1,0 +1,82 @@
+!SESSION 2012-01-17 10:59:12.582 -----------------------------------------------
+eclipse.buildId=I20110613-1736
+java.version=1.6.0_29
+java.vendor=Apple Inc.
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_US
+Framework arguments:  -product org.eclipse.epp.package.jee.product -product org.eclipse.epp.package.jee.product -keyring /Users/rterrabh/.eclipse_keyring -showlocation
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product org.eclipse.epp.package.jee.product -data /Users/rterrabh/Desktop/setupdcl -product org.eclipse.epp.package.jee.product -keyring /Users/rterrabh/.eclipse_keyring -showlocation
+
+!ENTRY org.eclipse.core.net 1 0 2012-01-17 10:59:17.164
+!MESSAGE System property http.nonProxyHosts has been set to local|*.local|169.254/16|*.169.254/16 by an external source. This value will be overwritten using the values from the preferences
+
+!ENTRY org.eclipse.core.resources 4 2 2012-01-17 11:32:23.147
+!MESSAGE Problems occurred when invoking code from plug-in: "org.eclipse.core.resources".
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Resource '/ExampleDCL/architecture.dcl' does not exist.
+	at org.eclipse.core.internal.resources.Resource.checkExists(Resource.java:320)
+	at org.eclipse.core.internal.resources.Resource.checkAccessible(Resource.java:194)
+	at org.eclipse.core.internal.resources.File.getContents(File.java:287)
+	at org.eclipse.core.internal.resources.File.getContents(File.java:278)
+	at dclsuite.core.Architecture.<init>(Architecture.java:45)
+	at dclsuite.util.ArchitectureUtils.initializeArchitecture(ArchitectureUtils.java:20)
+	at dclsuite.builder.DCLBuilder.fullBuild(DCLBuilder.java:55)
+	at dclsuite.builder.DCLBuilder.incrementalBuild(DCLBuilder.java:63)
+	at dclsuite.builder.DCLBuilder.build(DCLBuilder.java:48)
+	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:728)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:199)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:239)
+	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:292)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:295)
+	at org.eclipse.core.internal.events.BuildManager.basicBuildLoop(BuildManager.java:351)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:374)
+	at org.eclipse.core.internal.events.AutoBuildJob.doBuild(AutoBuildJob.java:143)
+	at org.eclipse.core.internal.events.AutoBuildJob.run(AutoBuildJob.java:241)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 1 org.eclipse.core.resources 4 368 2012-01-17 11:32:23.149
+!MESSAGE Resource '/ExampleDCL/architecture.dcl' does not exist.
+!SUBENTRY 1 org.eclipse.core.resources 4 368 2012-01-17 11:32:23.149
+!MESSAGE Resource '/ExampleDCL/architecture.dcl' does not exist.
+
+!ENTRY org.eclipse.core.resources 4 75 2012-01-17 11:32:23.152
+!MESSAGE Errors occurred during the build.
+!SUBENTRY 1 dclsuite 4 75 2012-01-17 11:32:23.152
+!MESSAGE Errors running builder 'DCL Suite Builder' on project 'ExampleDCL'.
+!STACK 1
+org.eclipse.core.internal.resources.ResourceException: Resource '/ExampleDCL/architecture.dcl' does not exist.
+	at org.eclipse.core.internal.resources.Resource.checkExists(Resource.java:320)
+	at org.eclipse.core.internal.resources.Resource.checkAccessible(Resource.java:194)
+	at org.eclipse.core.internal.resources.File.getContents(File.java:287)
+	at org.eclipse.core.internal.resources.File.getContents(File.java:278)
+	at dclsuite.core.Architecture.<init>(Architecture.java:45)
+	at dclsuite.util.ArchitectureUtils.initializeArchitecture(ArchitectureUtils.java:20)
+	at dclsuite.builder.DCLBuilder.fullBuild(DCLBuilder.java:55)
+	at dclsuite.builder.DCLBuilder.incrementalBuild(DCLBuilder.java:63)
+	at dclsuite.builder.DCLBuilder.build(DCLBuilder.java:48)
+	at org.eclipse.core.internal.events.BuildManager$2.run(BuildManager.java:728)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:199)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:239)
+	at org.eclipse.core.internal.events.BuildManager$1.run(BuildManager.java:292)
+	at org.eclipse.core.runtime.SafeRunner.run(SafeRunner.java:42)
+	at org.eclipse.core.internal.events.BuildManager.basicBuild(BuildManager.java:295)
+	at org.eclipse.core.internal.events.BuildManager.basicBuildLoop(BuildManager.java:351)
+	at org.eclipse.core.internal.events.BuildManager.build(BuildManager.java:374)
+	at org.eclipse.core.internal.events.AutoBuildJob.doBuild(AutoBuildJob.java:143)
+	at org.eclipse.core.internal.events.AutoBuildJob.run(AutoBuildJob.java:241)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:54)
+!SUBENTRY 2 org.eclipse.core.resources 4 368 2012-01-17 11:32:23.152
+!MESSAGE Resource '/ExampleDCL/architecture.dcl' does not exist.
+!SUBENTRY 1 org.eclipse.core.resources 4 368 2012-01-17 11:32:23.152
+!MESSAGE Resource '/ExampleDCL/architecture.dcl' does not exist.
+!SESSION 2012-01-17 12:02:27.143 -----------------------------------------------
+eclipse.buildId=I20110613-1736
+java.version=1.6.0_29
+java.vendor=Apple Inc.
+BootLoader constants: OS=macosx, ARCH=x86_64, WS=cocoa, NL=en_US
+Framework arguments:  -product org.eclipse.epp.package.jee.product -keyring /Users/rterrabh/.eclipse_keyring -showlocation
+Command-line arguments:  -os macosx -ws cocoa -arch x86_64 -product org.eclipse.epp.package.jee.product -keyring /Users/rterrabh/.eclipse_keyring -showlocation
+
+!ENTRY org.eclipse.core.net 1 0 2012-01-17 12:02:30.300
+!MESSAGE System property http.nonProxyHosts has been set to local|*.local|169.254/16|*.169.254/16 by an external source. This value will be overwritten using the values from the preferences
