@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="dclsuite_feature"
+      label="dclsuite"
+      version="1.0.0.qualifier">
+
+   <description>
+      Dependency Constraint Language
+   </description>
+
+   <copyright>
+      Universidade Federal de Minas Gerais
+   </copyright>
+
+   <license>
+      Please keep the credits.
+   </license>
+
+   <plugin
+         id="dclsuite"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+</feature>
