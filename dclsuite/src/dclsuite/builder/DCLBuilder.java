@@ -20,7 +20,9 @@ import org.eclipse.jdt.core.JavaCore;
 
 import dclsuite.core.Architecture;
 import dclsuite.core.DependencyConstraint;
+import dclsuite.core.DependencyConstraint.AbsenceArchitecturalDrift;
 import dclsuite.core.DependencyConstraint.ArchitecturalDrift;
+import dclsuite.core.DependencyConstraint.DivergenceArchitecturalDrift;
 import dclsuite.dependencies.Dependency;
 import dclsuite.util.ArchitectureUtils;
 import dclsuite.util.DCLPersistence;
@@ -59,7 +61,7 @@ public class DCLBuilder extends IncrementalProjectBuilder {
 				}
 			}
 			MarkerUtils.deleteErrorMarker(this.getProject());
-			System.out.printf("It took %.2f seconds.\n", (System.currentTimeMillis()-start)/1000.0);
+			System.out.printf("It took %.2f seconds.\n", (System.currentTimeMillis() - start) / 1000.0);
 		} catch (Throwable e) {
 			this.clean(monitor);
 			final String logFileName = DCLUtil.logError(this.getProject(), e);
@@ -74,7 +76,7 @@ public class DCLBuilder extends IncrementalProjectBuilder {
 		monitor.subTask("loading dependencies");
 		final Architecture architecture = ArchitectureUtils.getOrInitializeArchitecture(this.getProject());
 		monitor.beginTask("Checking architecture", architecture.getProjectClasses().size());
-		
+
 		for (String className : architecture.getProjectClasses()) {
 			monitor.subTask(className);
 			Collection<Dependency> dependencies = DCLPersistence.load(this.getProject(), className);
@@ -86,8 +88,7 @@ public class DCLBuilder extends IncrementalProjectBuilder {
 		}
 	}
 
-	protected void fullBuild(final IProgressMonitor monitor) throws CoreException,
-			IOException {
+	protected void fullBuild(final IProgressMonitor monitor) throws CoreException, IOException {
 		monitor.setTaskName("Checking architecture");
 		monitor.subTask("loading dependencies");
 		final Architecture architecture = ArchitectureUtils.initializeArchitecture(getProject());
@@ -104,7 +105,7 @@ public class DCLBuilder extends IncrementalProjectBuilder {
 		monitor.beginTask("Checking architecture", delta.getAffectedChildren(IResourceDelta.ADDED
 				| IResourceDelta.CHANGED | IResourceDelta.REMOVED, IResource.FILE).length);
 		delta.accept(new IncrementalDeltaVisitor(architecture, monitor));
-		
+
 		/* For now, any change in the DCL File requires full build */
 		if (updateDC) {
 			getProject().accept(new FullBuildVisitor(architecture, monitor, false));
@@ -192,6 +193,12 @@ public class DCLBuilder extends IncrementalProjectBuilder {
 							architecture.getProjectClasses(), dependencies, this.getProject());
 					if (result != null && !result.isEmpty()) {
 						for (ArchitecturalDrift ad : result) {
+							if (ad instanceof DivergenceArchitecturalDrift) {
+								System.out.println(((DivergenceArchitecturalDrift) ad).getForbiddenDependency()
+										.getClassNameA() + ": " + ((DivergenceArchitecturalDrift) ad).getForbiddenDependency().getLineNumber());
+							} else if (ad instanceof AbsenceArchitecturalDrift) {
+								System.out.println(((AbsenceArchitecturalDrift) ad).getClassNameA());
+							}
 							MarkerUtils.addMarker(file, ad);
 						}
 					}
@@ -203,7 +210,7 @@ public class DCLBuilder extends IncrementalProjectBuilder {
 			}
 		}
 	}
-	
+
 	private void delete(IResource resource) throws CoreException {
 		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
 			final IFile file = (IFile) resource;
@@ -211,7 +218,7 @@ public class DCLBuilder extends IncrementalProjectBuilder {
 
 			final ICompilationUnit unit = ((ICompilationUnit) JavaCore.create((IFile) resource));
 			final String className = DCLUtil.getClassName(unit);
-			
+
 			DCLPersistence.delete(this.getProject(), className);
 		}
 	}

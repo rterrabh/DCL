@@ -85,51 +85,54 @@ public class DCLDeepDependencyVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeDeclaration node) {
-		try {
-			IType type = (IType) unit.getTypes()[0];
-			ITypeHierarchy typeHierarchy = type.newSupertypeHierarchy(null); 
-																				
-			IType[] typeSuperclasses = typeHierarchy.getAllSuperclasses(type);
+		if (!node.isLocalTypeDeclaration() && !node.isMemberTypeDeclaration()) { //Para evitar fazer v‡rias vezes
+			try {
+				IType type = (IType) unit.getTypes()[0];
+				ITypeHierarchy typeHierarchy = type.newSupertypeHierarchy(null);
 
-			for (IType t : typeSuperclasses) {
-				if (node.getSuperclassType() != null
-						&& t.getFullyQualifiedName().equals(
-								node.getSuperclassType().resolveBinding().getQualifiedName())) {
-					this.dependencies.add(new ExtendDirectDependency(this.className, t.getFullyQualifiedName(),
-							fullClass.getLineNumber(node.getSuperclassType().getStartPosition())));
-				} else {
-					this.dependencies
-							.add(new ExtendIndirectDependency(this.className, t.getFullyQualifiedName(), null));
-				}
-			}
+				IType[] typeSuperclasses = typeHierarchy.getAllSuperclasses(type);
 
-			IType[] typeSuperinter = typeHierarchy.getAllInterfaces();
-
-			externo: for (IType t : typeSuperinter) {
-				for (Object it : node.superInterfaceTypes()) {
-					switch (((Type) it).getNodeType()) {
-					case ASTNode.SIMPLE_TYPE:
-						SimpleType st = (SimpleType) it;
-						if (t.getFullyQualifiedName().equals(st.getName().resolveTypeBinding().getQualifiedName())) {
-							this.dependencies.add(new ImplementDirectDependency(this.className, t
-									.getFullyQualifiedName(), fullClass.getLineNumber(st.getStartPosition())));
-							continue externo;
-						}
-						break;
-					case ASTNode.PARAMETERIZED_TYPE:
-						ParameterizedType pt = (ParameterizedType) it;
-						if (t.getFullyQualifiedName().equals(pt.getType().resolveBinding().getBinaryName())) {
-							this.dependencies.add(new ImplementDirectDependency(this.className, t
-									.getFullyQualifiedName(), fullClass.getLineNumber(pt.getStartPosition())));
-							continue externo;
-						}
-						break;
+				for (IType t : typeSuperclasses) {
+					if (node.getSuperclassType() != null
+							&& t.getFullyQualifiedName().equals(
+									node.getSuperclassType().resolveBinding().getQualifiedName())) {
+						this.dependencies.add(new ExtendDirectDependency(this.className, t.getFullyQualifiedName(),
+								fullClass.getLineNumber(node.getSuperclassType().getStartPosition())));
+					} else {
+						this.dependencies.add(new ExtendIndirectDependency(this.className, t.getFullyQualifiedName(),
+								null));
 					}
 				}
-				this.dependencies.add(new ImplementIndirectDependency(this.className, t.getFullyQualifiedName(), null));
+
+				IType[] typeSuperinter = typeHierarchy.getAllInterfaces();
+
+				externo: for (IType t : typeSuperinter) {
+					for (Object it : node.superInterfaceTypes()) {
+						switch (((Type) it).getNodeType()) {
+						case ASTNode.SIMPLE_TYPE:
+							SimpleType st = (SimpleType) it;
+							if (t.getFullyQualifiedName().equals(st.getName().resolveTypeBinding().getQualifiedName())) {
+								this.dependencies.add(new ImplementDirectDependency(this.className, t
+										.getFullyQualifiedName(), fullClass.getLineNumber(st.getStartPosition())));
+								continue externo;
+							}
+							break;
+						case ASTNode.PARAMETERIZED_TYPE:
+							ParameterizedType pt = (ParameterizedType) it;
+							if (t.getFullyQualifiedName().equals(pt.getType().resolveBinding().getBinaryName())) {
+								this.dependencies.add(new ImplementDirectDependency(this.className, t
+										.getFullyQualifiedName(), fullClass.getLineNumber(pt.getStartPosition())));
+								continue externo;
+							}
+							break;
+						}
+					}
+					this.dependencies.add(new ImplementIndirectDependency(this.className, t.getFullyQualifiedName(),
+							null));
+				}
+			} catch (JavaModelException e) {
+				throw new RuntimeException("AST Parser error.", e);
 			}
-		} catch (JavaModelException e) {
-			throw new RuntimeException("AST Parser error.", e);
 		}
 		return true;
 	}
@@ -143,9 +146,9 @@ public class DCLDeepDependencyVisitor extends ASTVisitor {
 					((VariableDeclarationFragment) field.fragments().get(0)).getName().getIdentifier()));
 		} else if (node.getParent().getNodeType() == ASTNode.METHOD_DECLARATION) {
 			MethodDeclaration method = (MethodDeclaration) node.getParent();
-			this.dependencies.add(new AnnotateMethodDependency(this.className, node.getTypeName()
-					.resolveTypeBinding().getQualifiedName(), fullClass.getLineNumber(node.getStartPosition()), method
-					.getName().getIdentifier()));
+			this.dependencies.add(new AnnotateMethodDependency(this.className, node.getTypeName().resolveTypeBinding()
+					.getQualifiedName(), fullClass.getLineNumber(node.getStartPosition()), method.getName()
+					.getIdentifier()));
 		} else if (node.getParent().getNodeType() == ASTNode.TYPE_DECLARATION) {
 			this.dependencies.add(new AnnotateClassDependency(this.className, node.getTypeName().resolveTypeBinding()
 					.getQualifiedName(), fullClass.getLineNumber(node.getStartPosition())));
@@ -205,6 +208,26 @@ public class DCLDeepDependencyVisitor extends ASTVisitor {
 				this.dependencies.add(new DeclareParameterDependency(this.className, this.getTargetClassName(svd
 						.getType().resolveBinding()), fullClass.getLineNumber(svd.getStartPosition()), node.getName()
 						.getIdentifier(), svd.getName().getIdentifier()));
+				if (svd.getType().getNodeType() == Type.PARAMETERIZED_TYPE) {
+					// TODO: Adjust the way that we handle parameter types
+					for (Object t : ((ParameterizedType) svd.getType()).typeArguments()) {
+						if (t instanceof SimpleType) {
+							SimpleType st = (SimpleType) t;
+							this.dependencies
+									.add(new DeclareParameterDependency(this.className, this.getTargetClassName(st
+											.resolveBinding()), fullClass.getLineNumber(st.getStartPosition()), node
+											.getName().getIdentifier(), svd.getName().getIdentifier()));
+						} else if (t instanceof ParameterizedType) {
+							ParameterizedType pt = (ParameterizedType) t;
+							this.dependencies
+									.add(new DeclareParameterDependency(this.className, this.getTargetClassName(pt
+											.getType().resolveBinding()),
+											fullClass.getLineNumber(pt.getStartPosition()), node.getName()
+													.getIdentifier(), svd.getName().getIdentifier()));
+						}
+					}
+				}
+
 			}
 		}
 		for (Object o : node.thrownExceptions()) {
@@ -341,9 +364,9 @@ public class DCLDeepDependencyVisitor extends ASTVisitor {
 					((VariableDeclarationFragment) field.fragments().get(0)).getName().getIdentifier()));
 		} else if (node.getParent().getNodeType() == ASTNode.METHOD_DECLARATION) {
 			MethodDeclaration method = (MethodDeclaration) node.getParent();
-			this.dependencies.add(new AnnotateMethodDependency(this.className, node.getTypeName()
-					.resolveTypeBinding().getQualifiedName(), fullClass.getLineNumber(node.getStartPosition()), method
-					.getName().getIdentifier()));
+			this.dependencies.add(new AnnotateMethodDependency(this.className, node.getTypeName().resolveTypeBinding()
+					.getQualifiedName(), fullClass.getLineNumber(node.getStartPosition()), method.getName()
+					.getIdentifier()));
 		} else if (node.getParent().getNodeType() == ASTNode.TYPE_DECLARATION) {
 			this.dependencies.add(new AnnotateClassDependency(this.className, node.getTypeName().resolveTypeBinding()
 					.getQualifiedName(), fullClass.getLineNumber(node.getStartPosition())));

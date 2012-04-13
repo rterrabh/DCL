@@ -36,10 +36,10 @@ public class AbsenceResolution {
 
 		final IProject project = marker.getResource().getProject();
 		final List<ModuleSimilarity> suitableModules = FixingUtil.suitableModule(project, architecture,
-				missingDependency.getClassNameA(), missingDependency.getDependencyType());
+				missingDependency.getClassNameA(), missingDependency.getDependencyType(),null);
 
 		suitableModules
-				.addAll(FixingUtil.suitableModule(project, architecture, missingDependency.getClassNameA(), null));
+				.addAll(FixingUtil.suitableModule(project, architecture, missingDependency.getClassNameA(), null,null));
 
 		String simpleClassName = missingDependency.getClassNameA().substring(
 				missingDependency.getClassNameA().lastIndexOf(".") + 1);
@@ -65,13 +65,13 @@ public class AbsenceResolution {
 				suggestions.add(FixingUtil.createMarkerResolution("annotate(" + missingDependency.getClassNameA() + ","
 						+ missingDependency.getModuleDescriptionB() + ")", null));
 				System.out.println(simpleClassName  + ": ok");
-			} else {
+			} //else {
 				for (ModuleSimilarity ms : suitableModules) {
 					suggestions.add(FixingUtil.createMarkerResolution("move_class("
 							+ missingDependency.getClassNameA() + ", " + ms.getModuleDescription()
 							+ ") (similarity: " + FormatUtil.formatDouble(ms.getSimilarity()) + ")", null));
 				}
-			}
+			//}
 
 		}
 		return suggestions.toArray(new IMarkerResolution[suggestions.size()]);
@@ -86,9 +86,9 @@ public class AbsenceResolution {
 		final List<ModuleSimilarity> suitableModules = new LinkedList<ModuleSimilarity>();
 
 		suitableModules.addAll(FixingUtil.suitableModule(project, architecture, missingDependency.getClassNameA(),
-				missingDependency.getDependencyType()));
+				missingDependency.getDependencyType(),null));
 		suitableModules
-				.addAll(FixingUtil.suitableModule(project, architecture, missingDependency.getClassNameA(), null));
+				.addAll(FixingUtil.suitableModule(project, architecture, missingDependency.getClassNameA(), null,null));
 
 		if (suitableModules != null && !suitableModules.isEmpty()) {
 			String suitableModulesDescription = "";
@@ -116,7 +116,7 @@ public class AbsenceResolution {
 				suggestions.add(FixingUtil.createMarkerResolution("derive(" + missingDependency.getClassNameA() + ","
 						+ missingDependency.getModuleDescriptionB() + ")", null));
 				System.out.println(simpleClassName  + ": ok");
-			} else {
+			} //else {
 				System.out.println(simpleClassName  + ": no");
 				/* TEMP */
 				for (ModuleSimilarity ms : suitableModules) {
@@ -124,7 +124,7 @@ public class AbsenceResolution {
 							"move_class(" + missingDependency.getClassNameA() + ", " + ms.getModuleDescription()
 									+ ") (similarity: " + FormatUtil.formatDouble(ms.getSimilarity()) + ")", null));
 				}
-			}
+			//}
 
 		}
 		return suggestions.toArray(new IMarkerResolution[suggestions.size()]);

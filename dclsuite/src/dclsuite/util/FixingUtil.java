@@ -27,10 +27,11 @@ public final class FixingUtil {
 	}
 
 	public static double similarity(Collection<Dependency> colDepA, Collection<Dependency> colDepB,
-			DependencyType dependencyType) {
+			DependencyType dependencyType, String targetClass) {
 		Collection<SimpleDependency> rA = new HashSet<SimpleDependency>();
 		for (Dependency d : colDepA) {
-			if (dependencyType == null || d.getDependencyType().equals(dependencyType)) {
+			if ((dependencyType == null || d.getDependencyType().equals(dependencyType))
+					&& (targetClass == null || d.getClassNameB().equals(targetClass))) {
 				rA.add(new SimpleDependency(d.getDependencyType(), d.getClassNameB()));
 			}
 		}
@@ -83,19 +84,23 @@ public final class FixingUtil {
 	}
 
 	public static List<ModuleSimilarity> suitableModule(IProject project, final Architecture architecture,
-			final String targetClassName, final DependencyType dependencyType) {
+			final String originClassName, final DependencyType dependencyType, final String targetClassName) {
 		final Map<String, Double> modules = new LinkedHashMap<String, Double>();
 
 		final Collection<String> projectClasses = architecture.getProjectClasses();
 
-		final Collection<Dependency> targetClassNameDependencies = architecture.getDependencies(targetClassName);
+		final Collection<Dependency> violatedClassDependencies = architecture.getDependencies(originClassName);
 
 		for (String className : projectClasses) {
+			if (className.equals(originClassName)) {
+				continue;
+			}
+
 			final String respectiveModuleName = DCLUtil.getPackageFromClassName(className) + ".*";
 
 			Collection<Dependency> dependencies = architecture.getDependencies(className);
 
-			double similarity = similarity(targetClassNameDependencies, dependencies, dependencyType);
+			double similarity = similarity(violatedClassDependencies, dependencies, dependencyType, targetClassName);
 
 			if (similarity != 0) {
 				if (!modules.containsKey(respectiveModuleName)) {
@@ -126,97 +131,125 @@ public final class FixingUtil {
 			if (result.size() >= MOVE_SUGGESTIONS) {
 				break;
 			}
-			result.add(new ModuleSimilarity(moduleName, sortedModules.get(moduleName)));
+			if (moduleName.matches(".*\\.client\\..*controller\\..*")
+					|| moduleName.matches(".*\\.client\\..*controler\\..*")) {
+				continue;
+			}
+			String x = "(";
+			if (dependencyType!=null){
+				x += "D";
+			}
+			if (targetClassName!=null){
+				x += "T";
+			}
+			x += ")";
+			result.add(new ModuleSimilarity(moduleName + " " + x, sortedModules.get(moduleName)));
+			//result.add(new ModuleSimilarity(moduleName, sortedModules.get(moduleName)));
+
 		}
 
 		return result;
 	}
 
-//	public static List<ModuleSimilarity> suitableModule(final Architecture architecture, final String targetClassName,
-//			final DependencyType dependencyType, final String classNameB) {
-//		final Map<String, Double> modules = new LinkedHashMap<String, Double>();
-//		final Collection<String> projectClasses = architecture.getProjectClasses();
-//
-//		for (String className : projectClasses) {
-//			final String respectiveModuleName = DCLUtil.getPackageFromClassName(className) + ".*";
-//
-//			Collection<Dependency> dependencies = architecture.getDependencies(className);
-//
-//			double count = 0;
-//
-//			for (Dependency d : dependencies) {
-//				if (d.getDependencyType().equals(dependencyType) && d.getClassNameB().equals(classNameB)) {
-//					count += 1;
-//				}
-//
-//				if (count != 0) {
-//					if (!modules.containsKey(respectiveModuleName)) {
-//						modules.put(respectiveModuleName, count);
-//					} else {
-//						modules.put(respectiveModuleName, (count + modules.get(respectiveModuleName)) / 2.0);
-//					}
-//				}
-//			}
-//		}
-//
-//		ValueComparator<Double> bvc = new ValueComparator<Double>(modules);
-//		Map<String, Double> sortedModules = new TreeMap<String, Double>(bvc);
-//		sortedModules.putAll(modules);
-//
-//		List<ModuleSimilarity> result = new LinkedList<ModuleSimilarity>();
-//		for (String moduleName : sortedModules.keySet()) {
-//			if (result.size() >= MOVE_SUGGESTIONS) {
-//				break;
-//			}
-//			result.add(new ModuleSimilarity(moduleName, sortedModules.get(moduleName)));
-//		}
-//
-//		return result;
-//	}
-//
-//	public static List<ModuleSimilarity> suitableModule(final IProject project, final Architecture architecture, final String targetClassName,
-//			final DependencyType dependencyType, final String moduleDescriptionB) {
-//		final Map<String, Double> modules = new LinkedHashMap<String, Double>();
-//		final Collection<String> projectClassNames = architecture.getProjectClasses();
-//
-//		for (String className : projectClassNames) {
-//			final String respectiveModuleName = DCLUtil.getPackageFromClassName(className) + ".*";
-//
-//			Collection<Dependency> dependencies = architecture.getDependencies(className);
-//
-//			double count = 0;
-//
-//			for (Dependency d : dependencies) {
-//				if (d.getDependencyType().equals(dependencyType)
-//						&& DCLUtil.hasClassNameByDescription(className, moduleDescriptionB, architecture.getModules(),
-//								projectClassNames, project)) {
-//					count += 1;
-//				}
-//
-//				if (count != 0) {
-//					if (!modules.containsKey(respectiveModuleName)) {
-//						modules.put(respectiveModuleName, count);
-//					} else {
-//						modules.put(respectiveModuleName, (count + modules.get(respectiveModuleName)) / 2.0);
-//					}
-//				}
-//			}
-//		}
-//
-//		ValueComparator<Double> bvc = new ValueComparator<Double>(modules);
-//		Map<String, Double> sortedModules = new TreeMap<String, Double>(bvc);
-//		sortedModules.putAll(modules);
-//
-//		List<ModuleSimilarity> result = new LinkedList<ModuleSimilarity>();
-//		for (String moduleName : sortedModules.keySet()) {
-//			if (result.size() >= MOVE_SUGGESTIONS) {
-//				break;
-//			}
-//			result.add(new ModuleSimilarity(moduleName, sortedModules.get(moduleName)));
-//		}
-//
-//		return result;
-//	}
+	// public static List<ModuleSimilarity> suitableModule(final Architecture
+	// architecture, final String targetClassName,
+	// final DependencyType dependencyType, final String classNameB) {
+	// final Map<String, Double> modules = new LinkedHashMap<String, Double>();
+	// final Collection<String> projectClasses =
+	// architecture.getProjectClasses();
+	//
+	// for (String className : projectClasses) {
+	// final String respectiveModuleName =
+	// DCLUtil.getPackageFromClassName(className) + ".*";
+	//
+	// Collection<Dependency> dependencies =
+	// architecture.getDependencies(className);
+	//
+	// double count = 0;
+	//
+	// for (Dependency d : dependencies) {
+	// if (d.getDependencyType().equals(dependencyType) &&
+	// d.getClassNameB().equals(classNameB)) {
+	// count += 1;
+	// }
+	//
+	// if (count != 0) {
+	// if (!modules.containsKey(respectiveModuleName)) {
+	// modules.put(respectiveModuleName, count);
+	// } else {
+	// modules.put(respectiveModuleName, (count +
+	// modules.get(respectiveModuleName)) / 2.0);
+	// }
+	// }
+	// }
+	// }
+	//
+	// ValueComparator<Double> bvc = new ValueComparator<Double>(modules);
+	// Map<String, Double> sortedModules = new TreeMap<String, Double>(bvc);
+	// sortedModules.putAll(modules);
+	//
+	// List<ModuleSimilarity> result = new LinkedList<ModuleSimilarity>();
+	// for (String moduleName : sortedModules.keySet()) {
+	// if (result.size() >= MOVE_SUGGESTIONS) {
+	// break;
+	// }
+	// result.add(new ModuleSimilarity(moduleName,
+	// sortedModules.get(moduleName)));
+	// }
+	//
+	// return result;
+	// }
+	//
+	// public static List<ModuleSimilarity> suitableModule(final IProject
+	// project, final Architecture architecture, final String targetClassName,
+	// final DependencyType dependencyType, final String moduleDescriptionB) {
+	// final Map<String, Double> modules = new LinkedHashMap<String, Double>();
+	// final Collection<String> projectClassNames =
+	// architecture.getProjectClasses();
+	//
+	// for (String className : projectClassNames) {
+	// final String respectiveModuleName =
+	// DCLUtil.getPackageFromClassName(className) + ".*";
+	//
+	// Collection<Dependency> dependencies =
+	// architecture.getDependencies(className);
+	//
+	// double count = 0;
+	//
+	// for (Dependency d : dependencies) {
+	// if (d.getDependencyType().equals(dependencyType)
+	// && DCLUtil.hasClassNameByDescription(className, moduleDescriptionB,
+	// architecture.getModules(),
+	// projectClassNames, project)) {
+	// count += 1;
+	// }
+	//
+	// if (count != 0) {
+	// if (!modules.containsKey(respectiveModuleName)) {
+	// modules.put(respectiveModuleName, count);
+	// } else {
+	// modules.put(respectiveModuleName, (count +
+	// modules.get(respectiveModuleName)) / 2.0);
+	// }
+	// }
+	// }
+	// }
+	//
+	// ValueComparator<Double> bvc = new ValueComparator<Double>(modules);
+	// Map<String, Double> sortedModules = new TreeMap<String, Double>(bvc);
+	// sortedModules.putAll(modules);
+	//
+	// List<ModuleSimilarity> result = new LinkedList<ModuleSimilarity>();
+	// for (String moduleName : sortedModules.keySet()) {
+	// if (result.size() >= MOVE_SUGGESTIONS) {
+	// break;
+	// }
+	// result.add(new ModuleSimilarity(moduleName,
+	// sortedModules.get(moduleName)));
+	// }
+	//
+	// return result;
+	// }
 
 }
 
