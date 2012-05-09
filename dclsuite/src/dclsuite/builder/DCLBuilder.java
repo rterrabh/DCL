@@ -20,9 +20,7 @@ import org.eclipse.jdt.core.JavaCore;
 
 import dclsuite.core.Architecture;
 import dclsuite.core.DependencyConstraint;
-import dclsuite.core.DependencyConstraint.AbsenceArchitecturalDrift;
 import dclsuite.core.DependencyConstraint.ArchitecturalDrift;
-import dclsuite.core.DependencyConstraint.DivergenceArchitecturalDrift;
 import dclsuite.dependencies.Dependency;
 import dclsuite.util.ArchitectureUtils;
 import dclsuite.util.DCLPersistence;
@@ -45,7 +43,6 @@ public class DCLBuilder extends IncrementalProjectBuilder {
 	@SuppressWarnings("rawtypes")
 	protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
 		try {
-			final long start = System.currentTimeMillis();
 			if (kind == FULL_BUILD || !DCLPersistence.existsDCLFolder(this.getProject())) {
 				fullBuild(monitor);
 			} else {
@@ -61,7 +58,6 @@ public class DCLBuilder extends IncrementalProjectBuilder {
 				}
 			}
 			MarkerUtils.deleteErrorMarker(this.getProject());
-			System.out.printf("It took %.2f seconds.\n", (System.currentTimeMillis() - start) / 1000.0);
 		} catch (Throwable e) {
 			this.clean(monitor);
 			final String logFileName = DCLUtil.logError(this.getProject(), e);
@@ -193,12 +189,6 @@ public class DCLBuilder extends IncrementalProjectBuilder {
 							architecture.getProjectClasses(), dependencies, this.getProject());
 					if (result != null && !result.isEmpty()) {
 						for (ArchitecturalDrift ad : result) {
-							if (ad instanceof DivergenceArchitecturalDrift) {
-								System.out.println(((DivergenceArchitecturalDrift) ad).getForbiddenDependency()
-										.getClassNameA() + ": " + ((DivergenceArchitecturalDrift) ad).getForbiddenDependency().getLineNumber());
-							} else if (ad instanceof AbsenceArchitecturalDrift) {
-								System.out.println(((AbsenceArchitecturalDrift) ad).getClassNameA());
-							}
 							MarkerUtils.addMarker(file, ad);
 						}
 					}

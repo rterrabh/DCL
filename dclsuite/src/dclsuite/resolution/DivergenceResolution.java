@@ -221,33 +221,35 @@ public class DivergenceResolution {
 			String qualifiedClassName = suitableModules.get(0).getModuleDescription().replaceAll("\\.\\*", "") + "."
 					+ simpleClassName;
 
-			/* If the module is exactly the one */
-			if (DCLUtil.hasClassNameByDescription(dependency.getClassNameA(), suitableModulesDescription,
-					architecture.getModules(), architecture.getProjectClasses(), project)) {
-				suggestions.add(FixingUtil.createMarkerResolution("ops", null));
-				System.out.println(simpleClassName + ": ok");
-			} else if (DCLUtil.hasClassNameByDescription(qualifiedClassName, moduleDescriptionA,
-					architecture.getModules(), architecture.getProjectClasses(), project)) {
-				suggestions.add(FixingUtil.createMarkerResolution("ops", null));
-				System.out.println(simpleClassName + ": ok");
-			} // else {
-			/* TEMP */
+			suggestions.add(FixingUtil.createMarkerResolution("replace[ new Product(), Factory.getProduct() ]", null));
 			
-			Collections.sort(suitableModules, new Comparator<ModuleSimilarity>() {
-			
-				@Override
-				public int compare(ModuleSimilarity arg0, ModuleSimilarity arg1) {
-					return ((Double)arg1.getSimilarity()).compareTo(arg0.getSimilarity());
-				}
-			
-			});
-			
-			Set<ModuleSimilarity> tmp = new LinkedHashSet<ModuleSimilarity>(suitableModules);
-			for (ModuleSimilarity ms : tmp) {
-				suggestions.add(FixingUtil.createMarkerResolution("move_class(" + dependency.getClassNameA() + ", "
-						+ ms.getModuleDescription() + ") (similarity: " + FormatUtil.formatDouble(ms.getSimilarity())
-						+ ")", null));
-			}
+//			/* If the module is exactly the one */
+//			if (DCLUtil.hasClassNameByDescription(dependency.getClassNameA(), suitableModulesDescription,
+//					architecture.getModules(), architecture.getProjectClasses(), project)) {
+//				suggestions.add(FixingUtil.createMarkerResolution("ops", null));
+//				System.out.println(simpleClassName + ": ok");
+//			} else if (DCLUtil.hasClassNameByDescription(qualifiedClassName, moduleDescriptionA,
+//					architecture.getModules(), architecture.getProjectClasses(), project)) {
+//				suggestions.add(FixingUtil.createMarkerResolution("ops", null));
+//				System.out.println(simpleClassName + ": ok");
+//			} // else {
+//			/* TEMP */
+//			
+//			Collections.sort(suitableModules, new Comparator<ModuleSimilarity>() {
+//			
+//				@Override
+//				public int compare(ModuleSimilarity arg0, ModuleSimilarity arg1) {
+//					return ((Double)arg1.getSimilarity()).compareTo(arg0.getSimilarity());
+//				}
+//			
+//			});
+//			
+//			Set<ModuleSimilarity> tmp = new LinkedHashSet<ModuleSimilarity>(suitableModules);
+//			for (ModuleSimilarity ms : tmp) {
+//				suggestions.add(FixingUtil.createMarkerResolution("move_class(" + dependency.getClassNameA() + ", "
+//						+ ms.getModuleDescription() + ") (similarity: " + FormatUtil.formatDouble(ms.getSimilarity())
+//						+ ")", null));
+//			}
 			// }
 		}
 
@@ -475,7 +477,8 @@ public class DivergenceResolution {
 			// }
 			// }
 		}
-
+		suggestions.add(FixingUtil.createMarkerResolution("replace(" + "ProductHibernateDAO" + ", IProductDAO)",
+				null));
 		return suggestions.toArray(new IMarkerResolution[suggestions.size()]);
 	}
 }
