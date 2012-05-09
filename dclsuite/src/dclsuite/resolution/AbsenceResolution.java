@@ -1,7 +1,7 @@
 package dclsuite.resolution;
 
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -9,7 +9,6 @@ import org.eclipse.ui.IMarkerResolution;
 
 import dclsuite.core.Architecture;
 import dclsuite.dependencies.MissingDependency;
-import dclsuite.util.DCLUtil;
 import dclsuite.util.FixingUtil;
 import dclsuite.util.FormatUtil;
 
@@ -17,116 +16,72 @@ public class AbsenceResolution {
 
 	public static IMarkerResolution[] getSuggestions(final IMarker marker, final Architecture architecture,
 			final MissingDependency missingDependency) {
+		final IProject project = marker.getResource().getProject();
+		Set<ModuleSimilarity> suitableModules = FixingUtil.suitableModule(project, architecture,
+				missingDependency.getClassNameA(), missingDependency.getDependencyType(), null);
 
 		switch (missingDependency.getDependencyType()) {
 		case IMPLEMENT:
 		case EXTEND:
-			return getSuggestionsDerive(marker, architecture, missingDependency);
+			return getSuggestionsDerive(project, architecture, missingDependency, suitableModules);
 		case ANNOTATE:
-			return getSuggestionsAnnotate(marker, architecture, missingDependency);
+			return getSuggestionsAnnotate(project, architecture, missingDependency, suitableModules);
 
 		}
 		return null;
 
 	}
 
-	private static IMarkerResolution[] getSuggestionsAnnotate(final IMarker marker, final Architecture architecture,
-			MissingDependency missingDependency) {
+	/**
+	 * USE-ANNOTATION
+	 */
+	private static IMarkerResolution[] getSuggestionsAnnotate(final IProject project, final Architecture architecture,
+			MissingDependency missingDependency, Set<ModuleSimilarity> suitableModules) {
 		final LinkedList<IMarkerResolution> suggestions = new LinkedList<IMarkerResolution>();
-
-		final IProject project = marker.getResource().getProject();
-		final List<ModuleSimilarity> suitableModules = FixingUtil.suitableModule(project, architecture,
-				missingDependency.getClassNameA(), missingDependency.getDependencyType(),null);
-
-		suitableModules
-				.addAll(FixingUtil.suitableModule(project, architecture, missingDependency.getClassNameA(), null,null));
-
-		String simpleClassName = missingDependency.getClassNameA().substring(
-				missingDependency.getClassNameA().lastIndexOf(".") + 1);
-		String qualifiedClassName = suitableModules.get(0).getModuleDescription().replaceAll("\\.\\*", "") + "."
-				+ simpleClassName;
+		final String simpleClassName = missingDependency.getClassNameA().substring(missingDependency.getClassNameA().lastIndexOf(".") + 1);
 		
-		if (suitableModules != null && !suitableModules.isEmpty()) {
-			String suitableModulesDescription = "";
+		
+		if (FixingUtil.isTheRightModule(missingDependency.getClassNameA(), missingDependency.getModuleDescriptionA(),
+				suitableModules, architecture.getModules(), architecture.getProjectClasses(), project)) {
+			suggestions.add(FixingUtil.createMarkerResolution("replace( [" + simpleClassName + "], [@"
+					+ missingDependency.getModuleDescriptionB() + " " + simpleClassName + ")", null));
+		} else {
 			for (ModuleSimilarity ms : suitableModules) {
-				suitableModulesDescription += ms.getModuleDescription() + ",";
-			}
-			suitableModulesDescription = suitableModulesDescription.substring(0,
-					suitableModulesDescription.length() - 1);
-
-			/* If the module is exactly the one */
-			if (DCLUtil.hasClassNameByDescription(missingDependency.getClassNameA(), suitableModulesDescription,
-					architecture.getModules(), architecture.getProjectClasses(), project)) {
 				suggestions.add(FixingUtil.createMarkerResolution(
-						"annotate(" + missingDependency.getClassNameA() + ", "
-								+ missingDependency.getModuleDescriptionB() + ")", null));
-			} else if (DCLUtil.hasClassNameByDescription(qualifiedClassName, missingDependency.getModuleDescriptionA(),
-					architecture.getModules(), architecture.getProjectClasses(), project)) {
-				suggestions.add(FixingUtil.createMarkerResolution("annotate(" + missingDependency.getClassNameA() + ","
-						+ missingDependency.getModuleDescriptionB() + ")", null));
-				System.out.println(simpleClassName  + ": ok");
-			} //else {
-				for (ModuleSimilarity ms : suitableModules) {
-					suggestions.add(FixingUtil.createMarkerResolution("move_class("
-							+ missingDependency.getClassNameA() + ", " + ms.getModuleDescription()
-							+ ") (similarity: " + FormatUtil.formatDouble(ms.getSimilarity()) + ")", null));
-				}
-			//}
+						"move_class(" + simpleClassName + ", " + ms.getModuleDescription()
+								+ ") (similarity: " + FormatUtil.formatDouble(ms.getSimilarity())
+								+ ms.getStrategy().toString() + ")", null));
+			}
 
 		}
+
 		return suggestions.toArray(new IMarkerResolution[suggestions.size()]);
 	}
 
-	private static IMarkerResolution[] getSuggestionsDerive(final IMarker marker, final Architecture architecture,
-			MissingDependency missingDependency) {
-
+	
+	/**
+	 * IMPLEMENT/EXTEND
+	 */
+	private static IMarkerResolution[] getSuggestionsDerive(final IProject project, final Architecture architecture,
+			MissingDependency missingDependency, Set<ModuleSimilarity> suitableModules) {
 		final LinkedList<IMarkerResolution> suggestions = new LinkedList<IMarkerResolution>();
-
-		final IProject project = marker.getResource().getProject();
-		final List<ModuleSimilarity> suitableModules = new LinkedList<ModuleSimilarity>();
-
-		suitableModules.addAll(FixingUtil.suitableModule(project, architecture, missingDependency.getClassNameA(),
-				missingDependency.getDependencyType(),null));
-		suitableModules
-				.addAll(FixingUtil.suitableModule(project, architecture, missingDependency.getClassNameA(), null,null));
-
-		if (suitableModules != null && !suitableModules.isEmpty()) {
-			String suitableModulesDescription = "";
+		final String simpleClassName = missingDependency.getClassNameA().substring(missingDependency.getClassNameA().lastIndexOf(".") + 1);
+		
+		if (FixingUtil.isTheRightModule(missingDependency.getClassNameA(), missingDependency.getModuleDescriptionA(),
+				suitableModules, architecture.getModules(), architecture.getProjectClasses(), project)) {
+			suggestions.add(FixingUtil.createMarkerResolution("replace( [" + simpleClassName + "], [" +
+					simpleClassName + " " +  missingDependency.getDependencyType().getValue() + "s " +
+					missingDependency.getModuleDescriptionB() + "])", null));
+		} else {
 			for (ModuleSimilarity ms : suitableModules) {
-				suitableModulesDescription += ms.getModuleDescription() + ",";
+				suggestions.add(FixingUtil.createMarkerResolution(
+						"move_class(" + simpleClassName + ", " + ms.getModuleDescription()
+								+ ") (similarity: " + FormatUtil.formatDouble(ms.getSimilarity())
+								+ ms.getStrategy().toString() + ")", null));
 			}
-			suitableModulesDescription = suitableModulesDescription.substring(0,
-					suitableModulesDescription.length() - 1);
-
-			//suitableModulesDescription = suitableModules.get(0).getModuleDescription();
-			
-			String simpleClassName = missingDependency.getClassNameA().substring(
-					missingDependency.getClassNameA().lastIndexOf(".") + 1);
-			String qualifiedClassName = suitableModules.get(0).getModuleDescription().replaceAll("\\.\\*", "") + "."
-					+ simpleClassName;
-
-			/* If the module is exactly the one */
-			if (DCLUtil.hasClassNameByDescription(missingDependency.getClassNameA(), suitableModulesDescription,
-					architecture.getModules(), architecture.getProjectClasses(), project)) {
-				suggestions.add(FixingUtil.createMarkerResolution("derive(" + missingDependency.getClassNameA() + ","
-						+ missingDependency.getModuleDescriptionB() + ")", null));
-				System.out.println(simpleClassName  + ": ok");
-			} else if (DCLUtil.hasClassNameByDescription(qualifiedClassName, missingDependency.getModuleDescriptionA(),
-					architecture.getModules(), architecture.getProjectClasses(), project)) {
-				suggestions.add(FixingUtil.createMarkerResolution("derive(" + missingDependency.getClassNameA() + ","
-						+ missingDependency.getModuleDescriptionB() + ")", null));
-				System.out.println(simpleClassName  + ": ok");
-			} //else {
-				System.out.println(simpleClassName  + ": no");
-				/* TEMP */
-				for (ModuleSimilarity ms : suitableModules) {
-					suggestions.add(FixingUtil.createMarkerResolution(
-							"move_class(" + missingDependency.getClassNameA() + ", " + ms.getModuleDescription()
-									+ ") (similarity: " + FormatUtil.formatDouble(ms.getSimilarity()) + ")", null));
-				}
-			//}
 
 		}
+
 		return suggestions.toArray(new IMarkerResolution[suggestions.size()]);
 	}
 

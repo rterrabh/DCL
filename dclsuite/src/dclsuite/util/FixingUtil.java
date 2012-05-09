@@ -4,9 +4,10 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -42,7 +43,8 @@ public final class FixingUtil {
 
 		Collection<SimpleDependency> rB = new HashSet<SimpleDependency>();
 		for (Dependency d : colDepB) {
-			if (dependencyType == null || d.getDependencyType().equals(dependencyType)) {
+			if ((dependencyType == null || d.getDependencyType().equals(dependencyType))
+					&& (targetClass == null || d.getClassNameB().equals(targetClass))) {
 				rB.add(new SimpleDependency(d.getDependencyType(), d.getClassNameB()));
 			}
 		}
@@ -83,72 +85,150 @@ public final class FixingUtil {
 		};
 	}
 
-	public static List<ModuleSimilarity> suitableModule(IProject project, final Architecture architecture,
+	public static Set<ModuleSimilarity> suitableModule(IProject project, final Architecture architecture,
 			final String originClassName, final DependencyType dependencyType, final String targetClassName) {
-		final Map<String, Double> modules = new LinkedHashMap<String, Double>();
+		final Map<String, Double> similarityModuleParticularDependency = new LinkedHashMap<String, Double>();
+		final Map<String, Double> similarityModuleAllDependencies = new LinkedHashMap<String, Double>();
 
 		final Collection<String> projectClasses = architecture.getProjectClasses();
 
-		final Collection<Dependency> violatedClassDependencies = architecture.getDependencies(originClassName);
+		final Collection<Dependency> dependenciesClassWithViolation = architecture.getDependencies(originClassName);
 
-		for (String className : projectClasses) {
-			if (className.equals(originClassName)) {
+		for (String otherClassName : projectClasses) {
+			/* Ignoring the class under analysis */
+			if (otherClassName.equals(originClassName)) {
 				continue;
 			}
 
-			final String respectiveModuleName = DCLUtil.getPackageFromClassName(className) + ".*";
+			Collection<Dependency> dependenciesOtherClass = architecture.getDependencies(otherClassName);
 
-			Collection<Dependency> dependencies = architecture.getDependencies(className);
+			final String respectiveModuleName = DCLUtil.getPackageFromClassName(otherClassName) + ".*";
 
-			double similarity = similarity(violatedClassDependencies, dependencies, dependencyType, targetClassName);
+			double similarityAllDependencies = similarity(dependenciesClassWithViolation, dependenciesOtherClass, null,
+					null);
+			adjustModuleSimilarity(project, architecture, similarityModuleAllDependencies, otherClassName,
+					respectiveModuleName, similarityAllDependencies);
 
-			if (similarity != 0) {
-				if (!modules.containsKey(respectiveModuleName)) {
-					modules.put(respectiveModuleName, similarity);
-				} else {
-					modules.put(respectiveModuleName, (similarity + modules.get(respectiveModuleName)) / 2.0);
-				}
+			double similarityParticularDependency = similarity(dependenciesClassWithViolation, dependenciesOtherClass,
+					dependencyType, targetClassName);
+			adjustModuleSimilarity(project, architecture, similarityModuleParticularDependency, otherClassName,
+					respectiveModuleName, similarityParticularDependency);
 
-				for (String moduleName : architecture.getModules().keySet()) {
-					if (DCLUtil.hasClassNameByDescription(className, moduleName, architecture.getModules(),
-							architecture.getProjectClasses(), project)) {
-						if (!modules.containsKey(moduleName)) {
-							modules.put(moduleName, similarity);
-						} else {
-							modules.put(moduleName, (similarity + modules.get(moduleName)) / 2.0);
-						}
+		}
+
+		/* Sorting the maps */
+		TreeMap<String, Double> sortedSimilarityModuleAllDependencies = new TreeMap<String, Double>(
+				new ValueComparator<Double>(similarityModuleAllDependencies));
+		sortedSimilarityModuleAllDependencies.putAll(similarityModuleAllDependencies);
+
+		TreeMap<String, Double> sortedSimilarityModuleParticularDependency = new TreeMap<String, Double>(
+				new ValueComparator<Double>(similarityModuleAllDependencies));
+		sortedSimilarityModuleAllDependencies.putAll(similarityModuleParticularDependency);
+
+		Set<ModuleSimilarity> result = new LinkedHashSet<ModuleSimilarity>();
+
+		Entry<String, Double> entryAll = null;
+		if ((entryAll = sortedSimilarityModuleAllDependencies.pollFirstEntry()) != null) {
+			result.add(new ModuleSimilarity(entryAll.getKey(), entryAll.getValue(),
+					ModuleSimilarity.Strategy.ALL_DEPENDENCIES));
+		}
+
+		Entry<String, Double> entryParticular = null;
+		if ((entryParticular = sortedSimilarityModuleParticularDependency.pollFirstEntry()) != null) {
+			result.add(new ModuleSimilarity(entryParticular.getKey(), entryParticular.getValue(),
+					ModuleSimilarity.Strategy.PARTICULAR_DEPENDENCY));
+		}
+
+		while (result.size() < MOVE_SUGGESTIONS) {
+			entryAll = sortedSimilarityModuleAllDependencies.pollFirstEntry();
+			entryParticular = sortedSimilarityModuleParticularDependency.pollFirstEntry();
+			if (entryAll == null) {
+				result.add(new ModuleSimilarity(entryParticular.getKey(), entryParticular.getValue(),
+						ModuleSimilarity.Strategy.PARTICULAR_DEPENDENCY));
+				continue;
+			}
+			if (entryParticular == null) {
+				result.add(new ModuleSimilarity(entryAll.getKey(), entryAll.getValue(),
+						ModuleSimilarity.Strategy.ALL_DEPENDENCIES));
+				continue;
+			}
+
+			if (entryAll.getValue() > entryParticular.getValue()) {
+				/* Add entryAll and put back entryParticular */
+				result.add(new ModuleSimilarity(entryAll.getKey(), entryAll.getValue(),
+						ModuleSimilarity.Strategy.ALL_DEPENDENCIES));
+				sortedSimilarityModuleParticularDependency.put(entryParticular.getKey(), entryParticular.getValue());
+			} else {
+				/* Add entryParticular and put back entryAll */
+				result.add(new ModuleSimilarity(entryParticular.getKey(), entryParticular.getValue(),
+						ModuleSimilarity.Strategy.PARTICULAR_DEPENDENCY));
+				sortedSimilarityModuleAllDependencies.put(entryAll.getKey(), entryAll.getValue());
+			}
+		}
+
+		for (ModuleSimilarity m : result) {
+			System.out.println(m.getModuleDescription() + ">" + m.getSimilarity());
+		}
+
+		return result;
+	}
+
+	private static void adjustModuleSimilarity(IProject project, final Architecture architecture,
+			final Map<String, Double> modules, String otherClassName, final String respectiveModuleName,
+			double similarity) {
+		if (similarity != 0) {
+			/* Packages */
+			if (!modules.containsKey(respectiveModuleName)) {
+				modules.put(respectiveModuleName, similarity);
+			} else {
+				modules.put(respectiveModuleName, (similarity + modules.get(respectiveModuleName)) / 2.0);
+			}
+
+			/* Defined Modules */
+			for (String moduleName : architecture.getModules().keySet()) {
+				if (DCLUtil.hasClassNameByDescription(otherClassName, moduleName, architecture.getModules(),
+						architecture.getProjectClasses(), project)) {
+					if (!modules.containsKey(moduleName)) {
+						modules.put(moduleName, similarity);
+					} else {
+						modules.put(moduleName, (similarity + modules.get(moduleName)) / 2.0);
 					}
 				}
 			}
 		}
+	}
 
-		ValueComparator<Double> bvc = new ValueComparator<Double>(modules);
-		Map<String, Double> sortedModules = new TreeMap<String, Double>(bvc);
-		sortedModules.putAll(modules);
+	public static boolean isTheRightModule(final String className, String moduleDescription, final Set<ModuleSimilarity> suitableModules,
+			final Map<String, String> modules, final Collection<String> projectClassNames, final IProject project) {
 
-		List<ModuleSimilarity> result = new LinkedList<ModuleSimilarity>();
-		for (String moduleName : sortedModules.keySet()) {
-			if (result.size() >= MOVE_SUGGESTIONS) {
-				break;
-			}
-			if (moduleName.matches(".*\\.client\\..*controller\\..*")
-					|| moduleName.matches(".*\\.client\\..*controler\\..*")) {
-				continue;
-			}
-			String x = "(";
-			if (dependencyType!=null){
-				x += "D";
-			}
-			if (targetClassName!=null){
-				x += "T";
-			}
-			x += ")";
-			result.add(new ModuleSimilarity(moduleName + " " + x, sortedModules.get(moduleName)));
-			//result.add(new ModuleSimilarity(moduleName, sortedModules.get(moduleName)));
+		String suitableModulesDescription = "";
 
+		if (suitableModules != null && !suitableModules.isEmpty()) {
+			for (ModuleSimilarity ms : suitableModules) {
+				suitableModulesDescription += ms.getModuleDescription() + ",";
+			}
+			suitableModulesDescription = suitableModulesDescription.substring(0,
+					suitableModulesDescription.length() - 1);
 		}
 
-		return result;
+		String simpleClassName = className.substring(className.lastIndexOf(".") + 1);
+
+		/* If the module is exactly the one */
+		if (DCLUtil.hasClassNameByDescription(className, suitableModulesDescription, modules, projectClassNames,
+				project)) {
+			return true;
+		}
+
+		for (ModuleSimilarity m : suitableModules) {
+			String qualifiedClassName = m.getModuleDescription().replaceAll("\\.\\*", "") + "." + simpleClassName;
+
+			if (DCLUtil.hasClassNameByDescription(qualifiedClassName, moduleDescription, modules,
+					projectClassNames, project)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 }
