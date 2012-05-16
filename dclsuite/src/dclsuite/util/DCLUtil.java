@@ -26,10 +26,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
-import org.objectweb.asm.ClassReader;
 
-import dclsuite.asm.DCLClassReader;
-import dclsuite.asm.DCLDeepDependencyVisitor;
 import dclsuite.dependencies.Dependency;
 
 public final class DCLUtil {
@@ -65,7 +62,6 @@ public final class DCLUtil {
 		}
 		return className.replaceAll("/", ".");
 	}
-
 
 	/**
 	 * DCL2 Checks whether the given resource is a Java source file.
@@ -204,7 +200,7 @@ public final class DCLUtil {
 		final IFile dcFile = project.getFile("dclcheck_" + DateUtil.dateToStr(new Date(), "yyyyMMdd-HHmmss")
 				+ "_error.log");
 
-		//TODO: Return file name created
+		// TODO: Return file name created
 		StringBuilder str = new StringBuilder();
 		str.append(e.toString() + "\n");
 		if (e.getStackTrace() != null) {
@@ -216,7 +212,8 @@ public final class DCLUtil {
 		InputStream source = new ByteArrayInputStream(str.toString().getBytes());
 		try {
 			dcFile.create(source, false, null);
-			//IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), dcFile);
+			// IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(),
+			// dcFile);
 		} catch (CoreException e1) {
 			e1.printStackTrace();
 		}
@@ -249,7 +246,6 @@ public final class DCLUtil {
 		}
 		return false;
 	}
-
 
 	public static String getNumberWithExactDigits(int originalNumber, int numDigits) {
 		String s = "" + originalNumber;
@@ -386,20 +382,27 @@ public final class DCLUtil {
 	 *            List of classes
 	 * @return List of dependencies
 	 */
+	@Deprecated
 	public static Collection<Dependency> getDependenciesUsingASM(IFile file) throws CoreException, IOException {
-		final DCLDeepDependencyVisitor cv = new DCLDeepDependencyVisitor();
-		final Collection<Dependency> dependencies = new LinkedList<Dependency>();
-
-		IJavaProject javaProject = JavaCore.create(file.getProject());
-		IPath binDir = javaProject.getOutputLocation();
-		IPath path = binDir.removeFirstSegments(1).append(file.getProjectRelativePath().removeFirstSegments(1));
-		IFile binFile = javaProject.getProject().getFile(path.removeFileExtension().addFileExtension("class"));
-
-		ClassReader cr = new DCLClassReader(binFile.getContents());
-		cr.accept(cv, 0);
-		dependencies.addAll(cv.getDependencies());
-
-		return dependencies;
+		/*
+		 * final DCLDeepDependencyVisitor cv = new DCLDeepDependencyVisitor();
+		 * final Collection<Dependency> dependencies = new
+		 * LinkedList<Dependency>();
+		 * 
+		 * IJavaProject javaProject = JavaCore.create(file.getProject()); IPath
+		 * binDir = javaProject.getOutputLocation(); IPath path =
+		 * binDir.removeFirstSegments
+		 * (1).append(file.getProjectRelativePath().removeFirstSegments(1));
+		 * IFile binFile =
+		 * javaProject.getProject().getFile(path.removeFileExtension
+		 * ().addFileExtension("class"));
+		 * 
+		 * ClassReader cr = new DCLClassReader(binFile.getContents());
+		 * cr.accept(cv, 0); dependencies.addAll(cv.getDependencies());
+		 * 
+		 * return dependencies;
+		 */
+		return null;
 	}
 
 	/**
@@ -409,7 +412,8 @@ public final class DCLUtil {
 	 *            List of classes
 	 * @return List of dependencies
 	 */
-	public static Collection<Dependency> getDependenciesUsingAST(ICompilationUnit unit) throws CoreException, IOException {
+	public static Collection<Dependency> getDependenciesUsingAST(ICompilationUnit unit) throws CoreException,
+			IOException {
 		final Collection<Dependency> dependencies = new LinkedList<Dependency>();
 
 		dclsuite.ast.DCLDeepDependencyVisitor cv = new dclsuite.ast.DCLDeepDependencyVisitor(unit);
@@ -432,7 +436,7 @@ public final class DCLUtil {
 				 * If it's $system, any class
 				 */
 				return projectClassNames.contains(className);
-			}else if (modules.containsKey(desc)) {
+			} else if (modules.containsKey(desc)) {
 				/*
 				 * If it's a module, call again the same method to return with
 				 * its description
@@ -461,11 +465,11 @@ public final class DCLUtil {
 			} else if (desc.endsWith("+")) {
 				/* If it refers to subtypes */
 				desc = desc.substring(0, desc.length() - 1);
-				
+
 				try {
 					IJavaProject javaProject = JavaCore.create(project);
 					IType type = javaProject.findType(desc);
-					
+
 					ITypeHierarchy typeHierarchy = type.newTypeHierarchy(null);
 					IType[] typeSubclasses = typeHierarchy.getAllSubtypes(type);
 
@@ -473,11 +477,12 @@ public final class DCLUtil {
 					for (IType t : typeSubclasses) {
 						strBuilder.append(t.getFullyQualifiedName() + ",");
 					}
-					if (strBuilder.length()>0){
-						strBuilder.deleteCharAt(strBuilder.length()-1);
+					if (strBuilder.length() > 0) {
+						strBuilder.deleteCharAt(strBuilder.length() - 1);
 					}
 					modules.put(desc + "+", strBuilder.toString());
-					if (hasClassNameByDescription(className, modules.get(desc + "+"), modules, projectClassNames, project)) {
+					if (hasClassNameByDescription(className, modules.get(desc + "+"), modules, projectClassNames,
+							project)) {
 						return true;
 					}
 				} catch (JavaModelException e) {
@@ -511,15 +516,15 @@ public final class DCLUtil {
 			return null;
 		}
 	}
-	
-	public static String getPackageFromClassName(final String className){
-		if (className.contains(".")){
+
+	public static String getPackageFromClassName(final String className) {
+		if (className.contains(".")) {
 			return className.substring(0, className.lastIndexOf('.'));
 		}
 		return className;
 	}
-	
-	public static String getSimpleClassName(final String qualifiedClassName){
+
+	public static String getSimpleClassName(final String qualifiedClassName) {
 		return qualifiedClassName.substring(qualifiedClassName.lastIndexOf(".") + 1);
 	}
 

@@ -2,7 +2,7 @@
 <feature
       id="dclsuite_feature"
       label="dclsuite"
-      version="1.0.0.qualifier">
+      version="1.1.0.qualifier">
 
    <description>
       Dependency Constraint Language
@@ -18,8 +18,8 @@
 
    <plugin
          id="dclsuite"
-         download-size="0"
-         install-size="0"
+         download-size="1MB"
+         install-size="50KB"
          version="0.0.0"
          unpack="false"/>
 
