@@ -31,8 +31,7 @@ public final class FixingUtil {
 			DependencyType dependencyType, String targetClass) {
 		Collection<SimpleDependency> rA = new HashSet<SimpleDependency>();
 		for (Dependency d : colDepA) {
-			if ((dependencyType == null || d.getDependencyType().equals(dependencyType))
-					&& (targetClass == null || d.getClassNameB().equals(targetClass))) {
+			if ((dependencyType == null || d.getDependencyType().equals(dependencyType))) {
 				rA.add(new SimpleDependency(d.getDependencyType(), d.getClassNameB()));
 			}
 		}
@@ -43,8 +42,7 @@ public final class FixingUtil {
 
 		Collection<SimpleDependency> rB = new HashSet<SimpleDependency>();
 		for (Dependency d : colDepB) {
-			if ((dependencyType == null || d.getDependencyType().equals(dependencyType))
-					&& (targetClass == null || d.getClassNameB().equals(targetClass))) {
+			if ((dependencyType == null || d.getDependencyType().equals(dependencyType))) {
 				rB.add(new SimpleDependency(d.getDependencyType(), d.getClassNameB()));
 			}
 		}
@@ -110,7 +108,7 @@ public final class FixingUtil {
 					respectiveModuleName, similarityAllDependencies);
 
 			double similarityParticularDependency = similarity(dependenciesClassWithViolation, dependenciesOtherClass,
-					dependencyType, targetClassName);
+					dependencyType, null);
 			adjustModuleSimilarity(project, architecture, similarityModuleParticularDependency, otherClassName,
 					respectiveModuleName, similarityParticularDependency);
 
@@ -122,8 +120,8 @@ public final class FixingUtil {
 		sortedSimilarityModuleAllDependencies.putAll(similarityModuleAllDependencies);
 
 		TreeMap<String, Double> sortedSimilarityModuleParticularDependency = new TreeMap<String, Double>(
-				new ValueComparator<Double>(similarityModuleAllDependencies));
-		sortedSimilarityModuleAllDependencies.putAll(similarityModuleParticularDependency);
+				new ValueComparator<Double>(similarityModuleParticularDependency));
+		sortedSimilarityModuleParticularDependency.putAll(similarityModuleParticularDependency);
 
 		Set<ModuleSimilarity> result = new LinkedHashSet<ModuleSimilarity>();
 
@@ -198,8 +196,34 @@ public final class FixingUtil {
 		}
 	}
 
-	public static boolean isTheRightModule(final String className, String moduleDescription, final Set<ModuleSimilarity> suitableModules,
-			final Map<String, String> modules, final Collection<String> projectClassNames, final IProject project) {
+	// public static boolean isTheRightModule(final String className, final
+	// Set<ModuleSimilarity> suitableModules,
+	// final Map<String, String> modules, final Collection<String>
+	// projectClassNames, final IProject project) {
+	//
+	// String suitableModulesDescription = "";
+	//
+	// if (suitableModules != null && !suitableModules.isEmpty()) {
+	// for (ModuleSimilarity ms : suitableModules) {
+	// suitableModulesDescription += ms.getModuleDescription() + ",";
+	// }
+	// suitableModulesDescription = suitableModulesDescription.substring(0,
+	// suitableModulesDescription.length() - 1);
+	// }
+	//
+	// /* If the module is exactly the one */
+	// if (DCLUtil.hasClassNameByDescription(className,
+	// suitableModulesDescription, modules, projectClassNames,
+	// project)) {
+	// return true;
+	// }
+	//
+	// return false;
+	// }
+
+	public static boolean isModuleMequalModuleMa(final String className, final String moduleDescription,
+			final Set<ModuleSimilarity> suitableModules, final Map<String, String> modules,
+			final Collection<String> projectClassNames, final IProject project) {
 
 		String suitableModulesDescription = "";
 
@@ -210,26 +234,66 @@ public final class FixingUtil {
 			suitableModulesDescription = suitableModulesDescription.substring(0,
 					suitableModulesDescription.length() - 1);
 		}
-
-		String simpleClassName = className.substring(className.lastIndexOf(".") + 1);
-
-		/* If the module is exactly the one */
-		if (DCLUtil.hasClassNameByDescription(className, suitableModulesDescription, modules, projectClassNames,
-				project)) {
-			return true;
-		}
+		
+		final String simpleClassName = DCLUtil.getSimpleClassName(className);
 
 		for (ModuleSimilarity m : suitableModules) {
-			String qualifiedClassName = m.getModuleDescription().replaceAll("\\.\\*", "") + "." + simpleClassName;
+			if (m.getModuleDescription().endsWith(".*")) {
+				/* Lets simulate if it had been moved */
+				String qualifiedClassName = m.getModuleDescription().replaceAll("\\.\\*", "") + "." + simpleClassName;
 
-			if (DCLUtil.hasClassNameByDescription(qualifiedClassName, moduleDescription, modules,
-					projectClassNames, project)) {
+				if (DCLUtil.hasClassNameByDescription(qualifiedClassName, moduleDescription, modules,
+						projectClassNames, project)) {
+					return true;
+				}
+			} else if (moduleDescription.contains(m.getModuleDescription())) {
+				/* It's the same as the description */
 				return true;
 			}
+
 		}
 
 		return false;
 	}
+
+	// public static boolean isTheRightModuleIfTheyHaveBeenMoved(final String
+	// className, final String moduleDescription, final Set<ModuleSimilarity>
+	// suitableModules,
+	// final Map<String, String> modules, final Collection<String>
+	// projectClassNames, final IProject project) {
+	//
+	// String suitableModulesDescription = "";
+	//
+	// if (suitableModules != null && !suitableModules.isEmpty()) {
+	// for (ModuleSimilarity ms : suitableModules) {
+	// suitableModulesDescription += ms.getModuleDescription() + ",";
+	// }
+	// suitableModulesDescription = suitableModulesDescription.substring(0,
+	// suitableModulesDescription.length() - 1);
+	// }
+	//
+	// final String simpleClassName = DCLUtil.getSimpleClassName(className);
+	//
+	// /* If after the move, it will be at allowed modules */
+	// for (ModuleSimilarity m : suitableModules) {
+	// if (m.getModuleDescription().endsWith(".*")){
+	// String qualifiedClassName = m.getModuleDescription().replaceAll("\\.\\*",
+	// "") + "." + simpleClassName;
+	//
+	// if (DCLUtil.hasClassNameByDescription(qualifiedClassName,
+	// moduleDescription, modules,
+	// projectClassNames, project)) {
+	// return true;
+	// }
+	// }
+	// if (moduleDescription.contains(m.getModuleDescription())){
+	// return true;
+	// }
+	//
+	// }
+	//
+	// return false;
+	// }
 
 }
 

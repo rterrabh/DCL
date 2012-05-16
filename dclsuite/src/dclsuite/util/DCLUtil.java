@@ -518,5 +518,9 @@ public final class DCLUtil {
 		}
 		return className;
 	}
+	
+	public static String getSimpleClassName(final String qualifiedClassName){
+		return qualifiedClassName.substring(qualifiedClassName.lastIndexOf(".") + 1);
+	}
 
 }

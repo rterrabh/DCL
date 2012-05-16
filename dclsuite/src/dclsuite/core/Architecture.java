@@ -1,6 +1,7 @@
 package dclsuite.core;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,7 +21,7 @@ import dclsuite.util.DCLUtil;
 
 public class Architecture {
 	private static final boolean DEBUG = false;
-	
+
 	/**
 	 * String: class name Collection<Dependency>: Collection of established
 	 * dependencies
@@ -38,7 +39,7 @@ public class Architecture {
 	public Collection<DependencyConstraint> dependencyConstraints = null;
 
 	public Architecture(IProject project) throws CoreException {
-		if (DEBUG){
+		if (DEBUG) {
 			System.out.println("Time BEFORE generate architecture (without dependencies): " + new Date());
 		}
 		this.projectClasses = new HashMap<String, Collection<Dependency>>();
@@ -49,7 +50,7 @@ public class Architecture {
 		}
 
 		this.initializeDependencyConstraints(project);
-		if (DEBUG){
+		if (DEBUG) {
 			System.out.println("Time AFTER generate architecture (without dependencies): " + new Date());
 		}
 	}
@@ -61,7 +62,10 @@ public class Architecture {
 
 			/* Define implicit modules */
 			this.modules.put("$java", DCLUtil.getJavaModuleDefinition());
-			/* Module $system has its behavior in DCLUtil.hasClassNameByDescription */
+			/*
+			 * Module $system has its behavior in
+			 * DCLUtil.hasClassNameByDescription
+			 */
 
 			this.dependencyConstraints = DCLParser.parseDependencyConstraints(project, dcFile.getContents());
 		} catch (IOException e) {
@@ -84,21 +88,21 @@ public class Architecture {
 		return projectClasses.get(className);
 	}
 
-	public Dependency getDependency(String classNameA, String classNameB, Integer lineNumberA, DependencyType dependencyType) {
+	public Dependency getDependency(String classNameA, String classNameB, Integer lineNumberA,
+			DependencyType dependencyType) {
 		Collection<Dependency> dependencies = projectClasses.get(classNameA);
-		for (Dependency d : dependencies){
-			if (lineNumberA == null ){
-				
+		for (Dependency d : dependencies) {
+			if (lineNumberA == null) {
+
 			}
-			if ((lineNumberA==null) ? d.getLineNumber() == null : lineNumberA.equals(d.getLineNumber()) && 
-					d.getClassNameB().equals(classNameB) &&
-					d.getDependencyType().equals(dependencyType)){
+			if ((lineNumberA == null) ? d.getLineNumber() == null : lineNumberA.equals(d.getLineNumber())
+					&& d.getClassNameB().equals(classNameB) && d.getDependencyType().equals(dependencyType)) {
 				return d;
 			}
 		}
 		return null;
 	}
-	
+
 	public void updateDependencies(String className, Collection<Dependency> dependencies) {
 		projectClasses.put(className, dependencies);
 	}
@@ -109,6 +113,24 @@ public class Architecture {
 
 	public Map<String, String> getModules() {
 		return this.modules;
+	}
+
+	/**
+	 * Method used to check if a particular dependency is allowed or not.
+	 * It is used, e.g., for the DCLfix module.
+	 */
+	public boolean can(String classNameA, String classNameB, DependencyType dependencyType, IProject project)
+			throws CoreException {
+		final Collection<Dependency> dependencies = new ArrayList<Dependency>(1);		
+		dependencies.add(dependencyType.createGenericDependency(classNameA, classNameB));
+		
+		for (DependencyConstraint dc : this.getDependencyConstraints()) {
+			if (dc.validate(classNameA, modules, this.getProjectClasses(), dependencies, project) != null) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 }

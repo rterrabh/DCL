@@ -60,5 +60,10 @@ public class ModuleSimilarity {
 			return false;
 		return true;
 	}
+	
+	@Override
+	public String toString() {
+		return this.moduleDescription + "(" + this.similarity + this.getStrategy().toString() + ")";
+	}
 
 }

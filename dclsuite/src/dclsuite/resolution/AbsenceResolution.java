@@ -20,6 +20,7 @@ public class AbsenceResolution {
 		Set<ModuleSimilarity> suitableModules = FixingUtil.suitableModule(project, architecture,
 				missingDependency.getClassNameA(), missingDependency.getDependencyType(), null);
 
+		//TODO: Missing the development of THROW rules
 		switch (missingDependency.getDependencyType()) {
 		case IMPLEMENT:
 		case EXTEND:
@@ -38,19 +39,21 @@ public class AbsenceResolution {
 	private static IMarkerResolution[] getSuggestionsAnnotate(final IProject project, final Architecture architecture,
 			MissingDependency missingDependency, Set<ModuleSimilarity> suitableModules) {
 		final LinkedList<IMarkerResolution> suggestions = new LinkedList<IMarkerResolution>();
-		final String simpleClassName = missingDependency.getClassNameA().substring(missingDependency.getClassNameA().lastIndexOf(".") + 1);
-		
-		
-		if (FixingUtil.isTheRightModule(missingDependency.getClassNameA(), missingDependency.getModuleDescriptionA(),
-				suitableModules, architecture.getModules(), architecture.getProjectClasses(), project)) {
+		final String simpleClassName = missingDependency.getClassNameA().substring(
+				missingDependency.getClassNameA().lastIndexOf(".") + 1);
+
+		if (FixingUtil.isModuleMequalModuleMa(missingDependency.getClassNameA(),
+				missingDependency.getModuleDescriptionA(), suitableModules, architecture.getModules(),
+				architecture.getProjectClasses(), project)) {
 			suggestions.add(FixingUtil.createMarkerResolution("replace( [" + simpleClassName + "], [@"
 					+ missingDependency.getModuleDescriptionB() + " " + simpleClassName + ")", null));
 		} else {
 			for (ModuleSimilarity ms : suitableModules) {
-				suggestions.add(FixingUtil.createMarkerResolution(
-						"move_class(" + simpleClassName + ", " + ms.getModuleDescription()
-								+ ") (similarity: " + FormatUtil.formatDouble(ms.getSimilarity())
-								+ ms.getStrategy().toString() + ")", null));
+				suggestions
+						.add(FixingUtil.createMarkerResolution(
+								"move_class(" + simpleClassName + ", " + ms.getModuleDescription() + ") (similarity: "
+										+ FormatUtil.formatDouble(ms.getSimilarity()) + ms.getStrategy().toString()
+										+ ")", null));
 			}
 
 		}
@@ -58,26 +61,28 @@ public class AbsenceResolution {
 		return suggestions.toArray(new IMarkerResolution[suggestions.size()]);
 	}
 
-	
 	/**
 	 * IMPLEMENT/EXTEND
 	 */
 	private static IMarkerResolution[] getSuggestionsDerive(final IProject project, final Architecture architecture,
 			MissingDependency missingDependency, Set<ModuleSimilarity> suitableModules) {
 		final LinkedList<IMarkerResolution> suggestions = new LinkedList<IMarkerResolution>();
-		final String simpleClassName = missingDependency.getClassNameA().substring(missingDependency.getClassNameA().lastIndexOf(".") + 1);
-		
-		if (FixingUtil.isTheRightModule(missingDependency.getClassNameA(), missingDependency.getModuleDescriptionA(),
+		final String simpleClassName = missingDependency.getClassNameA().substring(
+				missingDependency.getClassNameA().lastIndexOf(".") + 1);
+
+		if (FixingUtil.isModuleMequalModuleMa(missingDependency.getClassNameA(), missingDependency.getModuleDescriptionA(),
 				suitableModules, architecture.getModules(), architecture.getProjectClasses(), project)) {
-			suggestions.add(FixingUtil.createMarkerResolution("replace( [" + simpleClassName + "], [" +
-					simpleClassName + " " +  missingDependency.getDependencyType().getValue() + "s " +
-					missingDependency.getModuleDescriptionB() + "])", null));
+			suggestions.add(FixingUtil.createMarkerResolution(
+					"replace( [" + simpleClassName + "], [" + simpleClassName + " "
+							+ missingDependency.getDependencyType().getValue() + "s "
+							+ missingDependency.getModuleDescriptionB() + "])", null));
 		} else {
 			for (ModuleSimilarity ms : suitableModules) {
-				suggestions.add(FixingUtil.createMarkerResolution(
-						"move_class(" + simpleClassName + ", " + ms.getModuleDescription()
-								+ ") (similarity: " + FormatUtil.formatDouble(ms.getSimilarity())
-								+ ms.getStrategy().toString() + ")", null));
+				suggestions
+						.add(FixingUtil.createMarkerResolution(
+								"move_class(" + simpleClassName + ", " + ms.getModuleDescription() + ") (similarity: "
+										+ FormatUtil.formatDouble(ms.getSimilarity()) + ms.getStrategy().toString()
+										+ ")", null));
 			}
 
 		}
