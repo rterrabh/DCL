@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -14,6 +15,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Shell;
 
+import dclsuite.core.DependencyConstraint.ArchitecturalDrift;
 import dclsuite.core.parser.DCLParser;
 import dclsuite.dependencies.Dependency;
 import dclsuite.enums.DependencyType;
@@ -125,12 +127,34 @@ public class Architecture {
 		dependencies.add(dependencyType.createGenericDependency(classNameA, classNameB));
 		
 		for (DependencyConstraint dc : this.getDependencyConstraints()) {
-			if (dc.validate(classNameA, modules, this.getProjectClasses(), dependencies, project) != null) {
+			List<ArchitecturalDrift> violations = dc.validate(classNameA, modules, this.getProjectClasses(), dependencies, project);
+			if (violations != null && !violations.isEmpty()) {
 				return false;
 			}
 		}
 
 		return true;
+	}
+	
+	/**
+	 * Method used to check if some class of the system is allowed to establish a particular dependency.
+	 * It is used, e.g., for the DCLfix module.
+	 */
+	public boolean someclassCan(String classNameB, DependencyType dependencyType, IProject project)
+			throws CoreException {
+		
+		for (String classNameA : this.getProjectClasses()){
+			final Collection<Dependency> dependencies = new ArrayList<Dependency>(1);		
+			dependencies.add(dependencyType.createGenericDependency(classNameA, classNameB));
+			
+			for (DependencyConstraint dc : this.getDependencyConstraints()) {
+				if (dc.validate(classNameA, modules, this.getProjectClasses(), dependencies, project) == null) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 }

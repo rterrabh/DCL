@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -13,18 +14,86 @@ import java.util.TreeMap;
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.ITypeHierarchy;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.IMarkerResolution2;
 
 import dclsuite.core.Architecture;
+import dclsuite.dependencies.DeclareReturnDependency;
 import dclsuite.dependencies.Dependency;
 import dclsuite.enums.DependencyType;
 import dclsuite.resolution.ModuleSimilarity;
 
 public final class FixingUtil {
 	private static final int MOVE_SUGGESTIONS = 2;
+	private static final boolean DEBUG = false;
 
 	private FixingUtil() {
+	}
+
+	public static Collection<String> supertypesAllowedTo(final String originClassName, final IProject project,
+			final Architecture architecture, final String classNameToFindSuperTypes, final DependencyType dependencyType)
+			throws CoreException {
+		Collection<String> result = new LinkedList<String>();
+
+		IJavaProject javaProject = JavaCore.create(project);
+		IType type = javaProject.findType(classNameToFindSuperTypes);
+
+		ITypeHierarchy typeHierarchy = type.newTypeHierarchy(null);
+		IType[] typeSuperclasses = typeHierarchy.getAllSupertypes(type);
+
+		for (IType t : typeSuperclasses) {
+			if (architecture.can(originClassName, t.getFullyQualifiedName(), dependencyType, project)) {
+				result.add(t.getFullyQualifiedName());
+			}
+		}
+
+		return result;
+	}
+
+	public static Collection<String> subtypesAllowedTo(final String originClassName, final IProject project,
+			final Architecture architecture, final String classNameToFindSuperTypes, final DependencyType dependencyType)
+			throws CoreException {
+		Collection<String> result = new LinkedList<String>();
+
+		IJavaProject javaProject = JavaCore.create(project);
+		IType type = javaProject.findType(classNameToFindSuperTypes);
+
+		ITypeHierarchy typeHierarchy = type.newTypeHierarchy(null);
+		IType[] typeSubclasses = typeHierarchy.getAllSubtypes(type);
+
+		for (IType t : typeSubclasses) {
+			if (architecture.can(originClassName, t.getFullyQualifiedName(), dependencyType, project)) {
+				result.add(t.getFullyQualifiedName());
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Function to find a factory
+	 */
+	public static String[] factory(final IProject project, final Architecture architecture,
+			final String classNameToFindFactory) {
+		for (String className : architecture.getProjectClasses()) {
+			Collection<Dependency> dependencies = architecture.getDependencies(className);
+
+			for (Dependency d : dependencies) {
+				if (d instanceof DeclareReturnDependency) {
+					if (d.getClassNameB().equals(classNameToFindFactory)) {
+						DeclareReturnDependency drd = (DeclareReturnDependency) d;
+						return new String[] { className, drd.getMethodName() };
+					}
+				}
+			}
+		}
+		return null;
+
 	}
 
 	private static double similarity(Collection<Dependency> colDepA, Collection<Dependency> colDepB,
@@ -164,8 +233,10 @@ public final class FixingUtil {
 			}
 		}
 
-		for (ModuleSimilarity m : result) {
-			System.out.println(m.getModuleDescription() + ">" + m.getSimilarity());
+		if (DEBUG) {
+			for (ModuleSimilarity m : result) {
+				System.out.println(m.getModuleDescription() + ">" + m.getSimilarity());
+			}
 		}
 
 		return result;
@@ -196,31 +267,6 @@ public final class FixingUtil {
 		}
 	}
 
-	// public static boolean isTheRightModule(final String className, final
-	// Set<ModuleSimilarity> suitableModules,
-	// final Map<String, String> modules, final Collection<String>
-	// projectClassNames, final IProject project) {
-	//
-	// String suitableModulesDescription = "";
-	//
-	// if (suitableModules != null && !suitableModules.isEmpty()) {
-	// for (ModuleSimilarity ms : suitableModules) {
-	// suitableModulesDescription += ms.getModuleDescription() + ",";
-	// }
-	// suitableModulesDescription = suitableModulesDescription.substring(0,
-	// suitableModulesDescription.length() - 1);
-	// }
-	//
-	// /* If the module is exactly the one */
-	// if (DCLUtil.hasClassNameByDescription(className,
-	// suitableModulesDescription, modules, projectClassNames,
-	// project)) {
-	// return true;
-	// }
-	//
-	// return false;
-	// }
-
 	public static boolean isModuleMequalModuleMa(final String className, final String moduleDescription,
 			final Set<ModuleSimilarity> suitableModules, final Map<String, String> modules,
 			final Collection<String> projectClassNames, final IProject project) {
@@ -234,7 +280,7 @@ public final class FixingUtil {
 			suitableModulesDescription = suitableModulesDescription.substring(0,
 					suitableModulesDescription.length() - 1);
 		}
-		
+
 		final String simpleClassName = DCLUtil.getSimpleClassName(className);
 
 		for (ModuleSimilarity m : suitableModules) {
@@ -255,45 +301,6 @@ public final class FixingUtil {
 
 		return false;
 	}
-
-	// public static boolean isTheRightModuleIfTheyHaveBeenMoved(final String
-	// className, final String moduleDescription, final Set<ModuleSimilarity>
-	// suitableModules,
-	// final Map<String, String> modules, final Collection<String>
-	// projectClassNames, final IProject project) {
-	//
-	// String suitableModulesDescription = "";
-	//
-	// if (suitableModules != null && !suitableModules.isEmpty()) {
-	// for (ModuleSimilarity ms : suitableModules) {
-	// suitableModulesDescription += ms.getModuleDescription() + ",";
-	// }
-	// suitableModulesDescription = suitableModulesDescription.substring(0,
-	// suitableModulesDescription.length() - 1);
-	// }
-	//
-	// final String simpleClassName = DCLUtil.getSimpleClassName(className);
-	//
-	// /* If after the move, it will be at allowed modules */
-	// for (ModuleSimilarity m : suitableModules) {
-	// if (m.getModuleDescription().endsWith(".*")){
-	// String qualifiedClassName = m.getModuleDescription().replaceAll("\\.\\*",
-	// "") + "." + simpleClassName;
-	//
-	// if (DCLUtil.hasClassNameByDescription(qualifiedClassName,
-	// moduleDescription, modules,
-	// projectClassNames, project)) {
-	// return true;
-	// }
-	// }
-	// if (moduleDescription.contains(m.getModuleDescription())){
-	// return true;
-	// }
-	//
-	// }
-	//
-	// return false;
-	// }
 
 }
 

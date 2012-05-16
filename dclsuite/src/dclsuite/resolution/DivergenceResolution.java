@@ -1,5 +1,6 @@
 package dclsuite.resolution;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Set;
 
@@ -9,6 +10,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.IMarkerResolution;
 
 import dclsuite.core.Architecture;
+import dclsuite.dependencies.AccessFieldDependency;
+import dclsuite.dependencies.AccessMethodDependency;
 import dclsuite.dependencies.Dependency;
 import dclsuite.enums.Constraint;
 import dclsuite.enums.ConstraintType;
@@ -26,8 +29,14 @@ public class DivergenceResolution {
 		Set<ModuleSimilarity> suitableModules = FixingUtil.suitableModule(project, architecture,
 				dependency.getClassNameA(), dependency.getDependencyType(), dependency.getClassNameB());
 
-		//TODO: Missing the development of THROW rules
+		// TODO: Missing the development of THROW rules
 		switch (dependency.getDependencyType()) {
+		case DECLARE:
+			return getSuggestionsDeclare(project, architecture, dependency, suitableModules, moduleDescriptionA,
+					moduleDescriptionB, violatedConstraint.getConstraintType());
+		case ACCESS:
+			return getSuggestionsAccess(project, architecture, dependency, suitableModules, moduleDescriptionA,
+					moduleDescriptionB, violatedConstraint.getConstraintType());
 		case CREATE:
 			return getSuggestionsCreate(project, architecture, dependency, suitableModules, moduleDescriptionA,
 					moduleDescriptionB, violatedConstraint.getConstraintType());
@@ -81,18 +90,89 @@ public class DivergenceResolution {
 
 		return suggestions.toArray(new IMarkerResolution[suggestions.size()]);
 	}
-	
+
 	/**
-	 * USE-ANNOTATION
+	 * CREATE
 	 */
 	private static IMarkerResolution[] getSuggestionsCreate(IProject project, Architecture architecture,
 			Dependency dependency, Set<ModuleSimilarity> suitableModules, final String moduleDescriptionA,
 			final String moduleDescriptionB, ConstraintType constraintType) throws CoreException {
 		final LinkedList<IMarkerResolution> suggestions = new LinkedList<IMarkerResolution>();
+		@SuppressWarnings("unused")
 		final String simpleOriginClassName = DCLUtil.getSimpleClassName(dependency.getClassNameA());
 		final String simpleTargetClassName = DCLUtil.getSimpleClassName(dependency.getClassNameB());
 
+		if (!architecture.someclassCan(dependency.getClassNameB(), dependency.getDependencyType(), project)) {
+			suggestions.add(FixingUtil.createMarkerResolution("replace( [new " + simpleTargetClassName
+					+ "()], [null] )", null));
+		}
+
+		String[] factory = FixingUtil.factory(project, architecture, dependency.getClassNameB());
+		if (factory != null) {
+			suggestions.add(FixingUtil.createMarkerResolution("replace( [new " + simpleTargetClassName + "()], ["
+					+ factory[0] + "." + factory[1] + "()" + "] )", null));
+		}
+
+		return suggestions.toArray(new IMarkerResolution[suggestions.size()]);
+	}
+
+	
+	/**
+	 * DECLARE
+	 */
+	private static IMarkerResolution[] getSuggestionsDeclare(IProject project, Architecture architecture,
+			Dependency dependency, Set<ModuleSimilarity> suitableModules, final String moduleDescriptionA,
+			final String moduleDescriptionB, ConstraintType constraintType) throws CoreException {
+		final LinkedList<IMarkerResolution> suggestions = new LinkedList<IMarkerResolution>();
+		@SuppressWarnings("unused")
+		final String simpleOriginClassName = DCLUtil.getSimpleClassName(dependency.getClassNameA());
+		final String simpleTargetClassName = DCLUtil.getSimpleClassName(dependency.getClassNameB());
+
+		Collection<String> allowedSuperTypes = FixingUtil.supertypesAllowedTo(dependency.getClassNameA(), 
+				project, architecture, dependency.getClassNameB(), dependency.getDependencyType());
+
+		if (allowedSuperTypes != null && !allowedSuperTypes.isEmpty()) {
+			for (String allowedSuperTypeClassName : allowedSuperTypes){
+				suggestions.add(FixingUtil.createMarkerResolution("replace( [" + simpleTargetClassName + "], supertype ["
+						+ allowedSuperTypeClassName + "] )", null));	
+			}
+		}
 		
+		Collection<String> allowedSubTypes = FixingUtil.subtypesAllowedTo(dependency.getClassNameA(), 
+				project, architecture, dependency.getClassNameB(), dependency.getDependencyType());
+
+		if (allowedSubTypes != null && !allowedSubTypes.isEmpty()) {
+			for (String allowedSubTypeClassName : allowedSubTypes){
+				suggestions.add(FixingUtil.createMarkerResolution("replace( [" + simpleTargetClassName + "], subtype ["
+						+ allowedSubTypeClassName + "] )", null));	
+			}
+		}
+		
+		return suggestions.toArray(new IMarkerResolution[suggestions.size()]);
+	}
+	
+	/**
+	 * ACCESS
+	 */
+	private static IMarkerResolution[] getSuggestionsAccess(IProject project, Architecture architecture,
+			Dependency dependency, Set<ModuleSimilarity> suitableModules, final String moduleDescriptionA,
+			final String moduleDescriptionB, ConstraintType constraintType) throws CoreException {
+		final LinkedList<IMarkerResolution> suggestions = new LinkedList<IMarkerResolution>();
+		@SuppressWarnings("unused")
+		final String simpleOriginClassName = DCLUtil.getSimpleClassName(dependency.getClassNameA());
+		final String simpleTargetClassName = DCLUtil.getSimpleClassName(dependency.getClassNameB());
+
+		String accessedMember = null;
+		if (dependency instanceof AccessFieldDependency) {
+			accessedMember = ((AccessFieldDependency) dependency).getFieldName();
+		} else if (dependency instanceof AccessMethodDependency) {
+			accessedMember = ((AccessMethodDependency) dependency).getMethodNameB() + "()";
+		}
+
+		if (!architecture.someclassCan(dependency.getClassNameB(), dependency.getDependencyType(), project)) {
+			suggestions.add(FixingUtil.createMarkerResolution("remove( [" + simpleTargetClassName + "."
+					+ accessedMember + "] )", null));
+		}
 
 		return suggestions.toArray(new IMarkerResolution[suggestions.size()]);
 	}
