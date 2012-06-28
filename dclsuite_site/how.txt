@@ -1,9 +1,9 @@
-1. git commit -a 
-
+1. git commit -a
+   git push 
 
 2. Open all "dclsuite" projects
 
-3. Go "dclsuite_site"
+3. Go "dclsuite_site/site.xml"
    2.1. Synchronize
    2.2. Build All
    
