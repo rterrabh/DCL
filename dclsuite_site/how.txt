@@ -1,7 +1,10 @@
-1. Open all "dclsuite" projects
+1. git commit -a 
 
-2. Go "dclsuite_site"
+
+2. Open all "dclsuite" projects
+
+3. Go "dclsuite_site"
    2.1. Synchronize
    2.2. Build All
    
-3. FTP to http://www.dclsuite.org/update 
+4. FTP to http://www.dclsuite.org/update 

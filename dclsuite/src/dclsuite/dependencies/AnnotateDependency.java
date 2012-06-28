@@ -10,7 +10,7 @@ public class AnnotateDependency extends Dependency {
 	
 	@Override
 	public DependencyType getDependencyType() {
-		return DependencyType.ANNOTATE;
+		return DependencyType.USEANNOTATION;
 	}
 
 }

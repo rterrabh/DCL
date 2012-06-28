@@ -44,7 +44,7 @@ public class DivergenceResolution {
 		case EXTEND:
 			return getSuggestionsDerive(project, architecture, dependency, suitableModules, moduleDescriptionA,
 					moduleDescriptionB, violatedConstraint.getConstraintType());
-		case ANNOTATE:
+		case USEANNOTATION:
 			return getSuggestionsAnnotate(project, architecture, dependency, suitableModules, moduleDescriptionA,
 					moduleDescriptionB, violatedConstraint.getConstraintType());
 

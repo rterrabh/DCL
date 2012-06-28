@@ -12,7 +12,7 @@ import dclsuite.dependencies.ImplementDependency;
 import dclsuite.dependencies.ThrowDependency;
 
 public enum DependencyType {
-	ACCESS("access", AccessDependency.class), ANNOTATE("annotate", AnnotateDependency.class), CREATE("create",
+	ACCESS("access", AccessDependency.class), USEANNOTATION("annotate", AnnotateDependency.class), CREATE("create",
 			CreateDependency.class), DECLARE("declare", DeclareDependency.class), DERIVE("derive",
 			DeriveDependency.class), EXTEND("extend", ExtendDependency.class), HANDLE("handle", HandleDependency.class), IMPLEMENT(
 			"implement", ImplementDependency.class), THROW("throw", ThrowDependency.class), DEPEND("depend",
@@ -37,7 +37,7 @@ public enum DependencyType {
 	public final Dependency createGenericDependency(String classNameA, String classNameB) {
 		if (this == ACCESS) {
 			return new AccessDependency(classNameA, classNameB, null);
-		} else if (this == ANNOTATE) {
+		} else if (this == USEANNOTATION) {
 			return new AnnotateDependency(classNameA, classNameB, null);
 		} else if (this == CREATE) {
 			return new CreateDependency(classNameA, classNameB, null);

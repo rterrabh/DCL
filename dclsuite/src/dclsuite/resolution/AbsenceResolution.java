@@ -25,7 +25,7 @@ public class AbsenceResolution {
 		case IMPLEMENT:
 		case EXTEND:
 			return getSuggestionsDerive(project, architecture, missingDependency, suitableModules);
-		case ANNOTATE:
+		case USEANNOTATION:
 			return getSuggestionsAnnotate(project, architecture, missingDependency, suitableModules);
 
 		}

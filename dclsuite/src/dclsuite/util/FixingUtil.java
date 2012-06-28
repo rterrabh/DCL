@@ -209,6 +209,12 @@ public final class FixingUtil {
 		while (result.size() < MOVE_SUGGESTIONS) {
 			entryAll = sortedSimilarityModuleAllDependencies.pollFirstEntry();
 			entryParticular = sortedSimilarityModuleParticularDependency.pollFirstEntry();
+			
+			/* If there is no more possible suggestions, then abort */
+			if (entryAll == null && entryParticular == null){
+				break;
+			}
+			
 			if (entryAll == null) {
 				result.add(new ModuleSimilarity(entryParticular.getKey(), entryParticular.getValue(),
 						ModuleSimilarity.Strategy.PARTICULAR_DEPENDENCY));
