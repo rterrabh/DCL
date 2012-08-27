@@ -36,19 +36,19 @@ public enum DependencyType {
 
 	public final Dependency createGenericDependency(String classNameA, String classNameB) {
 		if (this == ACCESS) {
-			return new AccessDependency(classNameA, classNameB, null);
+			return new AccessDependency(classNameA, classNameB, null, null, null);
 		} else if (this == USEANNOTATION) {
-			return new AnnotateDependency(classNameA, classNameB, null);
+			return new AnnotateDependency(classNameA, classNameB, null, null, null);
 		} else if (this == CREATE) {
-			return new CreateDependency(classNameA, classNameB, null);
+			return new CreateDependency(classNameA, classNameB, null, null, null);
 		} else if (this == DECLARE) {
-			return new DeclareDependency(classNameA, classNameB, null);
+			return new DeclareDependency(classNameA, classNameB, null, null, null);
 		} else if (this == EXTEND) {
-			return new ExtendDependency(classNameA, classNameB, null);
+			return new ExtendDependency(classNameA, classNameB, null, null, null);
 		} else if (this == IMPLEMENT) {
-			return new ImplementDependency(classNameA, classNameB, null);
+			return new ImplementDependency(classNameA, classNameB, null, null, null);
 		} else if (this == THROW) {
-			return new ThrowDependency(classNameA, classNameB, null, null);
+			return new ThrowDependency(classNameA, classNameB, null, null, null, null);
 		}
 		return null;
 	}

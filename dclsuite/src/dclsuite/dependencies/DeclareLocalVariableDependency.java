@@ -8,8 +8,8 @@ public final class DeclareLocalVariableDependency extends DeclareDependency {
 	private final String fieldNameA;
 	private final String methodNameA;
 	
-	public DeclareLocalVariableDependency(String classNameA, String classNameB, Integer lineNumber, String methodNameA, String fieldNameA) {
-		super(classNameA,classNameB,lineNumber);
+	public DeclareLocalVariableDependency(String classNameA, String classNameB, Integer lineNumberA, Integer offset, Integer length, String methodNameA, String fieldNameA) {
+		super(classNameA,classNameB,lineNumberA, offset, length);
 		this.fieldNameA = fieldNameA;
 		this.methodNameA = methodNameA;
 	}

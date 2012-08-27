@@ -66,6 +66,11 @@ public class MarkerUtils {
 			marker.setAttribute(IMarker.MESSAGE, "Divergence: " + ad.getDetailedMessage());
 			marker.setAttribute(IMarker.LINE_NUMBER, dad.getForbiddenDependency().getLineNumber());
 
+			if (dad.getForbiddenDependency().getOffset() != null && dad.getForbiddenDependency().getLength() != null) {
+				marker.setAttribute(IMarker.CHAR_START, dad.getForbiddenDependency().getOffset());
+				marker.setAttribute(IMarker.CHAR_END, dad.getForbiddenDependency().getOffset()+dad.getForbiddenDependency().getLength());
+			}
+
 			marker.setAttribute(DEPENDENCY_TYPE.getKey(), dad.getForbiddenDependency().getDependencyType().toString());
 
 			/* Dependency Props */

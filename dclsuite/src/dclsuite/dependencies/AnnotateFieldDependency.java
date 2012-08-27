@@ -7,8 +7,8 @@ import dclsuite.enums.ViolationProperties;
 public final class AnnotateFieldDependency extends AnnotateDependency {
 	private final String fieldNameA;
 	
-	public AnnotateFieldDependency(String classNameA, String classNameB, Integer lineNumber, String fieldNameA) {
-		super(classNameA,classNameB,lineNumber);
+	public AnnotateFieldDependency(String classNameA, String classNameB, Integer lineNumberA, Integer offset, Integer length, String fieldNameA) {
+		super(classNameA,classNameB,lineNumberA, offset, length);
 		this.fieldNameA = fieldNameA;
 	}
 

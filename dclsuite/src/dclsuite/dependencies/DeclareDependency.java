@@ -4,8 +4,8 @@ import dclsuite.enums.DependencyType;
 
 public class DeclareDependency extends HandleDependency {
 
-	public DeclareDependency(String classNameA, String classNameB, Integer lineNumber) {
-		super(classNameA, classNameB, lineNumber);
+	public DeclareDependency(String classNameA, String classNameB, Integer lineNumberA, Integer offset, Integer length) {
+		super(classNameA, classNameB, lineNumberA, offset, length);
 	}
 	
 	@Override

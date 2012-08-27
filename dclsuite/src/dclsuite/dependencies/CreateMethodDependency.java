@@ -7,8 +7,8 @@ import dclsuite.enums.ViolationProperties;
 public class CreateMethodDependency extends CreateDependency {
 	private String methodNameA;
 	
-	public CreateMethodDependency(String classNameA, String classNameB, Integer lineNumber, String methodNameA) {
-		super(classNameA,classNameB,lineNumber);
+	public CreateMethodDependency(String classNameA, String classNameB, Integer lineNumberA, Integer offset, Integer length, String methodNameA) {
+		super(classNameA,classNameB,lineNumberA, offset, length);
 		this.methodNameA = methodNameA;
 	}
 	

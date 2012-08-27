@@ -7,9 +7,10 @@ import dclsuite.enums.ViolationProperties;
 public final class DeclareParameterDependency extends DeclareDependency {
 	private final String fieldNameA;
 	private final String methodNameA;
-	
-	public DeclareParameterDependency(String classNameA, String classNameB, Integer lineNumber, String methodNameA, String fieldNameA) {
-		super(classNameA,classNameB,lineNumber);
+
+	public DeclareParameterDependency(String classNameA, String classNameB, Integer lineNumberA, Integer offset,
+			Integer length, String methodNameA, String fieldNameA) {
+		super(classNameA, classNameB, lineNumberA, offset, length);
 		this.fieldNameA = fieldNameA;
 		this.methodNameA = methodNameA;
 	}
@@ -20,15 +21,14 @@ public final class DeclareParameterDependency extends DeclareDependency {
 
 	public String getMethodName() {
 		return methodNameA;
-	}	
-	
+	}
+
 	@Override
 	public String toString() {
-		return "'" + 
-				this.classNameA + "' contains the formal parameter '" + this.fieldNameA + 
-				"' in method '" + this.methodNameA + "' whose type is '" + this.classNameB + "'";
+		return "'" + this.classNameA + "' contains the formal parameter '" + this.fieldNameA + "' in method '"
+				+ this.methodNameA + "' whose type is '" + this.classNameB + "'";
 	}
-	
+
 	@Override
 	public Properties props() {
 		Properties props = super.props();

@@ -7,8 +7,8 @@ import dclsuite.enums.ViolationProperties;
 public class CreateFieldDependency extends CreateDependency {
 	private String fieldNameA;
 	
-	public CreateFieldDependency(String classNameA, String classNameB, Integer lineNumber, String fieldNameA) {
-		super(classNameA,classNameB,lineNumber);
+	public CreateFieldDependency(String classNameA, String classNameB, Integer lineNumberA, Integer offset, Integer length, String fieldNameA) {
+		super(classNameA,classNameB,lineNumberA,offset,length);
 		this.fieldNameA = fieldNameA;
 	}
 	

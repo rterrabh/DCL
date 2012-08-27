@@ -42,8 +42,8 @@ public class DCLRuleScanner extends RuleBasedScanner{
 				new SingleLineRule("th", "row", dependencyTypeToken),
 				
 				new SingleLineRule("\"", "\"", italicToken),
-				new SingleLineRule("$", "java", italicToken),
-				new SingleLineRule("$", "system", italicToken),
+				new SingleLineRule("$ja", "va", italicToken),
+				new SingleLineRule("$sys", "tem", italicToken),
 				new EndOfLineRule("%", commentToken)
 		};
 		

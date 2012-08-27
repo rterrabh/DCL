@@ -8,8 +8,8 @@ import dclsuite.enums.ViolationProperties;
 public final class ThrowDependency extends Dependency {
 	private final String methodNameA;
 	
-	public ThrowDependency(String classNameA, String classNameB, Integer lineNumber, String methodNameA) {
-		super(classNameA,classNameB,lineNumber);
+	public ThrowDependency(String classNameA, String classNameB, Integer lineNumberA, Integer offset, Integer length, String methodNameA) {
+		super(classNameA,classNameB,lineNumberA, offset, length);
 		this.methodNameA = methodNameA;
 	}
 

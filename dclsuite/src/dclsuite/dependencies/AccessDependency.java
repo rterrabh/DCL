@@ -4,9 +4,8 @@ import dclsuite.enums.DependencyType;
 
 public class AccessDependency extends HandleDependency {
 
-	public AccessDependency(String classNameA, String classNameB,
-			Integer lineNumber) {
-		super(classNameA, classNameB, lineNumber);
+	public AccessDependency(String classNameA, String classNameB, Integer lineNumberA, Integer offset, Integer length) {
+		super(classNameA, classNameB, lineNumberA, offset, length);
 	}
 	
 	@Override

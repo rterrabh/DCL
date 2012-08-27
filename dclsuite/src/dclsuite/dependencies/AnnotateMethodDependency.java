@@ -7,8 +7,8 @@ import dclsuite.enums.ViolationProperties;
 public final class AnnotateMethodDependency extends AnnotateDependency {
 	private final String methodNameA;
 	
-	public AnnotateMethodDependency(String classNameA, String classNameB, Integer lineNumber, String methodNameA) {
-		super(classNameA,classNameB,lineNumber);
+	public AnnotateMethodDependency(String classNameA, String classNameB, Integer lineNumber, Integer offset, Integer length, String methodNameA) {
+		super(classNameA,classNameB,lineNumber,offset,length);
 		this.methodNameA = methodNameA;
 	}
 

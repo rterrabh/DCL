@@ -10,8 +10,8 @@ public final class AccessFieldDependency extends AccessDependency {
 	private final String fieldNameB;
 	private final boolean staticAccess;
 	
-	public AccessFieldDependency(String classNameA, String classNameB, Integer lineNumber, String methodName, String fieldName, boolean staticAccess) {
-		super(classNameA,classNameB,lineNumber);
+	public AccessFieldDependency(String classNameA, String classNameB, Integer lineNumberA, Integer offset, Integer length, String methodName, String fieldName, boolean staticAccess) {
+		super(classNameA,classNameB,lineNumberA, offset, length);
 		this.methodNameA = methodName;
 		this.fieldNameB = fieldName;
 		this.staticAccess = staticAccess;

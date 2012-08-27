@@ -9,8 +9,8 @@ public final class AccessMethodDependency extends AccessDependency {
 	private final String methodNameB;
 	private final boolean staticAccess;
 	
-	public AccessMethodDependency(String classNameA, String classNameB, Integer lineNumber, String methodNameA, String methodNameB, boolean staticAccess) {
-		super(classNameA,classNameB,lineNumber);
+	public AccessMethodDependency(String classNameA, String classNameB, Integer lineNumberA, Integer offset, Integer length, String methodNameA, String methodNameB, boolean staticAccess) {
+		super(classNameA,classNameB,lineNumberA, offset, length);
 		this.methodNameA = methodNameA;
 		this.methodNameB = methodNameB;
 		this.staticAccess = staticAccess;
