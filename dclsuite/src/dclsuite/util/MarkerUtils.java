@@ -155,6 +155,33 @@ public class MarkerUtils {
 
 			@Override
 			public void run(IMarker m) {
+				/*
+				 * MessageDialog.openInformation(new Shell(), "dclsuite",
+				 * "In this version, the dclsuite tool has not automatizated performing refactorings."
+				 * );
+				 */
+			}
+
+			@Override
+			public String getLabel() {
+				return label;
+			}
+
+			public String getDescription() {
+				return description;
+			};
+
+			public org.eclipse.swt.graphics.Image getImage() {
+				return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_LCL_LINKTO_HELP);
+			};
+		};
+	}
+	
+	public static IMarkerResolution createMarkerResolutionRemoval(final String label, final String description) {
+		return new IMarkerResolution2() {
+
+			@Override
+			public void run(IMarker m) {
 				final ICompilationUnit unit = ((ICompilationUnit) JavaCore.create((IFile) m.getResource()));
 				try {
 					Document document = new Document(unit.getBuffer().getContents());

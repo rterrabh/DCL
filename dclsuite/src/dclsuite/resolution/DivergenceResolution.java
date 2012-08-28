@@ -64,7 +64,7 @@ public class DivergenceResolution {
 		final String simpleTargetClassName = DCLUtil.getSimpleClassName(dependency.getClassNameB());
 
 		/* D1 */
-		Collection<String> allowedSuperTypes = AuxiliaryFunctions.supertypesAllowedTo(dependency.getClassNameA(), project, architecture,
+		Collection<String> allowedSuperTypes = Functions.supertypesAllowedTo(dependency.getClassNameA(), project, architecture,
 				dependency.getClassNameB(), dependency.getDependencyType());
 
 		if (allowedSuperTypes != null && !allowedSuperTypes.isEmpty()) {
@@ -75,7 +75,7 @@ public class DivergenceResolution {
 		}
 
 		/* D2 */
-		Collection<String> allowedSubTypes = AuxiliaryFunctions.subtypesAllowedTo(dependency.getClassNameA(), project, architecture,
+		Collection<String> allowedSubTypes = Functions.subtypesAllowedTo(dependency.getClassNameA(), project, architecture,
 				dependency.getClassNameB(), dependency.getDependencyType());
 
 		if (allowedSubTypes != null && !allowedSubTypes.isEmpty()) {
@@ -127,7 +127,7 @@ public class DivergenceResolution {
 		final String simpleTargetClassName = DCLUtil.getSimpleClassName(dependency.getClassNameB());
 
 		/* D11 */
-		String[] factory = AuxiliaryFunctions.factory(project, architecture, dependency.getClassNameB());
+		String[] factory = Functions.factory(project, architecture, dependency.getClassNameB());
 		if (factory != null) {
 			suggestions.add(MarkerUtils.createMarkerResolution("D11: replace( [new " + simpleTargetClassName + "()], [" + factory[0] + "."
 					+ factory[1] + "()" + "] )", null));
@@ -162,7 +162,7 @@ public class DivergenceResolution {
 
 		
 		/* D19 */
-		Collection<String> allowedSuperTypes = AuxiliaryFunctions.supertypesAllowedTo(dependency.getClassNameA(), project, architecture,
+		Collection<String> allowedSuperTypes = Functions.supertypesAllowedTo(dependency.getClassNameA(), project, architecture,
 				dependency.getClassNameB(), dependency.getDependencyType());
 		if (allowedSuperTypes != null && !allowedSuperTypes.isEmpty()) {
 			for (String allowedSubTypeClassName : allowedSuperTypes) {
@@ -201,7 +201,7 @@ public class DivergenceResolution {
 		final String simpleOriginClassName = DCLUtil.getSimpleClassName(dependency.getClassNameA());
 		final String simpleTargetClassName = DCLUtil.getSimpleClassName(dependency.getClassNameB());
 
-		if (!AuxiliaryFunctions.isModuleMequalModuleMa(dependency.getClassNameA(), moduleDescriptionA, suitableModules,
+		if (!Functions.isModuleMequalModuleMa(dependency.getClassNameA(), moduleDescriptionA, suitableModules,
 				architecture.getModules(), architecture.getProjectClasses(), project, constraintType)) {
 			/* D21 and D23 */
 			for (ModuleSimilarity ms : suitableModules) {
