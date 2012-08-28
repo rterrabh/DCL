@@ -15,8 +15,21 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.JavaCore;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MarkerAnnotation;
+import org.eclipse.jdt.core.dom.NormalAnnotation;
+import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
+import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.Document;
+import org.eclipse.text.edits.MalformedTreeException;
+import org.eclipse.text.edits.TextEdit;
 import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.IMarkerResolution2;
 import org.eclipse.ui.ISharedImages;
@@ -142,8 +155,51 @@ public class MarkerUtils {
 
 			@Override
 			public void run(IMarker m) {
-				MessageDialog.openInformation(new Shell(), "dclsuite",
-						"In this version, the dclsuite tool has not automatizated performing refactorings.");
+				final ICompilationUnit unit = ((ICompilationUnit) JavaCore.create((IFile) m.getResource()));
+				try {
+					Document document = new Document(unit.getBuffer().getContents());
+					ASTParser parser = ASTParser.newParser(AST.JLS4);
+					parser.setSource(unit.getBuffer().getCharacters());
+
+					CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+					AST ast = cu.getAST();
+					final ASTRewrite rewriter = ASTRewrite.create(ast);
+					
+					cu.accept(new ASTVisitor() {
+
+						@Override
+						public boolean visit(NormalAnnotation node) {
+							rewriter.remove(node, null);
+							return false;
+						}
+
+						@Override
+						public boolean visit(MarkerAnnotation node) {
+							rewriter.remove(node, null);
+							return false;
+						}
+
+						@Override
+						public boolean visit(SingleMemberAnnotation node) {
+							rewriter.remove(node, null);
+							return false;
+						}
+
+					});					
+					
+					TextEdit edits = rewriter.rewriteAST(document, null);
+					edits.apply(document);
+					unit.getBuffer().setContents(document.get());
+				} catch (JavaModelException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (MalformedTreeException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (BadLocationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 
 			@Override
@@ -156,8 +212,7 @@ public class MarkerUtils {
 			};
 
 			public org.eclipse.swt.graphics.Image getImage() {
-				return PlatformUI.getWorkbench().getSharedImages()
-		          .getImage(ISharedImages.IMG_LCL_LINKTO_HELP);
+				return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_LCL_LINKTO_HELP);
 			};
 		};
 	}
