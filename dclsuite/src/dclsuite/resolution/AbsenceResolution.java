@@ -9,15 +9,13 @@ import org.eclipse.ui.IMarkerResolution;
 
 import dclsuite.core.Architecture;
 import dclsuite.dependencies.MissingDependency;
-import dclsuite.util.FixingUtil;
-import dclsuite.util.FormatUtil;
 
 public class AbsenceResolution {
 
 	public static IMarkerResolution[] getSuggestions(final IMarker marker, final Architecture architecture,
 			final MissingDependency missingDependency) {
 		final IProject project = marker.getResource().getProject();
-		Set<ModuleSimilarity> suitableModules = FixingUtil.suitableModule(project, architecture,
+		Set<ModuleSimilarity> suitableModules = SuitableModule.suitableModule(project, architecture,
 				missingDependency.getClassNameA(), missingDependency.getDependencyType(), null);
 
 		//TODO: Missing the development of THROW rules
@@ -42,23 +40,24 @@ public class AbsenceResolution {
 		final String simpleClassName = missingDependency.getClassNameA().substring(
 				missingDependency.getClassNameA().lastIndexOf(".") + 1);
 
-		if (FixingUtil.isModuleMequalModuleMa(missingDependency.getClassNameA(),
-				missingDependency.getModuleDescriptionA(), suitableModules, architecture.getModules(),
-				architecture.getProjectClasses(), project)) {
-			suggestions.add(FixingUtil.createMarkerResolution("replace( [" + simpleClassName + "], [@"
-					+ missingDependency.getModuleDescriptionB() + " " + simpleClassName + ")", null));
-		} else {
-			for (ModuleSimilarity ms : suitableModules) {
-				suggestions
-						.add(FixingUtil.createMarkerResolution(
-								"move_class(" + simpleClassName + ", " + ms.getModuleDescription() + ") (similarity: "
-										+ FormatUtil.formatDouble(ms.getSimilarity()) + ms.getStrategy().toString()
-										+ ")", null));
-			}
-
-		}
-
-		return suggestions.toArray(new IMarkerResolution[suggestions.size()]);
+//		if (AuxiliaryFunctions.isModuleMequalModuleMa(missingDependency.getClassNameA(),
+//				missingDependency.getModuleDescriptionA(), suitableModules, architecture.getModules(),
+//				architecture.getProjectClasses(), project)) {
+//			suggestions.add(AuxiliaryFunctions.createMarkerResolution("replace( [" + simpleClassName + "], [@"
+//					+ missingDependency.getModuleDescriptionB() + " " + simpleClassName + ")", null));
+//		} else {
+//			for (ModuleSimilarity ms : suitableModules) {
+//				suggestions
+//						.add(AuxiliaryFunctions.createMarkerResolution(
+//								"move_class(" + simpleClassName + ", " + ms.getModuleDescription() + ") (similarity: "
+//										+ FormatUtil.formatDouble(ms.getSimilarity()) + ms.getStrategy().toString()
+//										+ ")", null));
+//			}
+//
+//		}
+//
+//		return suggestions.toArray(new IMarkerResolution[suggestions.size()]);
+		return null;
 	}
 
 	/**
@@ -70,24 +69,25 @@ public class AbsenceResolution {
 		final String simpleClassName = missingDependency.getClassNameA().substring(
 				missingDependency.getClassNameA().lastIndexOf(".") + 1);
 
-		if (FixingUtil.isModuleMequalModuleMa(missingDependency.getClassNameA(), missingDependency.getModuleDescriptionA(),
-				suitableModules, architecture.getModules(), architecture.getProjectClasses(), project)) {
-			suggestions.add(FixingUtil.createMarkerResolution(
-					"replace( [" + simpleClassName + "], [" + simpleClassName + " "
-							+ missingDependency.getDependencyType().getValue() + "s "
-							+ missingDependency.getModuleDescriptionB() + "])", null));
-		} else {
-			for (ModuleSimilarity ms : suitableModules) {
-				suggestions
-						.add(FixingUtil.createMarkerResolution(
-								"move_class(" + simpleClassName + ", " + ms.getModuleDescription() + ") (similarity: "
-										+ FormatUtil.formatDouble(ms.getSimilarity()) + ms.getStrategy().toString()
-										+ ")", null));
-			}
-
-		}
-
-		return suggestions.toArray(new IMarkerResolution[suggestions.size()]);
+//		if (AuxiliaryFunctions.isModuleMequalModuleMa(missingDependency.getClassNameA(), missingDependency.getModuleDescriptionA(),
+//				suitableModules, architecture.getModules(), architecture.getProjectClasses(), project)) {
+//			suggestions.add(AuxiliaryFunctions.createMarkerResolution(
+//					"replace( [" + simpleClassName + "], [" + simpleClassName + " "
+//							+ missingDependency.getDependencyType().getValue() + "s "
+//							+ missingDependency.getModuleDescriptionB() + "])", null));
+//		} else {
+//			for (ModuleSimilarity ms : suitableModules) {
+//				suggestions
+//						.add(AuxiliaryFunctions.createMarkerResolution(
+//								"move_class(" + simpleClassName + ", " + ms.getModuleDescription() + ") (similarity: "
+//										+ FormatUtil.formatDouble(ms.getSimilarity()) + ms.getStrategy().toString()
+//										+ ")", null));
+//			}
+//
+//		}
+//
+//		return suggestions.toArray(new IMarkerResolution[suggestions.size()]);
+		return null;
 	}
 
 }

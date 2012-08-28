@@ -15,6 +15,12 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IMarkerResolution;
+import org.eclipse.ui.IMarkerResolution2;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 
 import dclsuite.core.DependencyConstraint.AbsenceArchitecturalDrift;
 import dclsuite.core.DependencyConstraint.ArchitecturalDrift;
@@ -51,12 +57,9 @@ public class MarkerUtils {
 		marker.setAttribute(VIOLATED_CONSTRAINT.getKey(), ad.getViolatedConstraint().toString());
 		marker.setAttribute(VIOLATION_TYPE.getKey(), ad.getViolationType());
 		marker.setAttribute(DETAILED_MESSAGE.getKey(), ad.getDetailedMessage());
-		marker.setAttribute(ViolationProperties.MODULE_DESCRIPTION_A.getKey(), ad.getViolatedConstraint()
-				.getModuleDescriptionA());
-		marker.setAttribute(ViolationProperties.MODULE_DESCRIPTION_B.getKey(), ad.getViolatedConstraint()
-				.getModuleDescriptionB());
-		marker.setAttribute(ViolationProperties.CONSTRAINT.getKey(), ad.getViolatedConstraint().getConstraint()
-				.getValue());
+		marker.setAttribute(ViolationProperties.MODULE_DESCRIPTION_A.getKey(), ad.getViolatedConstraint().getModuleDescriptionA());
+		marker.setAttribute(ViolationProperties.MODULE_DESCRIPTION_B.getKey(), ad.getViolatedConstraint().getModuleDescriptionB());
+		marker.setAttribute(ViolationProperties.CONSTRAINT.getKey(), ad.getViolatedConstraint().getConstraint().getValue());
 
 		/* Divergence Infs */
 		if (ad instanceof DivergenceArchitecturalDrift) {
@@ -68,7 +71,7 @@ public class MarkerUtils {
 
 			if (dad.getForbiddenDependency().getOffset() != null && dad.getForbiddenDependency().getLength() != null) {
 				marker.setAttribute(IMarker.CHAR_START, dad.getForbiddenDependency().getOffset());
-				marker.setAttribute(IMarker.CHAR_END, dad.getForbiddenDependency().getOffset()+dad.getForbiddenDependency().getLength());
+				marker.setAttribute(IMarker.CHAR_END, dad.getForbiddenDependency().getOffset() + dad.getForbiddenDependency().getLength());
 			}
 
 			marker.setAttribute(DEPENDENCY_TYPE.getKey(), dad.getForbiddenDependency().getDependencyType().toString());
@@ -82,8 +85,7 @@ public class MarkerUtils {
 			AbsenceArchitecturalDrift aad = (AbsenceArchitecturalDrift) ad;
 			marker.setAttribute(ViolationProperties.CLASS_NAME_A.getKey(), aad.getClassNameA());
 
-			marker.setAttribute(DEPENDENCY_TYPE.getKey(), aad.getViolatedConstraint().getConstraint()
-					.getDependencyType().toString());
+			marker.setAttribute(DEPENDENCY_TYPE.getKey(), aad.getViolatedConstraint().getConstraint().getDependencyType().toString());
 
 			marker.setAttribute(IMarker.MESSAGE, "Absence in <" + ad.getViolatedConstraint().toString() + ">");
 		}
@@ -133,6 +135,31 @@ public class MarkerUtils {
 			return new Integer(lineNumberA);
 		}
 		return null;
+	}
+
+	public static IMarkerResolution createMarkerResolution(final String label, final String description) {
+		return new IMarkerResolution2() {
+
+			@Override
+			public void run(IMarker m) {
+				MessageDialog.openInformation(new Shell(), "dclsuite",
+						"In this version, the dclsuite tool has not automatizated performing refactorings.");
+			}
+
+			@Override
+			public String getLabel() {
+				return label;
+			}
+
+			public String getDescription() {
+				return description;
+			};
+
+			public org.eclipse.swt.graphics.Image getImage() {
+				return PlatformUI.getWorkbench().getSharedImages()
+		          .getImage(ISharedImages.IMG_LCL_LINKTO_HELP);
+			};
+		};
 	}
 
 }

@@ -231,7 +231,18 @@ public class DCLDeepDependencyVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(SingleMemberAnnotation node) {
-		if (node.getNodeType() == ASTNode.SINGLE_MEMBER_ANNOTATION) {
+		if (node.getParent().getNodeType() == ASTNode.FIELD_DECLARATION) {
+			FieldDeclaration field = (FieldDeclaration) node.getParent();
+			this.dependencies.add(new AnnotateFieldDependency(this.className, node.getTypeName().resolveTypeBinding()
+					.getQualifiedName(), fullClass.getLineNumber(node.getStartPosition()), node.getStartPosition(),
+					node.getLength(), ((VariableDeclarationFragment) field.fragments().get(0)).getName()
+							.getIdentifier()));
+		} else if (node.getParent().getNodeType() == ASTNode.METHOD_DECLARATION) {
+			MethodDeclaration method = (MethodDeclaration) node.getParent();
+			this.dependencies.add(new AnnotateMethodDependency(this.className, node.getTypeName().resolveTypeBinding()
+					.getQualifiedName(), fullClass.getLineNumber(node.getStartPosition()), node.getStartPosition(),
+					node.getLength(), method.getName().getIdentifier()));
+		} else if (node.getParent().getNodeType() == ASTNode.TYPE_DECLARATION) {
 			this.dependencies.add(new AnnotateClassDependency(this.className, node.getTypeName().resolveTypeBinding()
 					.getQualifiedName(), fullClass.getLineNumber(node.getStartPosition()), node.getStartPosition(),
 					node.getLength()));
