@@ -21,11 +21,11 @@ import dclsuite.util.DCLUtil;
 public class SuitableModule {
 	private static final int MOVE_SUGGESTIONS = 2;
 	private static final boolean DEBUG = false;
-	
-	private SuitableModule(){
-		
+
+	private SuitableModule() {
+
 	}
-	
+
 	public static Set<ModuleSimilarity> suitableModule(IProject project, final Architecture architecture, final String originClassName,
 			final DependencyType dependencyType, final String targetClassName) {
 		final Map<String, Double> similarityModuleParticularDependency = new LinkedHashMap<String, Double>();
@@ -117,7 +117,6 @@ public class SuitableModule {
 		return result;
 	}
 
-	
 	private static double similarity(Collection<Dependency> colDepA, Collection<Dependency> colDepB, DependencyType dependencyType,
 			String targetClass) {
 		Collection<SimpleDependency> rA = new HashSet<SimpleDependency>();
@@ -147,7 +146,6 @@ public class SuitableModule {
 		return CollectionUtils.intersection(rA, rB).size() / union;
 	}
 
-	
 	private static void adjustModuleSimilarity(IProject project, final Architecture architecture, final Map<String, Double> modules,
 			String otherClassName, final String respectiveModuleName, double similarity) {
 		if (similarity != 0) {
@@ -171,7 +169,7 @@ public class SuitableModule {
 			}
 		}
 	}
-	
+
 }
 
 class ValueComparator<T extends Comparable<T>> implements Comparator<String> {

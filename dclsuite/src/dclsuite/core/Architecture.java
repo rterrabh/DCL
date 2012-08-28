@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -45,7 +46,7 @@ public class Architecture {
 			System.out.println("Time BEFORE generate architecture (without dependencies): " + new Date());
 		}
 		this.projectClasses = new HashMap<String, Collection<Dependency>>();
-		this.modules = new HashMap<String, String>();
+		this.modules = new ConcurrentHashMap<String, String>();
 
 		for (String className : DCLUtil.getClassNames(project)) {
 			this.projectClasses.put(className, null);
@@ -60,6 +61,7 @@ public class Architecture {
 	private void initializeDependencyConstraints(IProject project) throws CoreException {
 		try {
 			final IFile dcFile = project.getFile(DCLUtil.DC_FILENAME);
+
 			this.modules.putAll(DCLParser.parseModules(dcFile.getContents()));
 
 			/* Define implicit modules */
@@ -90,8 +92,7 @@ public class Architecture {
 		return projectClasses.get(className);
 	}
 
-	public Dependency getDependency(String classNameA, String classNameB, Integer lineNumberA,
-			DependencyType dependencyType) {
+	public Dependency getDependency(String classNameA, String classNameB, Integer lineNumberA, DependencyType dependencyType) {
 		Collection<Dependency> dependencies = projectClasses.get(classNameA);
 		for (Dependency d : dependencies) {
 			if (lineNumberA == null) {
@@ -118,14 +119,13 @@ public class Architecture {
 	}
 
 	/**
-	 * Method used to check if a particular dependency is allowed or not.
-	 * It is used, e.g., for the DCLfix module.
+	 * Method used to check if a particular dependency is allowed or not. It is
+	 * used, e.g., for the DCLfix module.
 	 */
-	public boolean can(String classNameA, String classNameB, DependencyType dependencyType, IProject project)
-			throws CoreException {
-		final Collection<Dependency> dependencies = new ArrayList<Dependency>(1);		
+	public boolean can(String classNameA, String classNameB, DependencyType dependencyType, IProject project) throws CoreException {
+		final Collection<Dependency> dependencies = new ArrayList<Dependency>(1);
 		dependencies.add(dependencyType.createGenericDependency(classNameA, classNameB));
-		
+
 		for (DependencyConstraint dc : this.getDependencyConstraints()) {
 			List<ArchitecturalDrift> violations = dc.validate(classNameA, modules, this.getProjectClasses(), dependencies, project);
 			if (violations != null && !violations.isEmpty()) {
@@ -135,18 +135,17 @@ public class Architecture {
 
 		return true;
 	}
-	
+
 	/**
-	 * Method used to check if some class of the system is allowed to establish a particular dependency.
-	 * It is used, e.g., for the DCLfix module.
+	 * Method used to check if some class of the system is allowed to establish
+	 * a particular dependency. It is used, e.g., for the DCLfix module.
 	 */
-	public boolean someclassCan(String classNameB, DependencyType dependencyType, IProject project)
-			throws CoreException {
-		
-		for (String classNameA : this.getProjectClasses()){
-			final Collection<Dependency> dependencies = new ArrayList<Dependency>(1);		
+	public boolean someclassCan(String classNameB, DependencyType dependencyType, IProject project) throws CoreException {
+
+		for (String classNameA : this.getProjectClasses()) {
+			final Collection<Dependency> dependencies = new ArrayList<Dependency>(1);
 			dependencies.add(dependencyType.createGenericDependency(classNameA, classNameB));
-			
+
 			for (DependencyConstraint dc : this.getDependencyConstraints()) {
 				if (dc.validate(classNameA, modules, this.getProjectClasses(), dependencies, project) == null) {
 					return true;

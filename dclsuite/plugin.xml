@@ -85,7 +85,7 @@
 		 point="org.eclipse.ui.ide.markerResolution">
 		 <markerResolutionGenerator
 		 	markerType="dclsuite.violation"
-		 	class="dclsuite.resolution.MarkerResolution">
+		 	class="dclsuite.resolution.MarkerResolutionGenerator">
 		 </markerResolutionGenerator>
    </extension>
 
