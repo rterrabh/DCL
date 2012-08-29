@@ -48,6 +48,10 @@ public abstract class Dependency implements Serializable {
 		props.put(ViolationProperties.CLASS_NAME_B.getKey(), this.classNameB);
 		props.put(ViolationProperties.LINE_NUMBER_A.getKey(), (this.lineNumberA != null) ? this.lineNumberA.toString()
 				: "");
+		props.put(ViolationProperties.AST_OFFSET.getKey(), (this.offset != null) ? this.offset.toString()
+				: "");
+		props.put(ViolationProperties.AST_LENGTH.getKey(), (this.length != null) ? this.length.toString()
+				: "");
 		return props;
 	}
 

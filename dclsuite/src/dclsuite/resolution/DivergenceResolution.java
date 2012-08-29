@@ -135,7 +135,7 @@ public class DivergenceResolution {
 
 		/* D12 */
 		if (!architecture.someclassCan(dependency.getClassNameB(), dependency.getDependencyType(), project)) {
-			suggestions.add(MarkerUtils.createMarkerResolution("D12: replace( [new " + simpleTargetClassName + "()], [null] )", null));
+			suggestions.add(MarkerUtils.createMarkerResolutionRemoval("D12: replace( [new " + simpleTargetClassName + "()], [null] )", null));
 		}
 
 		/* D13 */
@@ -201,18 +201,19 @@ public class DivergenceResolution {
 		final String simpleOriginClassName = DCLUtil.getSimpleClassName(dependency.getClassNameA());
 		final String simpleTargetClassName = DCLUtil.getSimpleClassName(dependency.getClassNameB());
 
-		if (!Functions.isModuleMequalModuleMa(dependency.getClassNameA(), moduleDescriptionA, suitableModules,
+		
+		if (Functions.isModuleMequalModuleMa(dependency.getClassNameA(), moduleDescriptionA, suitableModules,
 				architecture.getModules(), architecture.getProjectClasses(), project, constraintType)) {
+			/* D22 and D23 */
+			String recommendationNumber = (dependency instanceof AnnotateClassDependency) ? "D22" : "D24";
+			suggestions.add(MarkerUtils.createMarkerResolutionRemoval(recommendationNumber + ": remove( [@" + simpleTargetClassName + "] )", null));
+		} else {
 			/* D21 and D23 */
 			for (ModuleSimilarity ms : suitableModules) {
 				String recommendationNumber = (dependency instanceof AnnotateClassDependency) ? "D21" : "D23";
 				suggestions.add(MarkerUtils.createMarkerResolution(recommendationNumber + ": move_class(" + simpleOriginClassName + ", " + ms.getModuleDescription()
 						+ ") (similarity: " + FormatUtil.formatDouble(ms.getSimilarity()) + ms.getStrategy().toString() + ")", null));
 			}
-		} else {
-			/* D22 and D23 */
-			String recommendationNumber = (dependency instanceof AnnotateClassDependency) ? "D22" : "D24";
-			suggestions.add(MarkerUtils.createMarkerResolution(recommendationNumber + ": remove( [@" + simpleTargetClassName + "] )", null));
 		}
 
 		return suggestions.toArray(new IMarkerResolution[suggestions.size()]);

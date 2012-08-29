@@ -19,10 +19,12 @@ import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MarkerAnnotation;
+import org.eclipse.jdt.core.dom.NodeFinder;
 import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
@@ -34,6 +36,7 @@ import org.eclipse.ui.IMarkerResolution;
 import org.eclipse.ui.IMarkerResolution2;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
 
 import dclsuite.core.DependencyConstraint.AbsenceArchitecturalDrift;
 import dclsuite.core.DependencyConstraint.ArchitecturalDrift;
@@ -149,6 +152,22 @@ public class MarkerUtils {
 		}
 		return null;
 	}
+	
+	public static Integer getAstOffset(IMarker marker) throws CoreException {
+		String astOffset = (String) marker.getAttribute(ViolationProperties.AST_OFFSET.getKey());
+		if (astOffset != null) {
+			return new Integer(astOffset);
+		}
+		return null;
+	}
+	
+	public static Integer getAstLength(IMarker marker) throws CoreException {
+		String astLength = (String) marker.getAttribute(ViolationProperties.AST_LENGTH.getKey());
+		if (astLength != null) {
+			return new Integer(astLength);
+		}
+		return null;
+	}
 
 	public static IMarkerResolution createMarkerResolution(final String label, final String description) {
 		return new IMarkerResolution2() {
@@ -188,33 +207,22 @@ public class MarkerUtils {
 					ASTParser parser = ASTParser.newParser(AST.JLS4);
 					parser.setSource(unit.getBuffer().getCharacters());
 
+					Integer offset = MarkerUtils.getAstOffset(m);
+					Integer length = MarkerUtils.getAstLength(m);
+					////MarkerUtils.get
+					
 					CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 					AST ast = cu.getAST();
-					final ASTRewrite rewriter = ASTRewrite.create(ast);
 					
-					cu.accept(new ASTVisitor() {
-
-						@Override
-						public boolean visit(NormalAnnotation node) {
-							rewriter.remove(node, null);
-							return false;
-						}
-
-						@Override
-						public boolean visit(MarkerAnnotation node) {
-							rewriter.remove(node, null);
-							return false;
-						}
-
-						@Override
-						public boolean visit(SingleMemberAnnotation node) {
-							rewriter.remove(node, null);
-							return false;
-						}
-
-					});					
+					ASTNode node = NodeFinder.perform(cu.getRoot(), offset,length);
+					final ASTRewrite rewriter = ASTRewrite.create(ast);
+					rewriter.remove(node, null);
 					
 					TextEdit edits = rewriter.rewriteAST(document, null);
+					
+					IDE.openEditor(PlatformUI.getWorkbench()
+							.getActiveWorkbenchWindow().getActivePage(), (IFile)m.getResource());
+					
 					edits.apply(document);
 					unit.getBuffer().setContents(document.get());
 				} catch (JavaModelException e1) {
@@ -224,6 +232,9 @@ public class MarkerUtils {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (BadLocationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (CoreException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

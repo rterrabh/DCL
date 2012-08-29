@@ -2,6 +2,8 @@ package dclsuite.enums;
 
 public enum ViolationProperties {
 	VIOLATION_TYPE("violationType","Type of violation"),
+	AST_OFFSET("astOffset","AST offset"),
+	AST_LENGTH("astLength","AST length"),
 	VIOLATED_CONSTRAINT("violatedConstraint","Violated Architectural Constraint"),
 	CONSTRAINT("constraint","Constraint"),
 	DEPENDENCY_TYPE("dependencyType","Dependency Type"),
