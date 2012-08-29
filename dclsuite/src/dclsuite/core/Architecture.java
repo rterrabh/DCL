@@ -146,10 +146,17 @@ public class Architecture {
 			final Collection<Dependency> dependencies = new ArrayList<Dependency>(1);
 			dependencies.add(dependencyType.createGenericDependency(classNameA, classNameB));
 
+			boolean flag = true; /* It initially considers that it can */
 			for (DependencyConstraint dc : this.getDependencyConstraints()) {
-				if (dc.validate(classNameA, modules, this.getProjectClasses(), dependencies, project) == null) {
-					return true;
+				/* Case we find some violation in this dependency in any dependency constraint, we set flag false */
+				if (dc.validate(classNameA, modules, this.getProjectClasses(), dependencies, project) != null
+						&& !dc.validate(classNameA, modules, this.getProjectClasses(), dependencies, project).isEmpty()) {
+					flag = false;
 				}
+			}
+			/* If we did not find any violation for this class, it can! */
+			if (flag){
+				return true;
 			}
 		}
 
