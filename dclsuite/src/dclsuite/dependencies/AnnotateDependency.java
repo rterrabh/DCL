@@ -1,6 +1,7 @@
 package dclsuite.dependencies;
 
 import dclsuite.enums.DependencyType;
+import dclsuite.util.DCLUtil;
 
 public class AnnotateDependency extends Dependency {
 	
@@ -11,6 +12,11 @@ public class AnnotateDependency extends Dependency {
 	@Override
 	public DependencyType getDependencyType() {
 		return DependencyType.USEANNOTATION;
+	}
+	
+	@Override
+	public String toShortString() {
+		return "The annotation @" + DCLUtil.getSimpleClassName(this.classNameB) + " is disallowed for this location w.r.t. the architecture";
 	}
 
 }

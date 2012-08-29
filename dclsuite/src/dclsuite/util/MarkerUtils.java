@@ -21,12 +21,8 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
-import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.NodeFinder;
-import org.eclipse.jdt.core.dom.NormalAnnotation;
-import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
@@ -77,12 +73,13 @@ public class MarkerUtils {
 		marker.setAttribute(ViolationProperties.MODULE_DESCRIPTION_B.getKey(), ad.getViolatedConstraint().getModuleDescriptionB());
 		marker.setAttribute(ViolationProperties.CONSTRAINT.getKey(), ad.getViolatedConstraint().getConstraint().getValue());
 
+		marker.setAttribute(IMarker.MESSAGE, ad.getInfoMessage());
+		
 		/* Divergence Infs */
 		if (ad instanceof DivergenceArchitecturalDrift) {
 			DivergenceArchitecturalDrift dad = (DivergenceArchitecturalDrift) ad;
-			// marker.setAttribute(IMarker.MESSAGE, "Divergence in <" +
-			// ad.getViolatedConstraint().toString() + ">");
-			marker.setAttribute(IMarker.MESSAGE, "Divergence: " + ad.getDetailedMessage());
+			//marker.setAttribute(IMarker.MESSAGE, "Divergence: " + ad.getDetailedMessage());
+
 			marker.setAttribute(IMarker.LINE_NUMBER, dad.getForbiddenDependency().getLineNumber());
 
 			if (dad.getForbiddenDependency().getOffset() != null && dad.getForbiddenDependency().getLength() != null) {
@@ -103,7 +100,8 @@ public class MarkerUtils {
 
 			marker.setAttribute(DEPENDENCY_TYPE.getKey(), aad.getViolatedConstraint().getConstraint().getDependencyType().toString());
 
-			marker.setAttribute(IMarker.MESSAGE, "Absence in <" + ad.getViolatedConstraint().toString() + ">");
+			//marker.setAttribute(IMarker.MESSAGE, "Absence in <" + ad.getViolatedConstraint().toString() + ">");
+			
 		}
 
 		return marker;

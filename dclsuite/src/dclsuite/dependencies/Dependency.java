@@ -60,4 +60,6 @@ public abstract class Dependency implements Serializable {
 	}
 
 	public abstract DependencyType getDependencyType();
+	
+	public abstract String toShortString();
 }

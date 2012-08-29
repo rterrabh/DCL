@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import dclsuite.enums.DependencyType;
 import dclsuite.enums.ViolationProperties;
+import dclsuite.util.DCLUtil;
 
 public final class ThrowDependency extends Dependency {
 	private final String methodNameA;
@@ -22,6 +23,11 @@ public final class ThrowDependency extends Dependency {
 		return "'" + 
 				this.classNameA + "' contains the method '" + 
 				this.methodNameA + "' which throws '" + this.classNameB + "'";
+	}
+	
+	@Override
+	public String toShortString() {
+		return "The throwing of " + DCLUtil.getSimpleClassName(this.classNameB) + " is disallowed for this location w.r.t. the architecture";
 	}
 	
 	@Override

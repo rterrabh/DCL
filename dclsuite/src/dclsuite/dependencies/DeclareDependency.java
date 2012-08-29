@@ -1,6 +1,7 @@
 package dclsuite.dependencies;
 
 import dclsuite.enums.DependencyType;
+import dclsuite.util.DCLUtil;
 
 public class DeclareDependency extends HandleDependency {
 
@@ -11,5 +12,10 @@ public class DeclareDependency extends HandleDependency {
 	@Override
 	public DependencyType getDependencyType() {
 		return DependencyType.DECLARE;
+	}
+	
+	@Override
+	public String toShortString() {
+		return "The declaration of " + DCLUtil.getSimpleClassName(this.classNameB) + " is disallowed for this location w.r.t. the architecture";
 	}
 }

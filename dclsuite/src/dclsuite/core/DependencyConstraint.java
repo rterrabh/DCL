@@ -89,6 +89,9 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 				}
 			}
 		}
+		if (architecturalDrifts.isEmpty()){
+			System.out.println("as");
+		}
 		return architecturalDrifts;
 	}
 
@@ -232,6 +235,8 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 		}
 
 		public abstract String getDetailedMessage();
+		
+		public abstract String getInfoMessage();
 
 		public abstract String getViolationType();
 
@@ -252,6 +257,11 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 		@Override
 		public String getDetailedMessage() {
 			return this.forbiddenDependency.toString();
+		}
+		
+		@Override
+		public String getInfoMessage() {
+			return this.forbiddenDependency.toShortString();
 		}
 
 		@Override
@@ -282,7 +292,15 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 		public String getDetailedMessage() {
 			return this.classNameA + " does not "
 					+ this.violatedConstraint.getConstraint().getDependencyType().getValue() + " any type in "
-					+ super.violatedConstraint.getModuleDescriptionB();
+					+ this.violatedConstraint.getModuleDescriptionB();
+		}
+		
+		@Override
+		public String getInfoMessage() {
+			return "The class " + this.classNameA + " must " +
+					this.violatedConstraint.getConstraint().getDependencyType().getValue() + " "
+					+ this.violatedConstraint.getModuleDescriptionB()
+					+ " w.r.t. the architecture";
 		}
 
 		@Override

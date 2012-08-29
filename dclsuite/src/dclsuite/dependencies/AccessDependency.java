@@ -1,6 +1,7 @@
 package dclsuite.dependencies;
 
 import dclsuite.enums.DependencyType;
+import dclsuite.util.DCLUtil;
 
 public class AccessDependency extends HandleDependency {
 
@@ -11,6 +12,11 @@ public class AccessDependency extends HandleDependency {
 	@Override
 	public DependencyType getDependencyType() {
 		return DependencyType.ACCESS;
+	}
+	
+	@Override
+	public String toShortString() {
+		return "The access to " + DCLUtil.getSimpleClassName(this.classNameB) + " is disallowed for this location w.r.t. the architecture";
 	}
 	
 }
