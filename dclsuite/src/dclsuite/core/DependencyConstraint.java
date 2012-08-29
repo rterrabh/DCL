@@ -89,9 +89,6 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 				}
 			}
 		}
-		if (architecturalDrifts.isEmpty()){
-			System.out.println("as");
-		}
 		return architecturalDrifts;
 	}
 

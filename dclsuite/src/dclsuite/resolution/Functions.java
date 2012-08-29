@@ -1,6 +1,7 @@
 package dclsuite.resolution;
 
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -15,6 +16,7 @@ import org.eclipse.jdt.core.JavaCore;
 import dclsuite.core.Architecture;
 import dclsuite.dependencies.DeclareReturnDependency;
 import dclsuite.dependencies.Dependency;
+import dclsuite.dependencies.DeriveDependency;
 import dclsuite.enums.ConstraintType;
 import dclsuite.enums.DependencyType;
 import dclsuite.util.DCLUtil;
@@ -121,15 +123,67 @@ public final class Functions {
 	/**
 	 * Function to find a factory
 	 */
-	public static String[] factory(final IProject project, final Architecture architecture, final String classNameToFindFactory) {
-		for (String className : architecture.getProjectClasses()) {
-			Collection<Dependency> dependencies = architecture.getDependencies(className);
+	public static String[] factory(final IProject project, final Architecture architecture, final String classNameToFindFactory)
+			throws CoreException {
 
-			for (Dependency d : dependencies) {
-				if (d instanceof DeclareReturnDependency) {
-					if (d.getClassNameB().equals(classNameToFindFactory)) {
-						DeclareReturnDependency drd = (DeclareReturnDependency) d;
-						return new String[] { className, drd.getMethodName() };
+		// Collection<IFile> classes = DCLUtil.getAllClassFiles(project);
+		//
+		// for (IFile f : classes){
+		// ICompilationUnit unit = ((ICompilationUnit) JavaCore.create(f));
+		// System.out.println(unit);
+		// }
+		// IJavaProject javaProject = JavaCore.create(project);
+		//
+		// for (String className : architecture.getProjectClasses()) {
+		// IFile file = DCLUtil.getFileFromClassName(javaProject, className);
+		// ICompilationUnit unit = (ICompilationUnit) JavaCore.create(file);
+		//
+		// System.out.println(unit);
+		//
+		// for (IType t : unit.getAllTypes()) {
+		//
+		// for (IMethod m : t.getMethods()) {
+		// if (m.getReturnType().equals(classNameToFindFactory)) {
+		// //
+		// }
+		// }
+		//
+		// }
+		//
+		// ASTParser parser = ASTParser.newParser(AST.JLS4); // It was JSL3,
+		// // but it
+		// // is now deprecated
+		// parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		// parser.setSource(unit);
+		// parser.setResolveBindings(true);
+		//
+		// CompilationUnit cu = (CompilationUnit) parser.createAST(null); //
+		// parse
+		//
+		// // cu.get
+		//
+		// // unit.getAll
+		// //
+		Collection<String> potentialFactoryReturnTypes = new LinkedHashSet<String>();
+		potentialFactoryReturnTypes.add(classNameToFindFactory);
+
+		for (Dependency d : architecture.getDependencies(classNameToFindFactory)) {
+			if (d instanceof DeriveDependency && !d.getClassNameB().equals("java.lang.Object")) {
+				potentialFactoryReturnTypes.add(d.getClassNameB());
+			}
+		}
+
+		for (String potentialFactoryReturnType : potentialFactoryReturnTypes) {
+
+			for (String className : architecture.getProjectClasses()) {
+				Collection<Dependency> dependencies = architecture.getDependencies(className);
+
+				for (Dependency d : dependencies) {
+					if (d instanceof DeclareReturnDependency) {
+						if (d.getClassNameB().equals(potentialFactoryReturnType)) {
+							DeclareReturnDependency drd = (DeclareReturnDependency) d;
+							return new String[] { className, drd.getMethodName() };
+						}
 					}
 				}
 			}
@@ -141,14 +195,13 @@ public final class Functions {
 	public static boolean isModuleMequalModuleMa(final String className, final String moduleDescriptionA,
 			final Set<ModuleSimilarity> suitableModules, final Map<String, String> modules, final Collection<String> projectClassNames,
 			final IProject project, final ConstraintType constraintType) {
-		if (constraintType == ConstraintType.ONLY_CAN){
+		if (constraintType == ConstraintType.ONLY_CAN) {
 			return !isModuleMequalComplementModuleMa(className, moduleDescriptionA, suitableModules, modules, projectClassNames, project);
-		}else{
+		} else {
 			return isModuleMequalModuleMa(className, moduleDescriptionA, suitableModules, modules, projectClassNames, project);
 		}
 	}
-	
-	
+
 	/**
 	 * Checks whether M = Ma or not.
 	 */
@@ -156,11 +209,14 @@ public final class Functions {
 			final Set<ModuleSimilarity> suitableModules, final Map<String, String> modules, final Collection<String> projectClassNames,
 			final IProject project) {
 		final String simpleClassName = DCLUtil.getSimpleClassName(className);
-		
+
 		for (ModuleSimilarity m : suitableModules) {
 			if (m.getModuleDescription().endsWith(".*")) {
 				/* Lets simulate if it had been moved */
-				/* If it is moved to the suitable module M and it still remains in Ma, then M = Ma*/
+				/*
+				 * If it is moved to the suitable module M and it still remains
+				 * in Ma, then M = Ma
+				 */
 				String qualifiedClassName = m.getModuleDescription().replaceAll("\\.\\*", "") + "." + simpleClassName;
 
 				if (DCLUtil.hasClassNameByDescription(qualifiedClassName, moduleDescriptionA, modules, projectClassNames, project)) {
@@ -174,7 +230,7 @@ public final class Functions {
 
 		return false;
 	}
-	
+
 	/**
 	 * Checks whether M = complement(Ma) or not.
 	 */
@@ -182,11 +238,14 @@ public final class Functions {
 			final Set<ModuleSimilarity> suitableModules, final Map<String, String> modules, final Collection<String> projectClassNames,
 			final IProject project) {
 		final String simpleClassName = DCLUtil.getSimpleClassName(className);
-		
+
 		for (ModuleSimilarity m : suitableModules) {
 			if (m.getModuleDescription().endsWith(".*")) {
 				/* Lets simulate if it had been moved */
-				/* If it is moved to the suitable module M and it still remains in Ma, then M != complement(Ma)*/
+				/*
+				 * If it is moved to the suitable module M and it still remains
+				 * in Ma, then M != complement(Ma)
+				 */
 				String qualifiedClassName = m.getModuleDescription().replaceAll("\\.\\*", "") + "." + simpleClassName;
 
 				if (DCLUtil.hasClassNameByDescription(qualifiedClassName, moduleDescriptionA, modules, projectClassNames, project)) {

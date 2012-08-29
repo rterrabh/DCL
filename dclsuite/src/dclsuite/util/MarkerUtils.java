@@ -22,7 +22,9 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.NodeFinder;
+import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
@@ -74,11 +76,12 @@ public class MarkerUtils {
 		marker.setAttribute(ViolationProperties.CONSTRAINT.getKey(), ad.getViolatedConstraint().getConstraint().getValue());
 
 		marker.setAttribute(IMarker.MESSAGE, ad.getInfoMessage());
-		
+
 		/* Divergence Infs */
 		if (ad instanceof DivergenceArchitecturalDrift) {
 			DivergenceArchitecturalDrift dad = (DivergenceArchitecturalDrift) ad;
-			//marker.setAttribute(IMarker.MESSAGE, "Divergence: " + ad.getDetailedMessage());
+			// marker.setAttribute(IMarker.MESSAGE, "Divergence: " +
+			// ad.getDetailedMessage());
 
 			marker.setAttribute(IMarker.LINE_NUMBER, dad.getForbiddenDependency().getLineNumber());
 
@@ -100,8 +103,9 @@ public class MarkerUtils {
 
 			marker.setAttribute(DEPENDENCY_TYPE.getKey(), aad.getViolatedConstraint().getConstraint().getDependencyType().toString());
 
-			//marker.setAttribute(IMarker.MESSAGE, "Absence in <" + ad.getViolatedConstraint().toString() + ">");
-			
+			// marker.setAttribute(IMarker.MESSAGE, "Absence in <" +
+			// ad.getViolatedConstraint().toString() + ">");
+
 		}
 
 		return marker;
@@ -150,7 +154,7 @@ public class MarkerUtils {
 		}
 		return null;
 	}
-	
+
 	public static Integer getAstOffset(IMarker marker) throws CoreException {
 		String astOffset = (String) marker.getAttribute(ViolationProperties.AST_OFFSET.getKey());
 		if (astOffset != null) {
@@ -158,7 +162,7 @@ public class MarkerUtils {
 		}
 		return null;
 	}
-	
+
 	public static Integer getAstLength(IMarker marker) throws CoreException {
 		String astLength = (String) marker.getAttribute(ViolationProperties.AST_LENGTH.getKey());
 		if (astLength != null) {
@@ -193,7 +197,7 @@ public class MarkerUtils {
 			};
 		};
 	}
-	
+
 	public static IMarkerResolution createMarkerResolutionRemoval(final String label, final String description) {
 		return new IMarkerResolution2() {
 
@@ -207,20 +211,205 @@ public class MarkerUtils {
 
 					Integer offset = MarkerUtils.getAstOffset(m);
 					Integer length = MarkerUtils.getAstLength(m);
-					////MarkerUtils.get
-					
+
 					CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 					AST ast = cu.getAST();
-					
-					ASTNode node = NodeFinder.perform(cu.getRoot(), offset,length);
+
+					ASTNode node = NodeFinder.perform(cu.getRoot(), offset, length);
 					final ASTRewrite rewriter = ASTRewrite.create(ast);
+
 					rewriter.remove(node, null);
-					
+
 					TextEdit edits = rewriter.rewriteAST(document, null);
-					
-					IDE.openEditor(PlatformUI.getWorkbench()
-							.getActiveWorkbenchWindow().getActivePage(), (IFile)m.getResource());
-					
+
+					IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), (IFile) m.getResource());
+
+					edits.apply(document);
+					unit.getBuffer().setContents(document.get());
+				} catch (JavaModelException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (MalformedTreeException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (BadLocationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (CoreException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public String getLabel() {
+				return label;
+			}
+
+			public String getDescription() {
+				return description;
+			};
+
+			public org.eclipse.swt.graphics.Image getImage() {
+				return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_LCL_LINKTO_HELP);
+			};
+		};
+	}
+
+	public static IMarkerResolution createMarkerResolutionChangeToMethodInvocation(final String label, final String description,
+			final String[] factory) {
+		return new IMarkerResolution2() {
+
+			@Override
+			public void run(IMarker m) {
+				final ICompilationUnit unit = ((ICompilationUnit) JavaCore.create((IFile) m.getResource()));
+				try {
+					Document document = new Document(unit.getBuffer().getContents());
+					ASTParser parser = ASTParser.newParser(AST.JLS4);
+					parser.setSource(unit.getBuffer().getCharacters());
+
+					Integer offset = MarkerUtils.getAstOffset(m);
+					Integer length = MarkerUtils.getAstLength(m);
+
+					CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+					AST ast = cu.getAST();
+
+					ASTNode node = NodeFinder.perform(cu.getRoot(), offset, length);
+					final ASTRewrite rewriter = ASTRewrite.create(ast);
+
+					MethodInvocation mi = ast.newMethodInvocation();
+
+					QualifiedName name = ast.newQualifiedName(ast.newName(DCLUtil.getPackageFromClassName(factory[0])),
+							ast.newSimpleName(DCLUtil.getSimpleClassName(factory[0])));
+
+					mi.setExpression(name);
+					mi.setName(ast.newSimpleName(factory[1]));
+
+					rewriter.replace(node, mi, null);
+
+					TextEdit edits = rewriter.rewriteAST(document, null);
+
+					IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), (IFile) m.getResource());
+
+					edits.apply(document);
+					unit.getBuffer().setContents(document.get());
+				} catch (JavaModelException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (MalformedTreeException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (BadLocationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (CoreException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public String getLabel() {
+				return label;
+			}
+
+			public String getDescription() {
+				return description;
+			};
+
+			public org.eclipse.swt.graphics.Image getImage() {
+				return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_LCL_LINKTO_HELP);
+			};
+		};
+	}
+
+	public static IMarkerResolution createMarkerResolutionChangeToOtherType(final String label, final String description, final String type) {
+		return new IMarkerResolution2() {
+
+			@Override
+			public void run(IMarker m) {
+				final ICompilationUnit unit = ((ICompilationUnit) JavaCore.create((IFile) m.getResource()));
+				try {
+					Document document = new Document(unit.getBuffer().getContents());
+					ASTParser parser = ASTParser.newParser(AST.JLS4);
+					parser.setSource(unit.getBuffer().getCharacters());
+
+					Integer offset = MarkerUtils.getAstOffset(m);
+					Integer length = MarkerUtils.getAstLength(m);
+
+					CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+					AST ast = cu.getAST();
+
+					ASTNode node = NodeFinder.perform(cu.getRoot(), offset, length);
+					final ASTRewrite rewriter = ASTRewrite.create(ast);
+
+					QualifiedName newType = ast.newQualifiedName(ast.newName(DCLUtil.getPackageFromClassName(type)),
+							ast.newSimpleName(DCLUtil.getSimpleClassName(type)));
+
+					rewriter.replace(node, newType, null);
+
+					TextEdit edits = rewriter.rewriteAST(document, null);
+
+					IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), (IFile) m.getResource());
+
+					edits.apply(document);
+					unit.getBuffer().setContents(document.get());
+				} catch (JavaModelException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (MalformedTreeException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (BadLocationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (CoreException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public String getLabel() {
+				return label;
+			}
+
+			public String getDescription() {
+				return description;
+			};
+
+			public org.eclipse.swt.graphics.Image getImage() {
+				return PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_LCL_LINKTO_HELP);
+			};
+		};
+	}
+
+	public static IMarkerResolution createMarkerResolutionChangeToNull(final String label, final String description) {
+		return new IMarkerResolution2() {
+
+			@Override
+			public void run(IMarker m) {
+				final ICompilationUnit unit = ((ICompilationUnit) JavaCore.create((IFile) m.getResource()));
+				try {
+					Document document = new Document(unit.getBuffer().getContents());
+					ASTParser parser = ASTParser.newParser(AST.JLS4);
+					parser.setSource(unit.getBuffer().getCharacters());
+
+					Integer offset = MarkerUtils.getAstOffset(m);
+					Integer length = MarkerUtils.getAstLength(m);
+
+					CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+					AST ast = cu.getAST();
+
+					ASTNode node = NodeFinder.perform(cu.getRoot(), offset, length);
+					final ASTRewrite rewriter = ASTRewrite.create(ast);
+
+					rewriter.replace(node, ast.newNullLiteral(), null);
+
+					TextEdit edits = rewriter.rewriteAST(document, null);
+
+					IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), (IFile) m.getResource());
+
 					edits.apply(document);
 					unit.getBuffer().setContents(document.get());
 				} catch (JavaModelException e1) {

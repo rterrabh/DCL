@@ -69,8 +69,8 @@ public class DivergenceResolution {
 
 		if (allowedSuperTypes != null && !allowedSuperTypes.isEmpty()) {
 			for (String allowedSuperTypeClassName : allowedSuperTypes) {
-				suggestions.add(MarkerUtils.createMarkerResolution("D1: replace( [" + simpleTargetClassName + "], ["
-						+ allowedSuperTypeClassName + "] ) \"supertype\"", null));
+				suggestions.add(MarkerUtils.createMarkerResolutionChangeToOtherType("D1: replace( [" + simpleTargetClassName + "], ["
+						+ DCLUtil.getSimpleClassName(allowedSuperTypeClassName) + "] ) \"supertype\"", null, allowedSuperTypeClassName));
 			}
 		}
 
@@ -80,8 +80,8 @@ public class DivergenceResolution {
 
 		if (allowedSubTypes != null && !allowedSubTypes.isEmpty()) {
 			for (String allowedSubTypeClassName : allowedSubTypes) {
-				suggestions.add(MarkerUtils.createMarkerResolution("D2: replace( [" + simpleTargetClassName + "], ["
-						+ allowedSubTypeClassName + "] ) \"subtype\"", null));
+				suggestions.add(MarkerUtils.createMarkerResolutionChangeToOtherType("D2: replace( [" + simpleTargetClassName + "], ["
+						+ DCLUtil.getSimpleClassName(allowedSubTypeClassName) + "] ) \"subtype\"", null, allowedSubTypeClassName));
 			}
 		}
 
@@ -129,13 +129,13 @@ public class DivergenceResolution {
 		/* D11 */
 		String[] factory = Functions.factory(project, architecture, dependency.getClassNameB());
 		if (factory != null) {
-			suggestions.add(MarkerUtils.createMarkerResolution("D11: replace( [new " + simpleTargetClassName + "()], [" + factory[0] + "."
-					+ factory[1] + "()" + "] )", null));
+			suggestions.add(MarkerUtils.createMarkerResolutionChangeToMethodInvocation("D11: replace( [new " + simpleTargetClassName + "()], [" + DCLUtil.getSimpleClassName(factory[0]) + "."
+					+ factory[1] + "()" + "] )", null, factory));
 		}
 
 		/* D12 */
 		if (!architecture.someclassCan(dependency.getClassNameB(), dependency.getDependencyType(), project)) {
-			suggestions.add(MarkerUtils.createMarkerResolutionRemoval("D12: replace( [new " + simpleTargetClassName + "()], [null] )", null));
+			suggestions.add(MarkerUtils.createMarkerResolutionChangeToNull("D12: replace( [new " + simpleTargetClassName + "()], [null] )", null));
 		}
 
 		/* D13 */

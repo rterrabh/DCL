@@ -126,7 +126,7 @@ public final class DCLUtil {
 	 * @return List of class files
 	 * @throws CoreException
 	 */
-	public static Collection<IFile> getAllClassFiles(IProject project) throws CoreException, IOException {
+	public static Collection<IFile> getAllClassFiles(IProject project) throws CoreException {
 		IJavaProject javaProject = JavaCore.create(project);
 		IPath binDir = javaProject.getOutputLocation();
 		return DCLUtil.getAllClassFiles(project.getFolder(binDir.removeFirstSegments(1)));
