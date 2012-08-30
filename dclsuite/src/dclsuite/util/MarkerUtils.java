@@ -16,6 +16,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
@@ -103,10 +104,18 @@ public class MarkerUtils {
 			marker.setAttribute(ViolationProperties.CLASS_NAME_A.getKey(), aad.getClassNameA());
 
 			marker.setAttribute(DEPENDENCY_TYPE.getKey(), aad.getViolatedConstraint().getConstraint().getDependencyType().toString());
-
-			// marker.setAttribute(IMarker.MESSAGE, "Absence in <" +
-			// ad.getViolatedConstraint().toString() + ">");
-
+			
+			final ICompilationUnit unit = ((ICompilationUnit) JavaCore.create(file));
+			IType type = unit.findPrimaryType();
+			marker.setAttribute(IMarker.CHAR_START, type.getNameRange().getOffset());
+			marker.setAttribute(IMarker.CHAR_END, type.getNameRange().getOffset() + type.getNameRange().getLength());
+			
+//			ASTParser parser = ASTParser.newParser(AST.JLS4);
+//			parser.setKind(ASTParser.K_COMPILATION_UNIT);
+//			parser.setSource(unit);
+//			parser.setResolveBindings(false);			
+			//CompilationUnit fullClass = (CompilationUnit) parser.createAST(null);
+			//marker.setAttribute(IMarker.LINE_NUMBER, fullClass.getLineNumber(type.getNameRange().getOffset()));
 		}
 
 		return marker;
