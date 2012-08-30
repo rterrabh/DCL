@@ -143,6 +143,10 @@ public class Architecture {
 	public boolean someclassCan(String classNameB, DependencyType dependencyType, IProject project) throws CoreException {
 
 		for (String classNameA : this.getProjectClasses()) {
+			if (classNameA.equals(classNameB)){
+				continue;
+			}
+			
 			final Collection<Dependency> dependencies = new ArrayList<Dependency>(1);
 			dependencies.add(dependencyType.createGenericDependency(classNameA, classNameB));
 

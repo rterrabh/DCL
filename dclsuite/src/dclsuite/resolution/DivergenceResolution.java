@@ -126,30 +126,29 @@ public class DivergenceResolution {
 		final String simpleOriginClassName = DCLUtil.getSimpleClassName(dependency.getClassNameA());
 		final String simpleTargetClassName = DCLUtil.getSimpleClassName(dependency.getClassNameB());
 
-		/* D11 */
-		String[] factory = Functions.factory(project, architecture, dependency.getClassNameB());
-		if (factory != null) {
-			suggestions.add(MarkerUtils.createMarkerResolutionChangeToMethodInvocation("D11: replace( [new " + simpleTargetClassName + "()], [" + DCLUtil.getSimpleClassName(factory[0]) + "."
-					+ factory[1] + "()" + "] )", null, factory));
-		}
-
 		/* D12 */
 		if (!architecture.someclassCan(dependency.getClassNameB(), dependency.getDependencyType(), project)) {
-			suggestions.add(MarkerUtils.createMarkerResolutionChangeToNull("D12: replace( [new " + simpleTargetClassName + "()], [null] )", null));
-		}
+			suggestions.add(MarkerUtils.createMarkerResolutionChangeToNull("D12: replace( [new " + simpleTargetClassName + "()], [null] )",
+					null));
+		} else {
 
-		/* D13 */
-		/* If there is a suitable module to create a factory */
-		if (architecture.someclassCan(dependency.getClassNameB(), dependency.getDependencyType(), project)) {
-			suggestions.add(MarkerUtils.createMarkerResolution(
-					"D13: replace( [new " + simpleTargetClassName + "()], [FB.get" + Character.toUpperCase(simpleTargetClassName.charAt(0))
-							+ simpleTargetClassName.substring(1) + "()] )", null));
-		}
+			/* D11 */
+			String[] factory = Functions.factory(project, architecture, dependency.getClassNameB());
+			if (factory != null) {
+				suggestions.add(MarkerUtils.createMarkerResolutionChangeToMethodInvocation("D11: replace( [new " + simpleTargetClassName
+						+ "()], [" + DCLUtil.getSimpleClassName(factory[0]) + "." + factory[1] + "()" + "] )", null, factory));
+			}
 
+			/* D13 */
+			/* If there is a suitable module to create a factory */
+			if (architecture.someclassCan(dependency.getClassNameB(), dependency.getDependencyType(), project)) {
+				suggestions.add(MarkerUtils.createMarkerResolution("D13: replace( [new " + simpleTargetClassName + "()], [FB.get"
+						+ Character.toUpperCase(simpleTargetClassName.charAt(0)) + simpleTargetClassName.substring(1) + "()] )", null));
+			}
+		}
 		return suggestions.toArray(new IMarkerResolution[suggestions.size()]);
 	}
 
-	
 	/**
 	 * IMPLEMENT/EXTEND
 	 */
@@ -160,7 +159,6 @@ public class DivergenceResolution {
 		final String simpleOriginClassName = DCLUtil.getSimpleClassName(dependency.getClassNameA());
 		final String simpleTargetClassName = DCLUtil.getSimpleClassName(dependency.getClassNameB());
 
-		
 		/* D19 */
 		Collection<String> allowedSuperTypes = Functions.supertypesAllowedTo(dependency.getClassNameA(), project, architecture,
 				dependency.getClassNameB(), dependency.getDependencyType());
@@ -170,8 +168,7 @@ public class DivergenceResolution {
 						+ allowedSubTypeClassName + "] ) \"subtype\"", null));
 			}
 		}
-		
-		
+
 		/* D20 */
 		for (ModuleSimilarity ms : suitableModules) {
 			String qualifiedClassName = ms.getModuleDescription().replaceAll("\\.\\*", "") + "." + simpleOriginClassName;
@@ -188,9 +185,7 @@ public class DivergenceResolution {
 
 		return suggestions.toArray(new IMarkerResolution[suggestions.size()]);
 	}
-	
-	
-	
+
 	/**
 	 * USE-ANNOTATION
 	 */
@@ -201,24 +196,23 @@ public class DivergenceResolution {
 		final String simpleOriginClassName = DCLUtil.getSimpleClassName(dependency.getClassNameA());
 		final String simpleTargetClassName = DCLUtil.getSimpleClassName(dependency.getClassNameB());
 
-		
-		if (Functions.isModuleMequalModuleMa(dependency.getClassNameA(), moduleDescriptionA, suitableModules,
-				architecture.getModules(), architecture.getProjectClasses(), project, constraintType)) {
+		if (Functions.isModuleMequalModuleMa(dependency.getClassNameA(), moduleDescriptionA, suitableModules, architecture.getModules(),
+				architecture.getProjectClasses(), project, constraintType)) {
 			/* D22 and D23 */
 			String recommendationNumber = (dependency instanceof AnnotateClassDependency) ? "D22" : "D24";
-			suggestions.add(MarkerUtils.createMarkerResolutionRemoval(recommendationNumber + ": remove( [@" + simpleTargetClassName + "] )", null));
+			suggestions.add(MarkerUtils.createMarkerResolutionRemoval(
+					recommendationNumber + ": remove( [@" + simpleTargetClassName + "] )", null));
 		} else {
 			/* D21 and D23 */
 			for (ModuleSimilarity ms : suitableModules) {
 				String recommendationNumber = (dependency instanceof AnnotateClassDependency) ? "D21" : "D23";
-				suggestions.add(MarkerUtils.createMarkerResolution(recommendationNumber + ": move_class(" + simpleOriginClassName + ", " + ms.getModuleDescription()
-						+ ") (similarity: " + FormatUtil.formatDouble(ms.getSimilarity()) + ms.getStrategy().toString() + ")", null));
+				suggestions.add(MarkerUtils.createMarkerResolution(recommendationNumber + ": move_class(" + simpleOriginClassName + ", "
+						+ ms.getModuleDescription() + ") (similarity: " + FormatUtil.formatDouble(ms.getSimilarity())
+						+ ms.getStrategy().toString() + ")", null));
 			}
 		}
 
 		return suggestions.toArray(new IMarkerResolution[suggestions.size()]);
 	}
-
-	
 
 }

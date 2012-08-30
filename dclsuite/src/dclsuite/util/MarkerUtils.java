@@ -35,6 +35,7 @@ import org.eclipse.ui.IMarkerResolution2;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.texteditor.ITextEditor;
 
 import dclsuite.core.DependencyConstraint.AbsenceArchitecturalDrift;
 import dclsuite.core.DependencyConstraint.ArchitecturalDrift;
@@ -222,10 +223,12 @@ public class MarkerUtils {
 
 					TextEdit edits = rewriter.rewriteAST(document, null);
 
-					IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), (IFile) m.getResource());
-
+					IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), m);
+					
 					edits.apply(document);
 					unit.getBuffer().setContents(document.get());
+					
+					IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), m);
 				} catch (JavaModelException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -289,10 +292,13 @@ public class MarkerUtils {
 
 					TextEdit edits = rewriter.rewriteAST(document, null);
 
-					IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), (IFile) m.getResource());
-
+					IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), m);
+					
 					edits.apply(document);
 					unit.getBuffer().setContents(document.get());
+					
+					ITextEditor editor = (ITextEditor) IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), m);
+					editor.selectAndReveal(offset,mi.toString().length());
 				} catch (JavaModelException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -350,10 +356,15 @@ public class MarkerUtils {
 
 					TextEdit edits = rewriter.rewriteAST(document, null);
 
-					IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), (IFile) m.getResource());
-
+					IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), m);
+					
 					edits.apply(document);
 					unit.getBuffer().setContents(document.get());
+
+					IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), m);
+
+					ITextEditor editor = (ITextEditor) IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), m);
+					editor.selectAndReveal(offset,newType.toString().length());
 				} catch (JavaModelException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -408,10 +419,13 @@ public class MarkerUtils {
 
 					TextEdit edits = rewriter.rewriteAST(document, null);
 
-					IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), (IFile) m.getResource());
-
+					IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), m);
+					
 					edits.apply(document);
 					unit.getBuffer().setContents(document.get());
+
+					ITextEditor editor = (ITextEditor) IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), m);
+					editor.selectAndReveal(offset,ast.newNullLiteral().toString().length());
 				} catch (JavaModelException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

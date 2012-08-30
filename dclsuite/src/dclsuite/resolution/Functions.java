@@ -125,51 +125,14 @@ public final class Functions {
 	 */
 	public static String[] factory(final IProject project, final Architecture architecture, final String classNameToFindFactory)
 			throws CoreException {
-
-		// Collection<IFile> classes = DCLUtil.getAllClassFiles(project);
-		//
-		// for (IFile f : classes){
-		// ICompilationUnit unit = ((ICompilationUnit) JavaCore.create(f));
-		// System.out.println(unit);
-		// }
-		// IJavaProject javaProject = JavaCore.create(project);
-		//
-		// for (String className : architecture.getProjectClasses()) {
-		// IFile file = DCLUtil.getFileFromClassName(javaProject, className);
-		// ICompilationUnit unit = (ICompilationUnit) JavaCore.create(file);
-		//
-		// System.out.println(unit);
-		//
-		// for (IType t : unit.getAllTypes()) {
-		//
-		// for (IMethod m : t.getMethods()) {
-		// if (m.getReturnType().equals(classNameToFindFactory)) {
-		// //
-		// }
-		// }
-		//
-		// }
-		//
-		// ASTParser parser = ASTParser.newParser(AST.JLS4); // It was JSL3,
-		// // but it
-		// // is now deprecated
-		// parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		// parser.setSource(unit);
-		// parser.setResolveBindings(true);
-		//
-		// CompilationUnit cu = (CompilationUnit) parser.createAST(null); //
-		// parse
-		//
-		// // cu.get
-		//
-		// // unit.getAll
-		// //
 		Collection<String> potentialFactoryReturnTypes = new LinkedHashSet<String>();
 		potentialFactoryReturnTypes.add(classNameToFindFactory);
 
-		for (Dependency d : architecture.getDependencies(classNameToFindFactory)) {
-			if (d instanceof DeriveDependency && !d.getClassNameB().equals("java.lang.Object")) {
-				potentialFactoryReturnTypes.add(d.getClassNameB());
+		if (architecture.getDependencies(classNameToFindFactory) != null) {
+			for (Dependency d : architecture.getDependencies(classNameToFindFactory)) {
+				if (d instanceof DeriveDependency && !d.getClassNameB().equals("java.lang.Object")) {
+					potentialFactoryReturnTypes.add(d.getClassNameB());
+				}
 			}
 		}
 
