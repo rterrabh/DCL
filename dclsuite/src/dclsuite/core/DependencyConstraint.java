@@ -24,47 +24,43 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 	private final String moduleDescriptionB;
 	private final Constraint constraint;
 
-	public DependencyConstraint(String moduleDescriptionA, String moduleDescriptionB,
-			Constraint constraint) {
+	public DependencyConstraint(String moduleDescriptionA, String moduleDescriptionB, Constraint constraint) {
 		super();
 		this.moduleDescriptionA = moduleDescriptionA;
 		this.moduleDescriptionB = moduleDescriptionB;
 		this.constraint = constraint;
 	}
 
-	public List<ArchitecturalDrift> validate(String className, final Map<String, String> modules,
-			Set<String> projectClasses, Collection<Dependency> dependencies, IProject project) throws CoreException {
+	public List<ArchitecturalDrift> validate(String className, final Map<String, String> modules, Set<String> projectClasses,
+			Collection<Dependency> dependencies, IProject project) throws CoreException {
 		switch (this.constraint.getConstraintType()) {
 		case ONLY_CAN:
 			if (DCLUtil.hasClassNameByDescription(className, moduleDescriptionA, modules, projectClasses, project)) {
 				return null;
 			}
-			return this.validateCannot(className, moduleDescriptionB, this.constraint.getDependencyType()
-					.getDependencyClass(), modules, projectClasses, dependencies, project);
+			return this.validateCannot(className, moduleDescriptionB, this.constraint.getDependencyType().getDependencyClass(), modules,
+					projectClasses, dependencies, project);
 
 		case CANNOT:
-			if (!DCLUtil
-					.hasClassNameByDescription(className, moduleDescriptionA, modules, projectClasses, project)) {
+			if (!DCLUtil.hasClassNameByDescription(className, moduleDescriptionA, modules, projectClasses, project)) {
 				return null;
 			}
-			return this.validateCannot(className, moduleDescriptionB, this.constraint.getDependencyType()
-					.getDependencyClass(), modules, projectClasses, dependencies, project);
+			return this.validateCannot(className, moduleDescriptionB, this.constraint.getDependencyType().getDependencyClass(), modules,
+					projectClasses, dependencies, project);
 
 		case CAN_ONLY:
-			if (!DCLUtil
-					.hasClassNameByDescription(className, moduleDescriptionA, modules, projectClasses, project)) {
+			if (!DCLUtil.hasClassNameByDescription(className, moduleDescriptionA, modules, projectClasses, project)) {
 				return null;
 			}
-			return this.validateCanOnly(className, moduleDescriptionB, this.constraint.getDependencyType()
-					.getDependencyClass(), modules, projectClasses, dependencies, project);
+			return this.validateCanOnly(className, moduleDescriptionB, this.constraint.getDependencyType().getDependencyClass(), modules,
+					projectClasses, dependencies, project);
 
 		case MUST:
-			if (!DCLUtil
-					.hasClassNameByDescription(className, moduleDescriptionA, modules, projectClasses, project)) {
+			if (!DCLUtil.hasClassNameByDescription(className, moduleDescriptionA, modules, projectClasses, project)) {
 				return null;
 			}
-			return this.validateMust(className, moduleDescriptionB, this.constraint.getDependencyType()
-					.getDependencyClass(), modules, projectClasses, dependencies, project);
+			return this.validateMust(className, moduleDescriptionB, this.constraint.getDependencyType().getDependencyClass(), modules,
+					projectClasses, dependencies, project);
 		}
 
 		return null;
@@ -83,8 +79,7 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 				if (d.getClassNameB().equals(d.getClassNameA())) {
 					continue;
 				}
-				if (DCLUtil.hasClassNameByDescription(d.getClassNameB(), moduleDescriptionB, modules, projectClasses,
-						project)) {
+				if (DCLUtil.hasClassNameByDescription(d.getClassNameB(), moduleDescriptionB, modules, projectClasses, project)) {
 					architecturalDrifts.add(new DivergenceArchitecturalDrift(this, d));
 				}
 			}
@@ -106,8 +101,7 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 				if (d.getClassNameB().equals(d.getClassNameA())) {
 					continue;
 				}
-				if (!DCLUtil.hasClassNameByDescription(d.getClassNameB(), moduleDescriptionB, modules, projectClasses,
-						project)) {
+				if (!DCLUtil.hasClassNameByDescription(d.getClassNameB(), moduleDescriptionB, modules, projectClasses, project)) {
 					architecturalDrifts.add(new DivergenceArchitecturalDrift(this, d));
 				}
 
@@ -119,13 +113,11 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 	/**
 	 * must
 	 */
-	private List<ArchitecturalDrift> validateMust(String className, String moduleDescriptionB,
-			Class<? extends Dependency> dependencyClass, Map<String, String> modules, Set<String> projectClasses,
-			Collection<Dependency> dependencies, IProject project) {
+	private List<ArchitecturalDrift> validateMust(String className, String moduleDescriptionB, Class<? extends Dependency> dependencyClass,
+			Map<String, String> modules, Set<String> projectClasses, Collection<Dependency> dependencies, IProject project) {
 		List<ArchitecturalDrift> architecturalDrifts = new LinkedList<ArchitecturalDrift>();
 
-		if (dependencyClass.isAssignableFrom(DeriveDependency.class)
-				|| dependencyClass.isAssignableFrom(ExtendDependency.class)
+		if (dependencyClass.isAssignableFrom(DeriveDependency.class) || dependencyClass.isAssignableFrom(ExtendDependency.class)
 				|| dependencyClass.isAssignableFrom(ImplementDependency.class)) {
 
 			// TODO: What am I supposed to do in case of internal class?
@@ -133,8 +125,7 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 				return null;
 			} else if (className.equals(moduleDescriptionB)) {
 				return null;
-			} else if (DCLUtil.hasClassNameByDescription(className, moduleDescriptionB, modules, projectClasses,
-					project)) {
+			} else if (DCLUtil.hasClassNameByDescription(className, moduleDescriptionB, modules, projectClasses, project)) {
 				return null;
 			}
 
@@ -161,8 +152,7 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 			boolean found = false;
 			for (Dependency d : dependencies) {
 				if (dependencyClass.isAssignableFrom(d.getClass())) {
-					if (DCLUtil.hasClassNameByDescription(d.getClassNameB(), moduleDescriptionB, modules,
-							projectClasses, project)) {
+					if (DCLUtil.hasClassNameByDescription(d.getClassNameB(), moduleDescriptionB, modules, projectClasses, project)) {
 						found = true;
 						break;
 					}
@@ -175,8 +165,7 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 			boolean found = false;
 			for (Dependency d : dependencies) {
 				if (dependencyClass.isAssignableFrom(d.getClass())) {
-					if (DCLUtil.hasClassNameByDescription(d.getClassNameB(), moduleDescriptionB, modules,
-							projectClasses, project)) {
+					if (DCLUtil.hasClassNameByDescription(d.getClassNameB(), moduleDescriptionB, modules, projectClasses, project)) {
 						found = true;
 						break;
 					}
@@ -192,8 +181,8 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 
 	@Override
 	public String toString() {
-		return (this.constraint.getConstraintType().equals(ConstraintType.ONLY_CAN) ? "only " : "")
-				+ this.moduleDescriptionA + " " + this.constraint.getValue() + " " + this.moduleDescriptionB;
+		return (this.constraint.getConstraintType().equals(ConstraintType.ONLY_CAN) ? "only " : "") + this.moduleDescriptionA + " "
+				+ this.constraint.getValue() + " " + this.moduleDescriptionB;
 	}
 
 	public int compareTo(DependencyConstraint o) {
@@ -217,11 +206,11 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 	 * drift
 	 */
 	public static abstract class ArchitecturalDrift {
-		public static final String DIVERGENCE 	= "DIVERGENCE";
-		public static final String ABSENCE 		= "ABSENCE";
-		
+		public static final String DIVERGENCE = "DIVERGENCE";
+		public static final String ABSENCE = "ABSENCE";
+
 		protected final DependencyConstraint violatedConstraint;
-		
+
 		protected ArchitecturalDrift(DependencyConstraint violatedConstraint) {
 			super();
 			this.violatedConstraint = violatedConstraint;
@@ -232,7 +221,7 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 		}
 
 		public abstract String getDetailedMessage();
-		
+
 		public abstract String getInfoMessage();
 
 		public abstract String getViolationType();
@@ -255,7 +244,7 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 		public String getDetailedMessage() {
 			return this.forbiddenDependency.toString();
 		}
-		
+
 		@Override
 		public String getInfoMessage() {
 			return this.forbiddenDependency.toShortString();
@@ -270,7 +259,7 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 	public static class AbsenceArchitecturalDrift extends ArchitecturalDrift {
 		private final String classNameA;
 		private final String moduleDescriptionB;
-		
+
 		public AbsenceArchitecturalDrift(DependencyConstraint violatedConstraint, String classNameA, String moduleDescriptionB) {
 			super(violatedConstraint);
 			this.classNameA = classNameA;
@@ -284,20 +273,37 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 		public String getModuleNameB() {
 			return this.moduleDescriptionB;
 		}
-		
+
 		@Override
 		public String getDetailedMessage() {
-			return this.classNameA + " does not "
-					+ this.violatedConstraint.getConstraint().getDependencyType().getValue() + " any type in "
-					+ this.violatedConstraint.getModuleDescriptionB();
+			return this.classNameA + " does not " + this.violatedConstraint.getConstraint().getDependencyType().getValue()
+					+ " any type in " + this.violatedConstraint.getModuleDescriptionB();
 		}
-		
+
 		@Override
 		public String getInfoMessage() {
-			return "The class " + this.classNameA + " must " +
-					this.violatedConstraint.getConstraint().getDependencyType().getValue() + " "
-					+ this.violatedConstraint.getModuleDescriptionB()
-					+ " w.r.t. the architecture";
+			switch (this.violatedConstraint.getConstraint().getDependencyType()) {
+
+			case THROW:
+				return "The throwing of " + this.violatedConstraint.getModuleDescriptionB()
+						+ " is required for this location w.r.t. the architecture";
+			case DERIVE:
+			case EXTEND:
+			case IMPLEMENT:
+				return "The inheritance of " + this.violatedConstraint.getModuleDescriptionB()
+						+ " is required for this location w.r.t. the architecture";
+			case USEANNOTATION:
+				return "The annotation @" + this.violatedConstraint.getModuleDescriptionB()
+						+ " is required for this location w.r.t. the architecture";
+			default:
+				return "The dependency with " + this.violatedConstraint.getModuleDescriptionB()
+						+ " is required for this location w.r.t. the architecture";
+			}
+			// return "The class " + this.classNameA + " must " +
+			// this.violatedConstraint.getConstraint().getDependencyType().getValue()
+			// + " "
+			// + this.violatedConstraint.getModuleDescriptionB()
+			// + " w.r.t. the architecture";
 		}
 
 		@Override
