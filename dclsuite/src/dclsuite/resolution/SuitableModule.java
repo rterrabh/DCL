@@ -4,17 +4,18 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.core.resources.IProject;
 
 import dclsuite.core.Architecture;
 import dclsuite.dependencies.Dependency;
+import dclsuite.enums.ConstraintType;
 import dclsuite.enums.DependencyType;
 import dclsuite.util.DCLUtil;
 
@@ -26,8 +27,8 @@ public class SuitableModule {
 
 	}
 
-	public static Set<ModuleSimilarity> suitableModule(IProject project, final Architecture architecture, final String originClassName,
-			final DependencyType dependencyType, final String targetClassName) {
+	public static Set<ModuleSimilarity> calculate(IProject project, final Architecture architecture, final String originClassName,
+			final DependencyType dependencyType, final String targetClassName, ConstraintType constraintType) {
 		final Map<String, Double> similarityModuleParticularDependency = new LinkedHashMap<String, Double>();
 		final Map<String, Double> similarityModuleAllDependencies = new LinkedHashMap<String, Double>();
 
@@ -49,10 +50,12 @@ public class SuitableModule {
 			adjustModuleSimilarity(project, architecture, similarityModuleAllDependencies, otherClassName, respectiveModuleName,
 					similarityAllDependencies);
 
-			double similarityParticularDependency = similarity(dependenciesClassWithViolation, dependenciesOtherClass, dependencyType, null);
-			adjustModuleSimilarity(project, architecture, similarityModuleParticularDependency, otherClassName, respectiveModuleName,
-					similarityParticularDependency);
-
+			if (constraintType != ConstraintType.MUST) {
+				double similarityParticularDependency = similarity(dependenciesClassWithViolation, dependenciesOtherClass, dependencyType,
+						null);
+				adjustModuleSimilarity(project, architecture, similarityModuleParticularDependency, otherClassName, respectiveModuleName,
+						similarityParticularDependency);
+			}
 		}
 
 		/* Sorting the maps */
@@ -60,11 +63,13 @@ public class SuitableModule {
 				similarityModuleAllDependencies));
 		sortedSimilarityModuleAllDependencies.putAll(similarityModuleAllDependencies);
 
-		TreeMap<String, Double> sortedSimilarityModuleParticularDependency = new TreeMap<String, Double>(new ValueComparator<Double>(
-				similarityModuleParticularDependency));
-		sortedSimilarityModuleParticularDependency.putAll(similarityModuleParticularDependency);
-
-		Set<ModuleSimilarity> result = new LinkedHashSet<ModuleSimilarity>();
+		TreeMap<String, Double> sortedSimilarityModuleParticularDependency = new TreeMap<String, Double>();
+		if (constraintType != ConstraintType.MUST) {
+			sortedSimilarityModuleParticularDependency = new TreeMap<String, Double>(new ValueComparator<Double>(
+					similarityModuleParticularDependency));
+			sortedSimilarityModuleParticularDependency.putAll(similarityModuleParticularDependency);
+		}
+		Set<ModuleSimilarity> result = new TreeSet<ModuleSimilarity>(new SimilarityComparator());
 
 		Entry<String, Double> entryAll = null;
 		if ((entryAll = sortedSimilarityModuleAllDependencies.pollFirstEntry()) != null) {
@@ -170,6 +175,13 @@ public class SuitableModule {
 		}
 	}
 
+}
+
+class SimilarityComparator implements Comparator<ModuleSimilarity> {
+	@Override
+	public int compare(ModuleSimilarity o1, ModuleSimilarity o2) {
+		return ((Double) o2.getSimilarity()).compareTo(o1.getSimilarity());
+	}
 }
 
 class ValueComparator<T extends Comparable<T>> implements Comparator<String> {

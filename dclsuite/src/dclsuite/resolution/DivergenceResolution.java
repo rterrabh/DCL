@@ -26,8 +26,8 @@ public class DivergenceResolution {
 			final String moduleDescriptionA, final String moduleDescriptionB, final Constraint violatedConstraint) throws CoreException {
 
 		final IProject project = marker.getResource().getProject();
-		Set<ModuleSimilarity> suitableModules = SuitableModule.suitableModule(project, architecture, dependency.getClassNameA(),
-				dependency.getDependencyType(), dependency.getClassNameB());
+		Set<ModuleSimilarity> suitableModules = SuitableModule.calculate(project, architecture, dependency.getClassNameA(),
+				dependency.getDependencyType(), dependency.getClassNameB(), violatedConstraint.getConstraintType());
 
 		// TODO: Missing the development of THROW rules
 		switch (dependency.getDependencyType()) {

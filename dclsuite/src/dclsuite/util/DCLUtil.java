@@ -161,8 +161,7 @@ public final class DCLUtil {
 	 * @return Class IFile resource
 	 * @throws JavaModelException
 	 */
-	public static IFile getFileFromClassName(IJavaProject javaProject, final String className)
-			throws JavaModelException {
+	public static IFile getFileFromClassName(IJavaProject javaProject, final String className) throws JavaModelException {
 		for (IPackageFragmentRoot folder : javaProject.getAllPackageFragmentRoots()) {
 			if (folder.getKind() == IPackageFragmentRoot.K_SOURCE) {
 				IPath path = folder.getPath();
@@ -170,9 +169,7 @@ public final class DCLUtil {
 
 				/* If was internal class, consider the parent class */
 				if (className.contains("$")) {
-					path = path.append(className.substring(0, className.indexOf('$')).replaceAll("[.]",
-							"" + IPath.SEPARATOR)
-							+ ".java");
+					path = path.append(className.substring(0, className.indexOf('$')).replaceAll("[.]", "" + IPath.SEPARATOR) + ".java");
 				} else {
 					path = path.append(className.replaceAll("[.]", "" + IPath.SEPARATOR) + ".java");
 				}
@@ -197,8 +194,7 @@ public final class DCLUtil {
 	 * @throws CoreException
 	 */
 	public static String logError(IProject project, Throwable e) {
-		final IFile dcFile = project.getFile("dclcheck_" + DateUtil.dateToStr(new Date(), "yyyyMMdd-HHmmss")
-				+ "_error.log");
+		final IFile dcFile = project.getFile("dclcheck_" + DateUtil.dateToStr(new Date(), "yyyyMMdd-HHmmss") + "_error.log");
 
 		// TODO: Return file name created
 		StringBuilder str = new StringBuilder();
@@ -412,8 +408,7 @@ public final class DCLUtil {
 	 *            List of classes
 	 * @return List of dependencies
 	 */
-	public static Collection<Dependency> getDependenciesUsingAST(ICompilationUnit unit) throws CoreException,
-			IOException {
+	public static Collection<Dependency> getDependenciesUsingAST(ICompilationUnit unit) throws CoreException, IOException {
 		final Collection<Dependency> dependencies = new LinkedList<Dependency>();
 
 		dclsuite.ast.DCLDeepDependencyVisitor cv = new dclsuite.ast.DCLDeepDependencyVisitor(unit);
@@ -481,8 +476,7 @@ public final class DCLUtil {
 						strBuilder.deleteCharAt(strBuilder.length() - 1);
 					}
 					modules.put(desc + "+", strBuilder.toString());
-					if (hasClassNameByDescription(className, modules.get(desc + "+"), modules, projectClassNames,
-							project)) {
+					if (hasClassNameByDescription(className, modules.get(desc + "+"), modules, projectClassNames, project)) {
 						return true;
 					}
 				} catch (JavaModelException e) {
