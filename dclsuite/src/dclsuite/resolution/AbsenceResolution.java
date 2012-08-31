@@ -67,31 +67,23 @@ public class AbsenceResolution {
 		final LinkedList<IMarkerResolution> suggestions = new LinkedList<IMarkerResolution>();
 		final String simpleClassName = DCLUtil.getSimpleClassName(missingDependency.getClassNameA());
 
-		// if
-		// (AuxiliaryFunctions.isModuleMequalModuleMa(missingDependency.getClassNameA(),
-		// missingDependency.getModuleDescriptionA(), suitableModules,
-		// architecture.getModules(),
-		// architecture.getProjectClasses(), project)) {
-		// suggestions.add(AuxiliaryFunctions.createMarkerResolution("replace( ["
-		// + simpleClassName + "], [@"
-		// + missingDependency.getModuleDescriptionB() + " " + simpleClassName +
-		// ")", null));
-		// } else {
-		// for (ModuleSimilarity ms : suitableModules) {
-		// suggestions
-		// .add(AuxiliaryFunctions.createMarkerResolution(
-		// "move_class(" + simpleClassName + ", " + ms.getModuleDescription() +
-		// ") (similarity: "
-		// + FormatUtil.formatDouble(ms.getSimilarity()) +
-		// ms.getStrategy().toString()
-		// + ")", null));
-		// }
-		//
-		// }
-		//
-		// return suggestions.toArray(new
-		// IMarkerResolution[suggestions.size()]);
-		return null;
+		if (Functions.isModuleMequalModuleMa(missingDependency.getClassNameA(), missingDependency.getModuleDescriptionA(),
+				suitableModules, architecture.getModules(), architecture.getProjectClasses(), project, ConstraintType.MUST)) {
+			/* A6 and A8 */
+			suggestions.add(MarkerUtils.createMarkerResolution(
+					"A6: replace( [" + simpleClassName + "], [@" + missingDependency.getModuleDescriptionB() + " " + simpleClassName + ")",
+					null));
+		} else {
+			/* A5 and A7 */
+			for (ModuleSimilarity ms : suitableModules) {
+				suggestions.add(MarkerUtils.createMarkerResolution(
+						"A5: move_class(" + simpleClassName + ", " + ms.getModuleDescription() + ") (similarity: "
+								+ FormatUtil.formatDouble(ms.getSimilarity()) + ms.getStrategy().toString() + ")", null));
+			}
+
+		}
+
+		return suggestions.toArray(new IMarkerResolution[suggestions.size()]);
 	}
 
 }

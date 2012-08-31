@@ -1,6 +1,5 @@
 package dclsuite.core;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -14,13 +13,14 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.swt.widgets.Shell;
 
 import dclsuite.core.DependencyConstraint.ArchitecturalDrift;
 import dclsuite.core.parser.DCLParser;
 import dclsuite.dependencies.Dependency;
 import dclsuite.enums.DependencyType;
+import dclsuite.exception.ParseException;
 import dclsuite.util.DCLUtil;
+import dclsuite.util.MarkerUtils;
 
 public class Architecture {
 	private static final boolean DEBUG = false;
@@ -41,7 +41,7 @@ public class Architecture {
 	 */
 	public Collection<DependencyConstraint> dependencyConstraints = null;
 
-	public Architecture(IProject project) throws CoreException {
+	public Architecture(IProject project) throws CoreException, ParseException {
 		if (DEBUG) {
 			System.out.println("Time BEFORE generate architecture (without dependencies): " + new Date());
 		}
@@ -58,7 +58,7 @@ public class Architecture {
 		}
 	}
 
-	private void initializeDependencyConstraints(IProject project) throws CoreException {
+	private void initializeDependencyConstraints(IProject project) throws CoreException, ParseException {
 		try {
 			final IFile dcFile = project.getFile(DCLUtil.DC_FILENAME);
 
@@ -72,13 +72,15 @@ public class Architecture {
 			 */
 
 			this.dependencyConstraints = DCLParser.parseDependencyConstraints(project, dcFile.getContents());
-		} catch (IOException e) {
-			DCLUtil.showError(new Shell(), "Problem to read the file " + DCLUtil.DC_FILENAME + ".");
+		} catch (ParseException e) {
+			throw e;
+		} catch (Throwable e) {
+			MarkerUtils.addErrorMarker(project, "The " + DCLUtil.DC_FILENAME + " is invalid.");
 			throw new CoreException(Status.CANCEL_STATUS);
 		}
 	}
 
-	public void updateDependencyConstraints(IProject project) throws CoreException {
+	public void updateDependencyConstraints(IProject project) throws CoreException, ParseException {
 		this.modules.clear();
 		System.gc(); /* Suggesting the execution of the Garbage Collector */
 		this.initializeDependencyConstraints(project);
@@ -143,23 +145,26 @@ public class Architecture {
 	public boolean someclassCan(String classNameB, DependencyType dependencyType, IProject project) throws CoreException {
 
 		for (String classNameA : this.getProjectClasses()) {
-			if (classNameA.equals(classNameB)){
+			if (classNameA.equals(classNameB)) {
 				continue;
 			}
-			
+
 			final Collection<Dependency> dependencies = new ArrayList<Dependency>(1);
 			dependencies.add(dependencyType.createGenericDependency(classNameA, classNameB));
 
 			boolean flag = true; /* It initially considers that it can */
 			for (DependencyConstraint dc : this.getDependencyConstraints()) {
-				/* Case we find some violation in this dependency in any dependency constraint, we set flag false */
+				/*
+				 * Case we find some violation in this dependency in any
+				 * dependency constraint, we set flag false
+				 */
 				if (dc.validate(classNameA, modules, this.getProjectClasses(), dependencies, project) != null
 						&& !dc.validate(classNameA, modules, this.getProjectClasses(), dependencies, project).isEmpty()) {
 					flag = false;
 				}
 			}
 			/* If we did not find any violation for this class, it can! */
-			if (flag){
+			if (flag) {
 				return true;
 			}
 		}

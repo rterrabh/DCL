@@ -59,11 +59,20 @@ public class MarkerUtils {
 		marker.setAttribute(IMarker.MESSAGE, message);
 		return marker;
 	}
+	
+	public static IMarker addErrorMarker(IFile file, String message, int lineNumber) throws CoreException {
+		IMarker marker = file.createMarker(MARKER_ERROR_TYPE);
+		marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
+		marker.setAttribute(IMarker.SEVERITY, Severity.ERROR.getValue());
+		marker.setAttribute(IMarker.MESSAGE, message);
+		return marker;
+	}
 
 	public static void deleteErrorMarker(IProject project) throws CoreException {
 		project.deleteMarkers(MarkerUtils.MARKER_ERROR_TYPE, false, IResource.DEPTH_ZERO);
+		project.getFile(DCLUtil.DC_FILENAME).deleteMarkers(MarkerUtils.MARKER_ERROR_TYPE, false, IResource.DEPTH_ZERO);
 	}
-
+	
 	public static IMarker addMarker(IFile file, ArchitecturalDrift ad) throws CoreException {
 		IMarker marker = file.createMarker(MARKER_TYPE);
 		/* IMarker Attributes */

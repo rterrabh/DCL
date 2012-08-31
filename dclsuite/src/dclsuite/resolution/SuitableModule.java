@@ -20,7 +20,7 @@ import dclsuite.enums.DependencyType;
 import dclsuite.util.DCLUtil;
 
 public class SuitableModule {
-	private static final int MOVE_SUGGESTIONS = 2;
+	private static final int MOVE_SUGGESTIONS = 1;
 	private static final boolean DEBUG = false;
 
 	private SuitableModule() {

@@ -16,6 +16,7 @@ import dclsuite.dependencies.Dependency;
 import dclsuite.dependencies.MissingDependency;
 import dclsuite.enums.Constraint;
 import dclsuite.enums.DependencyType;
+import dclsuite.exception.ParseException;
 import dclsuite.util.ArchitectureUtils;
 import dclsuite.util.DCLPersistence;
 import dclsuite.util.MarkerUtils;
@@ -78,7 +79,7 @@ public class MarkerResolutionGenerator implements IMarkerResolutionGenerator, IM
 	 * Method responsible for getting the architecture and the initialization of
 	 * the dependencies (if they have not been initialized yet)
 	 */
-	private Architecture init(IProject project) throws CoreException, IOException, ClassNotFoundException {
+	private Architecture init(IProject project) throws CoreException, IOException, ClassNotFoundException, ParseException {
 		final Architecture architecture = ArchitectureUtils.getOrInitializeArchitecture(project);
 
 		for (String s : architecture.getProjectClasses()) {

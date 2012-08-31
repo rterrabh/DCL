@@ -5,6 +5,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.QualifiedName;
 
 import dclsuite.core.Architecture;
+import dclsuite.exception.ParseException;
 
 public class ArchitectureUtils {
 	public static final QualifiedName ARCHITECTURE = new QualifiedName("dclsuite", "architecture");
@@ -16,13 +17,13 @@ public class ArchitectureUtils {
 		return project.getSessionProperties().containsKey(ARCHITECTURE);
 	}
 
-	public static Architecture initializeArchitecture(IProject project) throws CoreException {
+	public static Architecture initializeArchitecture(IProject project) throws CoreException, ParseException {
 		final Architecture architecture = new Architecture(project);
 		project.setSessionProperty(ARCHITECTURE, architecture);
 		return architecture;
 	}
 	
-	public static Architecture getOrInitializeArchitecture(IProject project) throws CoreException {
+	public static Architecture getOrInitializeArchitecture(IProject project) throws CoreException, ParseException {
 		final Architecture architecture = (Architecture) project.getSessionProperty(ARCHITECTURE);
 		if (architecture == null) {
 			return initializeArchitecture(project);

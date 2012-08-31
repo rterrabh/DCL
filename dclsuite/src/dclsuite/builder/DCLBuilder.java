@@ -22,6 +22,7 @@ import dclsuite.core.Architecture;
 import dclsuite.core.DependencyConstraint;
 import dclsuite.core.DependencyConstraint.ArchitecturalDrift;
 import dclsuite.dependencies.Dependency;
+import dclsuite.exception.ParseException;
 import dclsuite.util.ArchitectureUtils;
 import dclsuite.util.DCLPersistence;
 import dclsuite.util.DCLUtil;
@@ -58,16 +59,20 @@ public class DCLBuilder extends IncrementalProjectBuilder {
 				}
 			}
 			MarkerUtils.deleteErrorMarker(this.getProject());
+		} catch (ParseException e) {
+			this.clean(monitor);
+			final IFile dcFile = this.getProject().getFile(DCLUtil.DC_FILENAME);
+			MarkerUtils
+					.addErrorMarker(dcFile, "Syntax error on token \"" + e.getBody() + "\"", e.getLineNumber());
 		} catch (Throwable e) {
 			this.clean(monitor);
 			final String logFileName = DCLUtil.logError(this.getProject(), e);
-			MarkerUtils.addErrorMarker(this.getProject(), "The dclcheck conformance tool has crashed. (see "
-					+ logFileName + ")");
+			MarkerUtils.addErrorMarker(this.getProject(), "The dclcheck conformance tool has crashed. (see " + logFileName + ")");
 		}
 		return null;
 	}
 
-	protected void fullLoad(final IProgressMonitor monitor) throws CoreException, IOException, ClassNotFoundException {
+	protected void fullLoad(final IProgressMonitor monitor) throws CoreException, IOException, ClassNotFoundException, ParseException {
 		monitor.setTaskName("Checking architecture");
 		monitor.subTask("loading dependencies");
 		final Architecture architecture = ArchitectureUtils.getOrInitializeArchitecture(this.getProject());
@@ -84,7 +89,7 @@ public class DCLBuilder extends IncrementalProjectBuilder {
 		}
 	}
 
-	protected void fullBuild(final IProgressMonitor monitor) throws CoreException, IOException {
+	protected void fullBuild(final IProgressMonitor monitor) throws CoreException, IOException, ParseException {
 		monitor.setTaskName("Checking architecture");
 		monitor.subTask("loading dependencies");
 		final Architecture architecture = ArchitectureUtils.initializeArchitecture(getProject());
@@ -92,14 +97,14 @@ public class DCLBuilder extends IncrementalProjectBuilder {
 		getProject().accept(new FullBuildVisitor(architecture, monitor, true));
 	}
 
-	protected void incrementalBuild(IResourceDelta delta, IProgressMonitor monitor) throws CoreException, IOException {
+	protected void incrementalBuild(IResourceDelta delta, IProgressMonitor monitor) throws CoreException, IOException, ParseException {
 		final Architecture architecture = ArchitectureUtils.getOrInitializeArchitecture(getProject());
 		final boolean updateDC = (delta.findMember(new Path(DCLUtil.DC_FILENAME)) != null);
 		if (updateDC) {
 			architecture.updateDependencyConstraints(this.getProject());
 		}
-		monitor.beginTask("Checking architecture", delta.getAffectedChildren(IResourceDelta.ADDED
-				| IResourceDelta.CHANGED | IResourceDelta.REMOVED, IResource.FILE).length);
+		monitor.beginTask("Checking architecture",
+				delta.getAffectedChildren(IResourceDelta.ADDED | IResourceDelta.CHANGED | IResourceDelta.REMOVED, IResource.FILE).length);
 		delta.accept(new IncrementalDeltaVisitor(architecture, monitor));
 
 		/* For now, any change in the DCL File requires full build */
@@ -165,8 +170,7 @@ public class DCLBuilder extends IncrementalProjectBuilder {
 		}
 	}
 
-	private void check(IResource resource, Architecture architecture, boolean reextractDependencies)
-			throws CoreException {
+	private void check(IResource resource, Architecture architecture, boolean reextractDependencies) throws CoreException {
 		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
 			final IFile file = (IFile) resource;
 			MarkerUtils.deleteMarkers(file);
@@ -194,8 +198,7 @@ public class DCLBuilder extends IncrementalProjectBuilder {
 					}
 				}
 			} catch (IOException e) {
-				MarkerUtils.addErrorMarker(this.getProject(), "There was a problem in extracting dependencies from "
-						+ className);
+				MarkerUtils.addErrorMarker(this.getProject(), "There was a problem in extracting dependencies from " + className);
 				throw new CoreException(Status.CANCEL_STATUS);
 			}
 		}
