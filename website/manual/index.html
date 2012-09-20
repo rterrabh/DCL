@@ -1,0 +1,620 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<title> DCL Manual </title>
+	<link rel="stylesheet" type="text/css" href="stylesheets/StyleSheet.css"/>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+</head>
+
+<body>
+	<!-- Cabeçalho -->
+	<div>
+	<table width="100%"><tbody>
+	<tr><th colspan="3" align="center"> DCL Manual </th></tr>
+	</tbody></table>
+	<hr /></div>
+	
+	<!-- 	Apresentação -->
+	<div>
+	<p><h1> DCL Manual </h1></p>
+	<p><h3> Ricardo Terra </h3></p>
+	<p><h3> Marco Túlio Valente </h3></p>
+	<p> Universidade Federal de Minas Gerais </p>
+	<p> 4 September, 2012 </p>
+	<hr /></div>	
+	<!-- Sumário -->
+	<div>
+	<p><b> Table of Contents </b></p>
+	
+	<!-- Sumário - Introdução -->
+	<dl>
+	<dt><a href="#link_1"> 1. Introduction </a></dt>
+		<dd><dl>
+		<dt><a href="#link_1.1"> 1. Requirements </a></dt>
+		</dl></dd>
+	</dl>
+	
+	<!-- Sumário - Instalação -->
+	<dl>
+	<dt><a href="#link_2"> 2. Installing DCL </a></dt>
+	</dl>
+	
+	<!-- Sumário - Definição de módulo -->
+	<dl>
+	<dt><a href="#link_3"> 3. Defining Modules </a></dt>
+		<dd><dl>
+		<dt><a href="#link_3.1"> 1. Specific Class </a></dt>
+		<dt><a href="#link_3.2"> 2. Package </a></dt>
+		<dt><a href="#link_3.3"> 3. Package and Subpackage </a></dt>
+		<dt><a href="#link_3.4"> 4. Inheritance </a></dt>
+		<dt><a href="#link_3.5"> 5. Regular Expression </a></dt>
+		<dt><a href="#link_3.6"> 6. Mixed </a></dt>
+		</dl></dd>
+	</dl>
+	
+	<!-- Sumário - Definição das restrições -->
+	<dl>
+	<dt><a href="#link_4"> 4. Architectural Constraints </a></dt>
+		<dd><dl>
+		<dt><a href="#link_4.1"> 1. Divergences </a></dt>
+			<dd><dl>
+			<dt><a href="#link_4.1.1"> 1. Kind of Constraints </a></dt>
+			<dt><a href="#link_4.1.2"> 2. Examples </a></dt>
+				<dd><dl>
+				<dt><a href="#link_4.1.2.1"> 1. Access </a></dt>
+                <dt><a href="#link_4.1.2.2"> 2. Declare </a></dt>
+                <dt><a href="#link_4.1.2.3"> 3. Handle </a></dt>
+                <dt><a href="#link_4.1.2.4"> 4. Create </a></dt>
+                <dt><a href="#link_4.1.2.5"> 5. Extend </a></dt>
+                <dt><a href="#link_4.1.2.6"> 6. Implement </a></dt>
+                <dt><a href="#link_4.1.2.7"> 7. Derive </a></dt>
+                <dt><a href="#link_4.1.2.8"> 8. Throw </a></dt>
+                <dt><a href="#link_4.1.2.9"> 9. Useannotation</a></dt>
+                <dt><a href="#link_4.1.2.10"> 10. Depend </a></dt>
+				</dl></dd>
+			</dl></dd>
+		<dt><a href="#link_4.2"> 2. Absences </a></dt>
+			<dd><dl>
+			<dt><a href="#link_4.2.1"> 1. Kind of Constraints </a></dt>
+			<dt><a href="#link_4.2.2"> 2. Examples </a></dt>
+				<dd><dl>
+				<dt><a href="#link_4.2.2.1"> 1. Extend </a></dt>
+				<dt><a href="#link_4.2.2.2"> 2. Implement </a></dt>
+				<dt><a href="#link_4.2.2.3"> 3. Derive </a></dt>
+				<dt><a href="#link_4.2.2.4"> 4. Throw </a></dt>
+				<dt><a href="#link_4.2.2.5"> 5. Useannotation </a></dt>
+				</dl></dd>
+			</dl></dd>
+		</dl></dd>
+	</dl>
+	
+	<hr /></div>
+	
+	<!-- Conteúdo -->
+	<div>
+	
+	<!-- Introdução -->
+	<div>
+	<h3><a name = "link_1"> 1. Introduction </a></h3>
+		<ol>
+		<dt><p>
+		DCL (Dependency Constraint Language) is a declarative, statically checked domain-specific language that supports the definition of structural constraints between modules.
+		The main purpose of the proposed language is to support the definition of constraints between modules, restricting the spectrum of dependencies that are allowed in object-oriented systems.
+		</a></dt>
+		
+		<dt><p><a name = "link_1.1"><b> 1.1. Requirements </b></a></dt>
+		<dt><p>
+		To use DCL, you must have installed the IDE Eclipse. The plugin has primarily been tested with Eclipse 3.7 and should work with 3.x releases, but let us know if you have any problems.<br>
+		The plugin runs under Java 1.5/5.0, or newer.
+		</dt>
+		</ol>
+	</div>
+
+	<!-- Instalação -->
+	<div>
+	<h3><a name = "link_2"> 2. Installing DCL </a></h3>
+		<ol>
+		<dt><p> To install DCL, please follow the steps below: </p></dt>
+			
+			<ol>
+			<li> In Eclipse, click on <b>Help</b> > <b>Install New Software...</b></li>
+			<li> Click <b> Add.... </b></li>
+			<li> Enter the following:
+			<ul><li><b> Name: </b> DCL </li>
+			<li><b> URL: </b> http://www.dclsuite.org/update </li>
+			and click <b> OK</b>. </li></ul>
+			<li> You should see <b> Architecture Conformance Tools </b> item under the field name.
+			<br> Click on the triangle next to it to make dclsuite visible in the tree. </li>
+			<li> Click the checkbox next to it to select it, and click <b> Next</b>. </li>
+			<li> After reviewing the items to be installed, go next. </li>
+			<li> After accepting the license, finish. </li>
+			<li> The plugin is not digitally signed. Go ahead and install it anyway. </li>
+			<li> Click <b> Restart Now </b> to make Eclipse restart itself. </li>
+			<li> Done. DCLsuite is now ready for use. </li></dt>
+			</ol>
+	
+		<p> The procedure above is also explained using this
+		<a href="http://dclsuite.org/index_videolb/player.swf?url=video/installing.flv&volume=100" target="_new"> video</a>.
+		</p>
+		</ol>
+	</div>
+
+	<!-- Definição de módulo -->
+	<div>
+	<h3><a name = "link_3"><b> 3. Defining Modules </b></a></h3>
+
+	<ol>
+
+	Basically, a module is a set of classes.	
+	
+	<!-- 3.1. Classes específicas -->
+	<div>
+		<br />
+		<dt><a name = "link_3.1"><b> 3.1. Specific Class </b></dt>
+		<br /> It is possible to define a module with one or more specific classes.
+		<br /><br />
+		
+		<div class="example">
+		<span class="example-content">
+		<strong><p> Example. Assume the following definitions: </p></strong>
+		</span>
+			<pre class="">
+  1: module Math: java.lang.Math
+  2: module Exception: java.lang.RuntimeException, java.io.IOException</pre> 
+ 			</div><br />
+ 		
+ 			In this example, module <code>Math</code> (line 1) includes only class <code>java.lang.Math</code>.
+ 			In line 2, module <code>Exception</code> consists of classes <code>java.lang.RuntimeException</code> and <code>java.io.IOException</code>.
+ 			<br /><br />
+	</div>
+		
+	<!-- 3.2. Pacotes -->
+	<div>
+	<dt><p><a name = "link_3.2"><b> 3.2. Package </b></a></dt>
+		The operator <code>*</code> selects all classes of a package.<br /><br />
+		
+	<div class="example">
+		<span class="example-content">
+		<strong><p> Example. Assume the following definition: </p></strong>
+		</span>
+			<pre class="">
+  1: module View: org.foo.view.*</pre> 
+ 			</div><br />
+ 		
+ 			Module <code>View</code> contains all classes of package <code>org.foo.view</code>.<br /><br />
+	</div>
+
+	<!-- 3.3. Pacotes e Subpacotes -->
+	<div>
+	<dt><p><a name = "link_3.3"><b> 3.3. Package and Subpackage </b></a></dt>
+		It is also possible to define a module as having all classes in packages with the specified prefix.<br /><br />		
+		
+		<div class="example">
+		<span class="example-content">
+		<strong><p> Example. Assume the following definition: </p></strong>
+		</span>
+			<pre class="">
+  1: module Model: org.foo.model.**</pre> 
+ 			</div><br />
+ 		
+ 			Module <code>Model</code> includes all classes of package <code> org.foo.model</code> and its internal packages,
+		such as <code>org.foo.model.dao, org.foo.model.dao.impl, org.foo.model.dto,</code> etc.
+	</div>
+	
+	<!-- 3.4. Herança -->
+	<div>
+	<dt><p><a name = "link_3.4"><b> 3.4. Inheritance </b></a></dt>
+		The operator <code> +</code> selects subtypes of a given type.<br /><br />
+		
+		<div class="example">
+		<span class="example-content">
+		<strong><p> Example. Assume the following definition: </p></strong>
+		</span>
+			<pre class="">
+  1: module Remote: java.rmi.UnicastRemoteObject+</pre> 
+ 			</div><br />
+ 		
+ 			Module <code>Remote</code> denotes all subclasses of <code> java.rmi.UnicastRemoteObject</code>.
+	</div>
+	
+	<!-- 3.5. Expressões Regulares -->
+	<div>
+	<dt><p><a name = "link_3.5"><b> 3.5. Regular Expression </b></a></dt>
+		The definition can be specified using a regular expression delimited by quotation marks.<br /><br />
+		
+		<div class="example">
+		<span class="example-content">
+		<strong><p> Example. Assume the following definition: </p></strong>
+		</span>
+			<pre class="">
+  1: module Frame: "org.foo.[a-zA-Z0-9/.]*Frame"</pre> 
+ 			</div><br />
+ 		
+ 			Module <code>Frame</code> consists of all classes whose qualified name begins with <code> org.foo.</code>
+			and ends with <code> Frame</code>.
+	</div>
+	
+	<!-- 3.6. Mistas -->
+	<div>
+	<dt><p><a name = "link_3.6"><b> 3.6. Mixed </b></a></dt>
+		It is possible to combine definitions by using commas.<br /><br />
+		
+		<div class="example">
+		<span class="example-content">
+		<strong><p> Example. Assume the following definition: </p></strong>
+		</span>
+			<pre class="">
+  1: module DataStructure: org.foo.util.*, org.foo.view.Tree</pre> 
+ 			</div><br />
+ 		
+ 			Module <code>DataStructure</code> includes all classes of package <code>org.foo.util</code> and class
+		<code> Tree</code> of package <code> org.foo.view</code>.
+	</div>
+	</ol>
+	</div>
+
+	<!-- Definição das restrições -->
+	<div>
+	<h3><a name = "link_4"> 4. Architectural Constraints </a></h3>
+	<ol>
+	
+	<!-- Divergências -->
+	<dt><p><a name = "link_4.1"><b> 4.1. Divergences </b></a></dt>
+
+	A divergence occurs when a dependency that exists in the source code violates a particular constraint defined by the architect. For example, when developers create an instance of a class <font size="4"><code>A</code></font>
+	(using the new operator) in a module that has not been defined as a factory for this type.<br>
+	
+	<ol>		
+		
+		<h4><a name = "link_4.1.1"><b> 4.1.1. Kinds of Constraints </b></a></h4>
+		
+		In order to capture divergences, DCL supports the definition of the following kinds of constraints between modules:<p>		
+		
+		• <code>only M<sub>A</sub> can-<i>dep</i> M<sub>A</sub></code> : Only classes of module <code>M<sub>A</sub></code> can depend on types defined in module <code>M<sub>B</sub></code>.
+		The literal <i><code>dep</code></i> refers to dependency type, which can be either more generic (<code>depend</code>)
+		or more specific (<code>access, declare, create, extend, implement, throw, and useannotation</code>).
+		For example, the constraint <code>only DAOFactory can-create DAO</code> defines that only a factory class can create data access objects.<br /><br />
+
+		• <code>M<sub>A</sub> can-<i>dep</i>-only M<sub>B</sub></code>: Classes of module <code>M<sub>A</sub></code> can depend only on types defined in module <code>M<sub>B</sub></code>.
+		For example, the constraint <code>Util can-depend-only Util, $java</code> defines that utility classes can only depend on their own classes or Java API classes.<br /><br />
+
+		• <code>M<sub>A</sub> cannot-<i>dep</i> M<sub>B</sub></code>: Classes of module <code>M<sub>A</sub></code> cannot depend on types defined in module <code>M<sub>B</sub></code>.
+		For example, the constraint <code>Facade cannot-handle DTO</code> defines that facade classes cannot manipulate entity classes. <br />
+		
+		<h4><a name = "link_4.1.2"><b> 4.1.2. Examples </b></a></h4>
+
+		
+		<ol>
+		
+		<!-- Access -->
+		<div>
+		<dt><a name = "link_4.1.2.1"><b> 4.1.2.1. <span class="const">access</span> (using <span> only can</span>)</b></dt>
+		A constraint in the form <span> only M<sub>A</sub> can-access M<sub>B</sub></span> indicates that
+        only classes declared in module <span> M<sub>A</sub></span> can access nonprivate members of
+        classes declared in module <span> M<sub>B</sub></span>.
+        Access in this case means calling methods, reading or writing to ﬁelds.
+		<br /><br />
+		
+		<div class="example">
+		<span class="example-content">
+		<strong><p> Example. Assume the following DCL constraints: </p></strong>
+		</span>
+			<pre class="">
+ 1: module Formulas: org.foo.formulas.*
+ 2: only Formulas can-access java.lang.Math </pre> 
+ 			</div><br />
+ 		
+ 		In this example, module <code>Formulas</code> groups the classes from package <code>org.foo.formulas</code> (line 1).
+        Then, in line 2, a restriction only allows module <code>Formulas</code> to access the standard Java class that provides mathematical operations.
+        Otherwise, DCL will report an architectural violation (divergence).
+        <br /><br />
+		</div>
+        
+        <!-- Declare -->
+		<div>
+		<dt><a name = "link_4.1.2.2"><b> 4.1.2.2. <span class="const">declare</span> (using <span> can-only</span>)</b></dt>
+		A constraint in the form <span> M<sub>A</sub> can-declare-only M<sub>B</sub></span> indicates that
+        classes declared in module <span> M<sub>A</sub></span> can declare only variables of types
+        declared in module <span> M<sub>B</sub></span>.
+		<br /><br />
+		
+		<div class="example">
+		<span class="example-content">
+		<strong><p> Example. Assume the following DCL constraints: </p></strong>
+		</span>
+			<pre class="">
+ 1: module DomainFacades: org.foo.facades.*
+ 2: module Domain: org.foo.model.Domain+
+ 3: DomainFacades can-declare-only Domain, $java </pre> 
+ 			</div><br />
+ 		
+ 		In this example, module <code>DomainFacades</code> groups all facade classes (line 1)
+ 		and module <code>Domain</code> refers to domain classes, i.e., subclasses from <code>org.foo.model.Domain</code> (line 2).
+ 		Then, in line 3, a constraint defines that module <code>DomainFacades</code> can declare only domain objects and types of Java library.
+ 		Otherwise, DCL will report an architectural violation (divergence).
+        <br /><br />
+		</div>
+        
+        <!-- Handle -->
+		<div>
+		<dt><a name = "link_4.1.2.3"><b> 4.1.2.3. <span class="const">handle</span> (using <span> cannot</span>)</b></dt>
+		Acronym for&nbsp <span>cannot-access, cannot-declare</span>.
+		<br /><br />
+		</div>
+		
+		<!-- Create -->
+		<div>
+		<dt><a name = "link_4.1.2.4"><b> 4.1.2.4. <span class="const">create</span> (using <span> only can</span>)</b></dt>
+		A constraint in the form <span> only M<sub>A</sub> can-create M<sub>B</sub></span> indicates that
+        only classes declared in module <span> M<sub>A</sub></span> can create objects of classes
+        declared in module <span> M<sub>B</sub></span>.
+		<br /><br />
+		
+		<div class="example">
+		<span class="example-content">
+		<strong><p> Example. Assume the following DCL constraints: </p></strong>
+		</span>
+			<pre class="">
+ 1: module Factory: org.foo.Factory
+ 2: module Product: org.foo.Product+
+ 3: only Factory can-create Product</pre> 
+ 			</div><br />
+ 		
+ 		In this example, module <code>Factory</code> contains only the class <code>org.foo.Factory</code> (line 1)
+and module <code>Product</code> groups the class <code>org.foo.Product</code> and its subclasses (line 2).
+Then, in line 3, a constraint defines that only module <code>Factory</code> can create products, i.e., instantiate classes from module <code>Product</code>.
+        Otherwise, DCL will report an architectural violation (divergence).
+        <br /><br />
+		</div>
+        
+        <!-- Extend -->
+		<div>
+		<dt><a name = "link_4.1.2.5"><b> 4.1.2.5. <span class="const">extend</span> (using <span> only can</span>)</b></dt>
+		A constraint in the form <span>only M<sub>A</sub> can-extend M<sub>B</sub></span> indicates that only
+        classes declared in module <span> M<sub>A</sub></span> can extend classes
+        declared in module <span> M<sub>B</sub></span>.
+		<br /><br />
+		
+		<div class="example">
+		<span class="example-content">
+		<strong><p> Example. Assume the following DCL constraints: </p></strong>
+		</span>
+			<pre class="">
+ 1: module Servlets: org.foo.controller.servlets.*
+ 2: module BaseHttpServlet: javax.servlet.http.HttpServlet
+ 3: only Servlets can-extend BaseHttpServlet </pre> 
+ 			</div><br />
+ 		
+ 		In this example, module <code>Servlets</code> contains all classes from package <code>org.foo.controller.servlets</code> (line 1) and module <code>BaseHttpServlet</code>
+ 		refers to the class <code>javax.servlet.http.HttpServlet</code>, which is the default Java class to handle requests and responses using the <code>HTTP</code> protocol (line 2).
+ 		Then, in line 3, a restriction ensures that only classes from module <code>Servlets</code> are allowed to extend the class <code>javax.servlet.http.HttpServlet</code>.
+        Otherwise, DCL will report an architectural violation (divergence).
+        <br /><br />
+		</div>
+        
+        <!-- Implement -->
+		<div>
+		<dt><a name = "link_4.1.2.6"><b> 4.1.2.6. <span class="const">implement</span> (using <span> can-only</span>)</b></dt>
+		A constraint in the form <span> M<sub>A</sub> can-implement-only M<sub>B</sub></span> indicates that
+        classes declared in module <span> M<sub>A</sub></span> can implement only interfaces
+        declared in module <span> M<sub>B</sub></span>.
+		<br /><br />
+		
+		<div class="example">
+		<span class="example-content">
+		<strong><p> Example. Assume the following DCL constraints: </p></strong>
+		</span>
+			<pre class="">
+ 1: module Filters: "org.foo.[a-zA-Z0-9/.]*Filter"
+ 2: Filters can-implement-only java.util.EventListener</pre> 
+ 			</div><br />
+ 		
+ 		In this example, module <code>Filters</code> groups the classes from package <code>org.foo</code> that have sufix <code>Filter</code> (line 1).
+		Then, in line 2, a constraint defines that classes from module <code>Filters</code> can implement only the interface <code>java.util.EventListener.</code>
+        Otherwise, DCL will report an architectural violation (divergence).
+        <br /><br />
+		</div>
+        
+        <!-- Derive -->
+		<div>
+		<dt><a name = "link_4.1.2.7"><b> 4.1.2.7. <span class="const">derive</span> (using <span> cannot</span>)</b></dt>
+		Acronym for&nbsp <span>cannot-extend, cannot-implement</span>.
+		<br /><br />
+		</div>
+        
+        <!-- Throw -->
+		<div>
+		<dt><a name = "link_4.1.2.8"><b> 4.1.2.8. <span class="const">throw</span> (using <span> cannot</span>)</b></dt>
+		A constraint in the form <span> M<sub>A</sub> cannot-throw M<sub>B</sub></span> indicates that
+        no methods from classes declared in module <span> M<sub>A</sub></span> can throw exceptions
+        declared in module <span> M<sub>B</sub></span>.
+		<br /><br />
+		
+		<div class="example">
+		<span class="example-content">
+		<strong><p> Example. Assume the following DCL constraints: </p></strong>
+		</span>
+			<pre class="">
+ 1: module DAO: "org.foo.model.dao.[a-zA-Z0-9/.]*DAO"
+ 2: DAO cannot-throw java.sql.SQLException+</pre> 
+ 			</div><br />
+ 		
+ 		In this example, the module <code>DAO</code> contains classes from package <code>org.foo.model.dao</code> that have suffix <code>DAO</code> (line 1).
+ 		Then, in line 2, a restriction prohibits that methods from <code>DAO</code> classes returns with exceptions from JDBC library activated (i.e., exceptions like <code>java.sql.SQLException</code> and its subclasses).
+        Otherwise, DCL will report an architectural violation (divergence).
+        <br /><br />
+		</div>
+        
+        <!-- Useannotation -->
+		<div>
+		<dt><a name = "link_4.1.2.9"><b> 4.1.2.9. <span class="const">useannotation</span> (using <span> cannot</span>)</b></dt>
+		A constraint in the form <span> M<sub>A</sub> cannot-useannotation M<sub>B</sub></span> indicates that
+        no classe declared in module <span> M<sub>A</sub></span> can use annotations
+        declared in module <span> M<sub>B</sub></span>.
+		<br /><br />
+		
+		<div class="example">
+		<span class="example-content">
+		<strong><p> Example. Assume the following DCL constraints: </p></strong>
+		</span>
+			<pre class="">
+ 1: $system cannot-useannotation java.lang.SuppressWarnings</pre> 
+ 			</div><br />
+ 		
+ 		In this example, it was not necessary to define a module, since DCL provides the
+ 		default module <code>$system</code>, which refers to the class of the system under analysis.
+		Therefore, this restriction prohibits any class of the system to use the annotation
+		<code>java.lang.SuppressWarnings</code>, which is a native annotation of Java 
+		responsible for suppressing warnings.
+      Otherwise, DCL will report an architectural violation (divergence).
+        <br /><br />
+		</div>
+        
+        <!-- Depend -->
+		<div>
+		<dt><a name = "link_4.1.2.10"><b> 4.1.2.10. <span class="const">depend</span> (using <span> cannot</span>)</b></dt>
+		A constraint in the form <span>M<sub>A</sub> cannot-depend M<sub>B</sub></span>
+        indicates that classes declared in module <span> M<sub>A</sub></span>
+        cannot depend on classes declared in module <span>M<sub>B</sub></span>. Thus, <span>depend</span> refers to any kind of dependence, i.e.,
+        <span>access, declare</span>, etc.
+
+		<br /><br />
+		
+		</div>
+		
+		</ol></ol>	
+	
+	
+	
+	<!-- Ausências -->
+	<dt><p><a name = "link_4.2"><b> 4.2. Absences </b></a></dt>
+
+	An absence occurs when the source code does not establish a dependency that is prescribed by a particular constraint.
+	For example, when classes of package <font size="4"><code>P</code></font> do not implement an
+	interface <font size="4"><code>I</code></font>, as determined by the intended architecture of the system.
+	<br /> 
+		
+		<ol>
+		
+		<h4><a name = "link_4.2.1"><b> 4.2.1. Kinds of Constraints </b></a></h4>
+		
+		In order to capture absences, DCL supports the definition of the following constraints: <p>		
+		
+		• <code>M<sub>A</sub> must-<i>dep</i> M<sub>B</sub></code>: Classes of module <code>M<sub>A</sub></code> must depend on types defined
+		in module <code>M<sub>B</sub></code>. For example, the constraint <code>DTO must-implement
+		java.io.Serializable</code> defines that entity classes must implement
+		Java’s serializable interface. <br />
+		
+		<h4><a name = "link_4.2.2"><b> 4.2.2. Examples </b></a></h4>
+
+		
+		<ol>
+		
+		<!-- Must-extend -->
+		<div>
+		<dt><a name = "link_4.2.2.1"><b> 4.2.2.1. <span class="const">extend</span> (using <span> must</span>)</b></dt>
+		A constraint in the form
+		<span>M<sub>A</sub> must-extend M<sub>B</sub></span>
+		indicates that all classes declared in module <span> M<sub>A</sub></span> must extend a class declared in module <span style="font-family: 'Courier';"> M<sub>B</sub></span>.
+		<br /><br />
+		
+		<div class="example">
+		<span class="example-content">
+		<strong><p> Example. Assume the following DCL constraints: </p></strong>
+		</span>
+			<pre class="">
+ 1: module Servlets: org.foo.controller.servlets.*
+ 2: module BaseHttpServlet: javax.servlet.http.HttpServlet
+ 3: Servlets must-extend BaseHttpServlet</pre> 
+ 			</div><br />
+ 		
+ 		In this example, module <code>Servlets</code> contains the classes of package
+ 		<code>org.foo.controller.servlets</code> (line 1) and module <code>BaseHttpServlet</code>
+		refers to class <code>javax.servlet.http.HttpServlet</code>,
+		which is the standard class to handle requests and responses using <code>HTTP</code> protocol.
+		Then, in line 3, a constraint requires that the classes of module <code>Servlets</code>
+		extend the class <code>javax.servlet.http.HttpServlet</code>. 
+ 		Otherwise, DCL will report an architectural violation (absence).<br /><br />
+		</div>
+		
+		<!-- Must-implement -->
+		<div>
+		<dt><a name = "link_4.2.2.2"><b> 4.2.2.2. <span class="const">implement</span> (using <span> must</span>) </b></dt>
+		A constraint in the form
+		<span> M<sub>A</sub> must-implement M<sub>B</sub></span> indicates that all classes declared in module <span> M<sub>A</sub></span> must implement at least an interface declared in module <span> M<sub>B</sub></span>.
+		<br /><br />			
+		
+		<div class="example">
+		<span class="example-content">
+		<strong><p> Example. Assume the following DCL constraints: </p></strong>
+		</span>
+			<pre class="">
+ 1: module Filters: "org.foo.[a-zA-Z0-9/.]*Filter"
+ 2: Filters must-implement java.util.EventListener</pre> 
+ 			</div><br />
+ 		
+ 		In this example, module <code>Filters</code> groups classes from package <code>org.foo</code> that have suffix <code>Filter</code> (line 1).
+ 		Then, in line 2, a constraint requires that classes from module <code>Filters</code> must implement the interface <code>java.util.EventListener</code>.
+ 		Otherwise, DCL will report an architectural violation (absence).<br /><br />
+		</div>
+		
+		<!-- Must-derive -->
+		<div>
+		<p><dt><a name = "link_4.2.2.3"><b> 4.2.2.3. <span class="const">derive</span> (using <span> must</span>) </b></dt>
+			Acronym for&nbsp <span>must-extend, must-implement</span>.
+		<br /><br /></div>
+		
+		<!-- Must-throw -->
+		<div>
+		<p><dt><a name = "link_4.2.2.4"><b> 4.2.2.4. <span class="const">throw</span> (using <span> must</span>) </b></dt>
+		A constraint in the form
+		<span> M<sub>A</sub> must-throw M<sub>B</sub></span> indicates that all methods from classes declared in module <span> M<sub>A</sub></span> must declare that they can return with exceptions declared in module <span> M<sub>B</sub></span> raised.
+		<br /><br />		
+		
+		<div class="example">
+		<span class="example-content">
+		<strong><p> Example. Assume the following DCL constraints: </p></strong>
+		</span>
+			<pre class="">
+ 1: module DAO: org.foo.model.dao.impl.*
+ 2: module DAOException: org.foo.model.dao.DAOException
+ 3: DAO must-throw DAOException</pre>
+  
+ 			</div><br />
+ 		In this example, module <code>DAO</code> groups all classes of package <code>org.foo.model.dao.impl</code> (line 1)
+ 		and module <code>DAOException</code> (line 2) refers to class <code>org.foo.model.dao.DAOException</code>.
+ 		Then, in line 3, a constraint requires that all methods declared in module <code>DAO</code> must declare that they can return with exceptions declared in module <code>DAOException</code>.
+ 		Otherwise, DCL will report an architectural violation (absence).<br /><br />
+		</div>
+		
+		<!-- Must-useannotation -->
+		<div>		
+		<p><dt><a name = "link_4.2.2.5"><b> 4.2.2.5. <span class="const">useannotation </span> (using <span> must</span>) </b></dt>
+		A constraint in the form
+		<span> M<sub>A</sub> must-useannotation M<sub>B</sub></span> indicates that all classes declared in module <span> M<sub>A</sub></span> must use at least an annotation declared in module <span> M<sub>B</sub></span>.		
+		<br /><br />
+		
+		<div class="example">
+		<span class="example-content">
+		<strong><p> Example. Assume the following DCL constraints: </p></strong>
+		</span>
+			<pre class="">
+ 1: module DTO: org.foo.model.dto.*
+ 2: module JPA: javax.persistence.**
+ 3: DTO must-useannotation JPA</pre> 
+ 			</div><br />
+ 		
+ 		In this example, module <code>DTO</code> (line 1) groups all classes of package <code>org.foo.model.dto</code>
+ 		and module <code>JPA</code> (line 2) includes classes of <code>javax.persistence</code> and its internal packages.
+ 		Then, in line 3, a constraint requires that all classes in module <code>DTO</code> must use at least an annotation declared in module <code>JPA</code>.
+ 		Otherwise, DCL will report an architectural violation (absence).<br /><br />
+		</div>
+		
+		</ol></ol>
+	</ol>
+
+	</div>
+	</div>
+	
+</body>

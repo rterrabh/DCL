@@ -1,0 +1,75 @@
+/* CSS Document */
+
+@charset "utf-8";
+
+/* -------------------------------- */
+/* ---     Layout da página    --- */
+/* -------------------------------- */
+
+/*Layout padrão do site*/
+body {
+	text-align:center;
+	background-color:#DDD;
+}
+
+/*Layout padrão do site*/
+.Default {
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+   	font-size: 15px;
+	color: #666;
+	text-align:center;
+}
+
+div#Title_Header {
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+   	font-size: 22px;
+	font-weight:bold;
+	color: #666;
+	text-align:center;
+}
+
+/*Layout de título dos painéis*/
+.Titulo {
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+   	font-size: 17px;
+	color: #999;
+	text-align:left;
+	text-decoration:none;
+}
+
+/*Layout dos painéis*/
+.Painel {
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  	font-size: 14px;
+	color: #666;
+	text-align:justify;
+	padding-right:40px;
+	line-height:22px;
+}
+
+/*Bordas da página*/
+div#Box {
+	width:800px;
+	height:auto;
+	margin:0 auto;
+	margin-top:0.5em;
+	text-align:center;
+	background-color:#FFF;
+	border-top-color:#999;
+	border-top-width:2px;
+	border-top-style:solid;
+	border-left-color:#999;
+	border-left-width:2px;
+	border-left-style:solid;
+	border-bottom-color:#999;
+	border-bottom-width:2px;
+	border-bottom-style:solid;
+	border-right-color:#999;
+	border-right-width:2px;
+	border-right-style:solid;
+	padding:0;
+}
+
+a {
+	outline: 0;
+}
