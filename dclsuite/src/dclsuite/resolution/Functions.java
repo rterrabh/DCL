@@ -205,21 +205,23 @@ public final class Functions {
 			final IProject project) {
 		final String simpleClassName = DCLUtil.getSimpleClassName(className);
 
-		for (ModuleSimilarity m : suitableModules) {
-			if (m.getModuleDescription().endsWith(".*")) {
-				/* Lets simulate if it had been moved */
-				/*
-				 * If it is moved to the suitable module M and it still remains
-				 * in Ma, then M != complement(Ma)
-				 */
-				String qualifiedClassName = m.getModuleDescription().replaceAll("\\.\\*", "") + "." + simpleClassName;
+		if (suitableModules != null) {
+			for (ModuleSimilarity m : suitableModules) {
+				if (m.getModuleDescription().endsWith(".*")) {
+					/* Lets simulate if it had been moved */
+					/*
+					 * If it is moved to the suitable module M and it still
+					 * remains in Ma, then M != complement(Ma)
+					 */
+					String qualifiedClassName = m.getModuleDescription().replaceAll("\\.\\*", "") + "." + simpleClassName;
 
-				if (DCLUtil.hasClassNameByDescription(qualifiedClassName, moduleDescriptionA, modules, projectClassNames, project)) {
+					if (DCLUtil.hasClassNameByDescription(qualifiedClassName, moduleDescriptionA, modules, projectClassNames, project)) {
+						return false;
+					}
+				} else if (moduleDescriptionA.contains(m.getModuleDescription())) {
+					/* It's the same as the description */
 					return false;
 				}
-			} else if (moduleDescriptionA.contains(m.getModuleDescription())) {
-				/* It's the same as the description */
-				return false;
 			}
 		}
 

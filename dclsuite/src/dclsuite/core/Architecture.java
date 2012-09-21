@@ -184,6 +184,10 @@ public class Architecture {
 	}
 	
 	public Set<String> getUsedClasses(final String className, DependencyType dependencyType) {
+		if (dependencyType == null){
+			return getUsedClasses(className);
+		}
+		
 		Set<String> set = new HashSet<String>();
 
 		for (Dependency d : this.getDependencies(className)) {
@@ -208,6 +212,9 @@ public class Architecture {
 	}
 
 	public Set<String> getUniverseOfUsedClasses(DependencyType dependencyType) {
+		if (dependencyType == null){
+			return getUniverseOfUsedClasses();
+		}
 		Set<String> set = new HashSet<String>();
 
 		for (Collection<Dependency> col : projectClasses.values()) {

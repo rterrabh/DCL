@@ -1,14 +1,18 @@
 package dclsuite.resolution.similarity;
 
-public class ModuleSimilarity {
-	private final String moduleDescription;
-	private double similarity;
-	private final Strategy strategy;
+import dclsuite.util.FormatUtil;
 
-	public ModuleSimilarity(String moduleDescription, double similarity, Strategy strategy) {
+public class ModuleSimilarity implements Comparable<ModuleSimilarity>{
+	private final String moduleDescription;
+	private final double similarity;
+	private final CoverageStrategy coverageStrategy;
+	private final ICoefficientStrategy coefficientStrategy;
+
+	public ModuleSimilarity(String moduleDescription, double similarity, CoverageStrategy coverageStrategy, ICoefficientStrategy coefficientStrategy) {
 		this.moduleDescription = moduleDescription;
 		this.similarity = similarity;
-		this.strategy = strategy;
+		this.coverageStrategy = coverageStrategy;
+		this.coefficientStrategy = coefficientStrategy;
 	}
 
 	public String getModuleDescription() {
@@ -19,28 +23,25 @@ public class ModuleSimilarity {
 		return this.similarity;
 	}
 
-	public Strategy getStrategy() {
-		return strategy;
+	public CoverageStrategy getCoverageStrategy() {
+		return this.coverageStrategy;
+	}
+	
+	public ICoefficientStrategy getCoefficientStrategy() {
+		return this.coefficientStrategy;
 	}
 
-	public static enum Strategy {
-		PARTICULAR_DEPENDENCY, ALL_DEPENDENCIES;
 		
-		public String toString() {
-			if (this==PARTICULAR_DEPENDENCY){
-				return "PD";	
-			}else if (this==ALL_DEPENDENCIES){
-				return "AD";	
-			}
-			return null;
-		};
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((coefficientStrategy == null) ? 0 : coefficientStrategy.hashCode());
+		result = prime * result + ((coverageStrategy == null) ? 0 : coverageStrategy.hashCode());
 		result = prime * result + ((moduleDescription == null) ? 0 : moduleDescription.hashCode());
+		long temp;
+		temp = Double.doubleToLongBits(similarity);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		return result;
 	}
 
@@ -53,17 +54,48 @@ public class ModuleSimilarity {
 		if (getClass() != obj.getClass())
 			return false;
 		ModuleSimilarity other = (ModuleSimilarity) obj;
+		if (coefficientStrategy == null) {
+			if (other.coefficientStrategy != null)
+				return false;
+		} else if (!coefficientStrategy.equals(other.coefficientStrategy))
+			return false;
+		if (coverageStrategy != other.coverageStrategy)
+			return false;
 		if (moduleDescription == null) {
 			if (other.moduleDescription != null)
 				return false;
 		} else if (!moduleDescription.equals(other.moduleDescription))
 			return false;
+		if (Double.doubleToLongBits(similarity) != Double.doubleToLongBits(other.similarity))
+			return false;
 		return true;
 	}
-	
+
 	@Override
 	public String toString() {
-		return this.moduleDescription + "(" + this.similarity + this.getStrategy().toString() + ")";
+		return this.moduleDescription + "(" + FormatUtil.formatDouble(this.similarity) + "_" + this.coverageStrategy.getType() + "_" + this.coefficientStrategy.getName() + ")";
+	}
+	
+	public String getInfo(){
+		return "(" + FormatUtil.formatDouble(this.similarity) + "_" + this.coverageStrategy.getType() + "_" + this.coefficientStrategy.getName() + ")";
+	}
+	
+	public static enum CoverageStrategy {
+		PARTICULAR_DEPENDENCY, ALL_DEPENDENCIES;
+		
+		public String getType() {
+			if (this==PARTICULAR_DEPENDENCY){
+				return "PD";	
+			}else if (this==ALL_DEPENDENCIES){
+				return "AD";	
+			}
+			return null;
+		};
+	}
+
+	@Override
+	public int compareTo(ModuleSimilarity o) {
+		return ((Double)o.similarity).compareTo(this.similarity);
 	}
 
 }

@@ -13,7 +13,6 @@ import dclsuite.enums.ConstraintType;
 import dclsuite.resolution.similarity.ModuleSimilarity;
 import dclsuite.resolution.similarity.SuitableModule;
 import dclsuite.util.DCLUtil;
-import dclsuite.util.FormatUtil;
 import dclsuite.util.MarkerUtils;
 
 public class AbsenceResolution {
@@ -59,8 +58,7 @@ public class AbsenceResolution {
 			int i = 0;
 			for (ModuleSimilarity ms : suitableModules) {
 				suggestions.add(MarkerUtils.createMarkerResolution(
-						"A4." + ++i + ": move_class(" + simpleClassName + ", " + ms.getModuleDescription() + ") (similarity: "
-								+ FormatUtil.formatDouble(ms.getSimilarity()) + ms.getStrategy().toString() + ")", null));
+						"A4." + ++i + ": move_class(" + simpleClassName + ", " + ms.getModuleDescription() + ") " + ms.getInfo(), null));
 			}
 
 		}
@@ -88,8 +86,7 @@ public class AbsenceResolution {
 			if (suitableModules != null) {
 				for (ModuleSimilarity ms : suitableModules) {
 					suggestions.add(MarkerUtils.createMarkerResolution(
-							"A5." + ++i + ": move_class(" + simpleClassName + ", " + ms.getModuleDescription() + ") (similarity: "
-									+ FormatUtil.formatDouble(ms.getSimilarity()) + ms.getStrategy().toString() + ")", null));
+							"A5." + ++i + ": move_class(" + simpleClassName + ", " + ms.getModuleDescription() + ") " + ms.getInfo(), null));
 				}
 			}
 

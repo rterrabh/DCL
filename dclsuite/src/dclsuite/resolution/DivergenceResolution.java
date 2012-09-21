@@ -19,7 +19,6 @@ import dclsuite.enums.ConstraintType;
 import dclsuite.resolution.similarity.ModuleSimilarity;
 import dclsuite.resolution.similarity.SuitableModule;
 import dclsuite.util.DCLUtil;
-import dclsuite.util.FormatUtil;
 import dclsuite.util.MarkerUtils;
 
 public class DivergenceResolution {
@@ -31,11 +30,6 @@ public class DivergenceResolution {
 		Set<ModuleSimilarity> suitableModules = SuitableModule.calculate(project, architecture, dependency.getClassNameA(),
 				dependency.getDependencyType(), dependency.getClassNameB(), violatedConstraint.getConstraintType());
 
-		/*DEBUG*/
-		//for (ModuleSimilarity ms : suitableModules){
-		//	System.out.println(ms);
-		//}
-		
 		// TODO: Missing the development of THROW rules
 		switch (dependency.getDependencyType()) {
 		case DECLARE:
@@ -76,7 +70,17 @@ public class DivergenceResolution {
 
 		if (allowedSuperTypes != null && !allowedSuperTypes.isEmpty()) {
 			for (String allowedSuperTypeClassName : allowedSuperTypes) {
-				if (allowedSuperTypeClassName.equals("java.lang.Object")){ /* We do not consider java.lang.Object */
+				if (allowedSuperTypeClassName.equals("java.lang.Object")) { /*
+																			 * We
+																			 * do
+																			 * not
+																			 * consider
+																			 * java
+																			 * .
+																			 * lang
+																			 * .
+																			 * Object
+																			 */
 					continue;
 				}
 				suggestions.add(MarkerUtils.createMarkerResolutionChangeToOtherType("D1: replace( [" + simpleTargetClassName + "], ["
@@ -147,7 +151,7 @@ public class DivergenceResolution {
 			if (factory != null) {
 				suggestions.add(MarkerUtils.createMarkerResolutionChangeToMethodInvocation("D11: replace( [new " + simpleTargetClassName
 						+ "()], [" + DCLUtil.getSimpleClassName(factory[0]) + "." + factory[1] + "()" + "] )", null, factory));
-			}else{
+			} else {
 
 				/* D13 */
 				/* If there is a suitable module to create a factory */
@@ -155,7 +159,7 @@ public class DivergenceResolution {
 					suggestions.add(MarkerUtils.createMarkerResolution("D13: replace( [new " + simpleTargetClassName + "()], [FB.get"
 							+ Character.toUpperCase(simpleTargetClassName.charAt(0)) + simpleTargetClassName.substring(1) + "()] )", null));
 				}
-			
+
 			}
 		}
 		return suggestions.toArray(new IMarkerResolution[suggestions.size()]);
@@ -185,14 +189,13 @@ public class DivergenceResolution {
 		for (ModuleSimilarity ms : suitableModules) {
 			String qualifiedClassName = ms.getModuleDescription().replaceAll("\\.\\*", "") + "." + simpleOriginClassName;
 
-			
 			int i = 0;
 			if (!ms.getModuleDescription().endsWith(".*")
 					|| (ms.getModuleDescription().endsWith(".*") && architecture.can(qualifiedClassName, dependency.getClassNameB(),
 							dependency.getDependencyType(), project))) {
 				suggestions.add(MarkerUtils.createMarkerResolution(
-						"D20." + ++i + ": move_class(" + simpleOriginClassName + ", " + ms.getModuleDescription() + ") (similarity: "
-								+ FormatUtil.formatDouble(ms.getSimilarity()) + ms.getStrategy().toString() + ")", null));
+						"D20." + ++i + ": move_class(" + simpleOriginClassName + ", " + ms.getModuleDescription() + ") " + ms.getInfo(),
+						null));
 			}
 
 		}
@@ -219,11 +222,12 @@ public class DivergenceResolution {
 		} else {
 			/* D21 and D23 */
 			int i = 0;
-			for (ModuleSimilarity ms : suitableModules) {
-				String recommendationNumber = (dependency instanceof AnnotateClassDependency) ? "D21" : "D23";
-				suggestions.add(MarkerUtils.createMarkerResolution(recommendationNumber + "." + ++i + ": move_class(" + simpleOriginClassName + ", "
-						+ ms.getModuleDescription() + ") (similarity: " + FormatUtil.formatDouble(ms.getSimilarity())
-						+ ms.getStrategy().toString() + ")", null));
+			if (suitableModules != null) {
+				for (ModuleSimilarity ms : suitableModules) {
+					String recommendationNumber = (dependency instanceof AnnotateClassDependency) ? "D21" : "D23";
+					suggestions.add(MarkerUtils.createMarkerResolution(recommendationNumber + "." + ++i + ": move_class("
+							+ simpleOriginClassName + ", " + ms.getModuleDescription() + ") " + ms.getInfo(), null));
+				}
 			}
 		}
 
