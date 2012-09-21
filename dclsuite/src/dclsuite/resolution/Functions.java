@@ -19,6 +19,7 @@ import dclsuite.dependencies.Dependency;
 import dclsuite.dependencies.DeriveDependency;
 import dclsuite.enums.ConstraintType;
 import dclsuite.enums.DependencyType;
+import dclsuite.resolution.similarity.ModuleSimilarity;
 import dclsuite.util.DCLUtil;
 
 public final class Functions {
@@ -173,21 +174,23 @@ public final class Functions {
 			final IProject project) {
 		final String simpleClassName = DCLUtil.getSimpleClassName(className);
 
-		for (ModuleSimilarity m : suitableModules) {
-			if (m.getModuleDescription().endsWith(".*")) {
-				/* Lets simulate if it had been moved */
-				/*
-				 * If it is moved to the suitable module M and it still remains
-				 * in Ma, then M = Ma
-				 */
-				String qualifiedClassName = m.getModuleDescription().replaceAll("\\.\\*", "") + "." + simpleClassName;
+		if (suitableModules != null) {
+			for (ModuleSimilarity m : suitableModules) {
+				if (m.getModuleDescription().endsWith(".*")) {
+					/* Lets simulate if it had been moved */
+					/*
+					 * If it is moved to the suitable module M and it still
+					 * remains in Ma, then M = Ma
+					 */
+					String qualifiedClassName = m.getModuleDescription().replaceAll("\\.\\*", "") + "." + simpleClassName;
 
-				if (DCLUtil.hasClassNameByDescription(qualifiedClassName, moduleDescriptionA, modules, projectClassNames, project)) {
+					if (DCLUtil.hasClassNameByDescription(qualifiedClassName, moduleDescriptionA, modules, projectClassNames, project)) {
+						return true;
+					}
+				} else if (moduleDescriptionA.contains(m.getModuleDescription())) {
+					/* It's the same as the description */
 					return true;
 				}
-			} else if (moduleDescriptionA.contains(m.getModuleDescription())) {
-				/* It's the same as the description */
-				return true;
 			}
 		}
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -170,6 +171,54 @@ public class Architecture {
 		}
 
 		return false;
+	}
+
+	public Set<String> getUsedClasses(final String className) {
+		Set<String> set = new HashSet<String>();
+
+		for (Dependency d : this.getDependencies(className)) {
+			set.add(d.getClassNameB());
+		}
+
+		return set;
+	}
+	
+	public Set<String> getUsedClasses(final String className, DependencyType dependencyType) {
+		Set<String> set = new HashSet<String>();
+
+		for (Dependency d : this.getDependencies(className)) {
+			if (d.getDependencyType().equals(dependencyType)) {
+				set.add(d.getClassNameB());
+			}
+		}
+
+		return set;
+	}
+
+	public Set<String> getUniverseOfUsedClasses() {
+		Set<String> set = new HashSet<String>();
+
+		for (Collection<Dependency> col : projectClasses.values()) {
+			for (Dependency d : col) {
+				set.add(d.getClassNameB());
+			}
+		}
+
+		return set;
+	}
+
+	public Set<String> getUniverseOfUsedClasses(DependencyType dependencyType) {
+		Set<String> set = new HashSet<String>();
+
+		for (Collection<Dependency> col : projectClasses.values()) {
+			for (Dependency d : col) {
+				if (d.getDependencyType().equals(dependencyType)) {
+					set.add(d.getClassNameB());
+				}
+			}
+		}
+
+		return set;
 	}
 
 }

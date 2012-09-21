@@ -10,6 +10,8 @@ import org.eclipse.ui.IMarkerResolution;
 import dclsuite.core.Architecture;
 import dclsuite.dependencies.MissingDependency;
 import dclsuite.enums.ConstraintType;
+import dclsuite.resolution.similarity.ModuleSimilarity;
+import dclsuite.resolution.similarity.SuitableModule;
 import dclsuite.util.DCLUtil;
 import dclsuite.util.FormatUtil;
 import dclsuite.util.MarkerUtils;
@@ -21,6 +23,11 @@ public class AbsenceResolution {
 		final IProject project = marker.getResource().getProject();
 		Set<ModuleSimilarity> suitableModules = SuitableModule.calculate(project, architecture, missingDependency.getClassNameA(),
 				missingDependency.getDependencyType(), null, ConstraintType.MUST);
+
+		/* DEBUG */
+		// for (ModuleSimilarity ms : suitableModules){
+		// System.out.println(ms);
+		// }
 
 		// TODO: Missing the development of THROW rules
 		switch (missingDependency.getDependencyType()) {
@@ -49,9 +56,11 @@ public class AbsenceResolution {
 					+ missingDependency.getDependencyType().getValue() + "s " + missingDependency.getModuleDescriptionB() + "])", null));
 		} else {
 			/* A4 */
+			int i = 0;
 			for (ModuleSimilarity ms : suitableModules) {
-				suggestions.add(MarkerUtils.createMarkerResolution("A4: move_class(" + simpleClassName + ", " + ms.getModuleDescription()
-						+ ") (similarity: " + FormatUtil.formatDouble(ms.getSimilarity()) + ms.getStrategy().toString() + ")", null));
+				suggestions.add(MarkerUtils.createMarkerResolution(
+						"A4." + ++i + ": move_class(" + simpleClassName + ", " + ms.getModuleDescription() + ") (similarity: "
+								+ FormatUtil.formatDouble(ms.getSimilarity()) + ms.getStrategy().toString() + ")", null));
 			}
 
 		}
@@ -67,18 +76,21 @@ public class AbsenceResolution {
 		final LinkedList<IMarkerResolution> suggestions = new LinkedList<IMarkerResolution>();
 		final String simpleClassName = DCLUtil.getSimpleClassName(missingDependency.getClassNameA());
 
-		if (Functions.isModuleMequalModuleMa(missingDependency.getClassNameA(), missingDependency.getModuleDescriptionA(),
-				suitableModules, architecture.getModules(), architecture.getProjectClasses(), project, ConstraintType.MUST)) {
+		if (Functions.isModuleMequalModuleMa(missingDependency.getClassNameA(), missingDependency.getModuleDescriptionA(), suitableModules,
+				architecture.getModules(), architecture.getProjectClasses(), project, ConstraintType.MUST)) {
 			/* A6 and A8 */
 			suggestions.add(MarkerUtils.createMarkerResolution(
 					"A6: replace( [" + simpleClassName + "], [@" + missingDependency.getModuleDescriptionB() + " " + simpleClassName + ")",
 					null));
 		} else {
 			/* A5 and A7 */
-			for (ModuleSimilarity ms : suitableModules) {
-				suggestions.add(MarkerUtils.createMarkerResolution(
-						"A5: move_class(" + simpleClassName + ", " + ms.getModuleDescription() + ") (similarity: "
-								+ FormatUtil.formatDouble(ms.getSimilarity()) + ms.getStrategy().toString() + ")", null));
+			int i = 0;
+			if (suitableModules != null) {
+				for (ModuleSimilarity ms : suitableModules) {
+					suggestions.add(MarkerUtils.createMarkerResolution(
+							"A5." + ++i + ": move_class(" + simpleClassName + ", " + ms.getModuleDescription() + ") (similarity: "
+									+ FormatUtil.formatDouble(ms.getSimilarity()) + ms.getStrategy().toString() + ")", null));
+				}
 			}
 
 		}

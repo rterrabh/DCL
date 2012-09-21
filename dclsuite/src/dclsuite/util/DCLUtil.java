@@ -196,7 +196,7 @@ public final class DCLUtil {
 	public static String logError(IProject project, Throwable e) {
 		final IFile dcFile = project.getFile("dclcheck_" + DateUtil.dateToStr(new Date(), "yyyyMMdd-HHmmss") + "_error.log");
 
-		// TODO: Return file name created
+		/* Return file name created */
 		StringBuilder str = new StringBuilder();
 		str.append(e.toString() + "\n");
 		if (e.getStackTrace() != null) {

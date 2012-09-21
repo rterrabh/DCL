@@ -35,7 +35,7 @@ public class DCLRuleScanner extends RuleBasedScanner{
 				new SingleLineRule("ex", "tend", dependencyTypeToken),
 				new SingleLineRule("ha", "ndle", dependencyTypeToken),
 				new SingleLineRule("im", "plement", dependencyTypeToken),				
-				new SingleLineRule("mo", "dule", boldToken),
+				new SingleLineRule("mod", "ule", boldToken),
 				new SingleLineRule("mu", "st-", boldToken),
 				new SingleLineRule("on", "ly", boldToken),
 				new SingleLineRule("us", "eannotation", dependencyTypeToken),

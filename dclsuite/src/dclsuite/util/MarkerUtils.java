@@ -23,12 +23,17 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ImportDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.NodeFinder;
-import org.eclipse.jdt.core.dom.QualifiedName;
+import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.rewrite.ASTRewrite;
+import org.eclipse.jdt.core.dom.rewrite.ITrackedNodePosition;
+import org.eclipse.jdt.core.dom.rewrite.ListRewrite;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.text.edits.MalformedTreeException;
 import org.eclipse.text.edits.TextEdit;
 import org.eclipse.ui.IMarkerResolution;
@@ -59,7 +64,7 @@ public class MarkerUtils {
 		marker.setAttribute(IMarker.MESSAGE, message);
 		return marker;
 	}
-	
+
 	public static IMarker addErrorMarker(IFile file, String message, int lineNumber) throws CoreException {
 		IMarker marker = file.createMarker(MARKER_ERROR_TYPE);
 		marker.setAttribute(IMarker.LINE_NUMBER, lineNumber);
@@ -72,7 +77,7 @@ public class MarkerUtils {
 		project.deleteMarkers(MarkerUtils.MARKER_ERROR_TYPE, false, IResource.DEPTH_ZERO);
 		project.getFile(DCLUtil.DC_FILENAME).deleteMarkers(MarkerUtils.MARKER_ERROR_TYPE, false, IResource.DEPTH_ZERO);
 	}
-	
+
 	public static IMarker addMarker(IFile file, ArchitecturalDrift ad) throws CoreException {
 		IMarker marker = file.createMarker(MARKER_TYPE);
 		/* IMarker Attributes */
@@ -113,18 +118,20 @@ public class MarkerUtils {
 			marker.setAttribute(ViolationProperties.CLASS_NAME_A.getKey(), aad.getClassNameA());
 
 			marker.setAttribute(DEPENDENCY_TYPE.getKey(), aad.getViolatedConstraint().getConstraint().getDependencyType().toString());
-			
+
 			final ICompilationUnit unit = ((ICompilationUnit) JavaCore.create(file));
 			IType type = unit.findPrimaryType();
 			marker.setAttribute(IMarker.CHAR_START, type.getNameRange().getOffset());
 			marker.setAttribute(IMarker.CHAR_END, type.getNameRange().getOffset() + type.getNameRange().getLength());
-			
-//			ASTParser parser = ASTParser.newParser(AST.JLS4);
-//			parser.setKind(ASTParser.K_COMPILATION_UNIT);
-//			parser.setSource(unit);
-//			parser.setResolveBindings(false);			
-			//CompilationUnit fullClass = (CompilationUnit) parser.createAST(null);
-			//marker.setAttribute(IMarker.LINE_NUMBER, fullClass.getLineNumber(type.getNameRange().getOffset()));
+
+			// ASTParser parser = ASTParser.newParser(AST.JLS4);
+			// parser.setKind(ASTParser.K_COMPILATION_UNIT);
+			// parser.setSource(unit);
+			// parser.setResolveBindings(false);
+			// CompilationUnit fullClass = (CompilationUnit)
+			// parser.createAST(null);
+			// marker.setAttribute(IMarker.LINE_NUMBER,
+			// fullClass.getLineNumber(type.getNameRange().getOffset()));
 		}
 
 		return marker;
@@ -195,11 +202,7 @@ public class MarkerUtils {
 
 			@Override
 			public void run(IMarker m) {
-				/*
-				 * MessageDialog.openInformation(new Shell(), "dclsuite",
-				 * "In this version, the dclsuite tool has not automatizated performing refactorings."
-				 * );
-				 */
+				MessageDialog.openInformation(new Shell(), "dclsuite", "Currently, this refactoring has to be manually performed.");
 			}
 
 			@Override
@@ -242,10 +245,10 @@ public class MarkerUtils {
 					TextEdit edits = rewriter.rewriteAST(document, null);
 
 					IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), m);
-					
+
 					edits.apply(document);
 					unit.getBuffer().setContents(document.get());
-					
+
 					IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), m);
 				} catch (JavaModelException e1) {
 					// TODO Auto-generated catch block
@@ -298,10 +301,24 @@ public class MarkerUtils {
 					ASTNode node = NodeFinder.perform(cu.getRoot(), offset, length);
 					final ASTRewrite rewriter = ASTRewrite.create(ast);
 
-					MethodInvocation mi = ast.newMethodInvocation();
+					ImportDeclaration id = ast.newImportDeclaration();
+					id.setName(ast.newName(factory[0].split("\\.")));
+					ListRewrite lrw = rewriter.getListRewrite(cu, CompilationUnit.IMPORTS_PROPERTY);
 
-					QualifiedName name = ast.newQualifiedName(ast.newName(DCLUtil.getPackageFromClassName(factory[0])),
-							ast.newSimpleName(DCLUtil.getSimpleClassName(factory[0])));
+					boolean putin = true;
+					for (Object o : lrw.getOriginalList()) {
+						if (id.getName().getFullyQualifiedName().equals(((ImportDeclaration) o).getName().getFullyQualifiedName())) {
+							putin = false;
+						}
+					}
+					if (putin) {
+						lrw.insertLast(id, null);
+					}
+
+					MethodInvocation mi = ast.newMethodInvocation();
+					ITrackedNodePosition tdLocation = rewriter.track(mi);
+
+					SimpleName name = ast.newSimpleName(DCLUtil.getSimpleClassName(factory[0]));
 
 					mi.setExpression(name);
 					mi.setName(ast.newSimpleName(factory[1]));
@@ -311,12 +328,13 @@ public class MarkerUtils {
 					TextEdit edits = rewriter.rewriteAST(document, null);
 
 					IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), m);
-					
+
 					edits.apply(document);
 					unit.getBuffer().setContents(document.get());
-					
-					ITextEditor editor = (ITextEditor) IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), m);
-					editor.selectAndReveal(offset,mi.toString().length());
+
+					ITextEditor editor = (ITextEditor) IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(),
+							m);
+					editor.selectAndReveal(tdLocation.getStartPosition(), tdLocation.getLength());
 				} catch (JavaModelException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -367,22 +385,37 @@ public class MarkerUtils {
 					ASTNode node = NodeFinder.perform(cu.getRoot(), offset, length);
 					final ASTRewrite rewriter = ASTRewrite.create(ast);
 
-					QualifiedName newType = ast.newQualifiedName(ast.newName(DCLUtil.getPackageFromClassName(type)),
-							ast.newSimpleName(DCLUtil.getSimpleClassName(type)));
+					ImportDeclaration id = ast.newImportDeclaration();
+					id.setName(ast.newName(type.split("\\.")));
+					ListRewrite lrw = rewriter.getListRewrite(cu, CompilationUnit.IMPORTS_PROPERTY);
+
+					boolean putin = true;
+					for (Object o : lrw.getOriginalList()) {
+						if (id.getName().getFullyQualifiedName().equals(((ImportDeclaration) o).getName().getFullyQualifiedName())) {
+							putin = false;
+						}
+					}
+					if (putin) {
+						lrw.insertLast(id, null);
+					}
+
+					SimpleName newType = ast.newSimpleName(DCLUtil.getSimpleClassName(type));
+					ITrackedNodePosition tdLocation = rewriter.track(newType);
 
 					rewriter.replace(node, newType, null);
 
 					TextEdit edits = rewriter.rewriteAST(document, null);
 
 					IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), m);
-					
+
 					edits.apply(document);
 					unit.getBuffer().setContents(document.get());
 
 					IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), m);
 
-					ITextEditor editor = (ITextEditor) IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), m);
-					editor.selectAndReveal(offset,newType.toString().length());
+					ITextEditor editor = (ITextEditor) IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(),
+							m);
+					editor.selectAndReveal(tdLocation.getStartPosition(), tdLocation.getLength());
 				} catch (JavaModelException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -438,12 +471,13 @@ public class MarkerUtils {
 					TextEdit edits = rewriter.rewriteAST(document, null);
 
 					IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), m);
-					
+
 					edits.apply(document);
 					unit.getBuffer().setContents(document.get());
 
-					ITextEditor editor = (ITextEditor) IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), m);
-					editor.selectAndReveal(offset,ast.newNullLiteral().toString().length());
+					ITextEditor editor = (ITextEditor) IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(),
+							m);
+					editor.selectAndReveal(offset, ast.newNullLiteral().toString().length());
 				} catch (JavaModelException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
