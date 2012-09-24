@@ -3,7 +3,6 @@ package dclsuite.resolution.similarity;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +40,7 @@ public class SuitableModule {
 			suitableModules.addAll(calculate(project, architecture, originClassName, targetClassName, constraintType, coefficientStrategy,
 					dependencyType));
 		}
-
+				
 		return new TreeSet<ModuleSimilarity>(suitableModules);
 	}
 
@@ -98,7 +97,7 @@ public class SuitableModule {
 
 		}
 
-		Set<ModuleSimilarity> result = new LinkedHashSet<ModuleSimilarity>();
+		Set<ModuleSimilarity> result = new TreeSet<ModuleSimilarity>();
 		for (int i = 0; i < Math.min(MOVE_SUGGESTIONS, modules.size()); i++) {
 			result.add(new ModuleSimilarity(modules.get(i).getKey(), modules.get(i).getValue(),
 					(dependencyType == null) ? CoverageStrategy.ALL_DEPENDENCIES : CoverageStrategy.PARTICULAR_DEPENDENCY,
