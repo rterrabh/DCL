@@ -116,66 +116,27 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 			Map<String, String> modules, Set<String> projectClasses, Collection<Dependency> dependencies, IProject project) {
 		List<ArchitecturalDrift> architecturalDrifts = new LinkedList<ArchitecturalDrift>();
 
-		if (dependencyClass.isAssignableFrom(DeriveDependency.class) || dependencyClass.isAssignableFrom(ExtendDependency.class)
-				|| dependencyClass.isAssignableFrom(ImplementDependency.class)) {
+		// TODO: What am I supposed to do in case of internal class?
+		if (className.contains("$")) {
+			return null;
+		} else if (className.equals(moduleDescriptionB)) {
+			return null;
+		} else if (DCLUtil.hasClassNameByDescription(className, moduleDescriptionB, modules, projectClasses, project)) {
+			return null;
+		}
 
-			// TODO: What am I supposed to do in case of internal class?
-			if (className.contains("$")) {
-				return null;
-			} else if (className.equals(moduleDescriptionB)) {
-				return null;
-			} else if (DCLUtil.hasClassNameByDescription(className, moduleDescriptionB, modules, projectClasses, project)) {
-				return null;
-			}
-
-			List<String> derivedClasses = new LinkedList<String>();
-			for (Dependency d : dependencies) {
-				if (dependencyClass.isAssignableFrom(d.getClass())) {
-					derivedClasses.add(d.getClassNameB());
-				}
-			}
-
-			boolean found = false;
-
-			for (String clazz : derivedClasses) {
-				if (DCLUtil.hasClassNameByDescription(clazz, moduleDescriptionB, modules, projectClasses, project)) {
+		boolean found = false;
+		for (Dependency d : dependencies) {
+			if (dependencyClass.isAssignableFrom(d.getClass())) {
+				if (DCLUtil.hasClassNameByDescription(d.getClassNameB(), moduleDescriptionB, modules, projectClasses, project)) {
 					found = true;
 					break;
 				}
 			}
-
-			if (!found) {
-				architecturalDrifts.add(new AbsenceArchitecturalDrift(this, className, moduleDescriptionB));
-			}
-		} else if (dependencyClass.isAssignableFrom(ThrowDependency.class)) {
-			boolean found = false;
-			for (Dependency d : dependencies) {
-				if (dependencyClass.isAssignableFrom(d.getClass())) {
-					if (DCLUtil.hasClassNameByDescription(d.getClassNameB(), moduleDescriptionB, modules, projectClasses, project)) {
-						found = true;
-						break;
-					}
-				}
-			}
-			if (!found) {
-				architecturalDrifts.add(new AbsenceArchitecturalDrift(this, className, moduleDescriptionB));
-			}
-		} else {
-			boolean found = false;
-			for (Dependency d : dependencies) {
-				if (dependencyClass.isAssignableFrom(d.getClass())) {
-					if (DCLUtil.hasClassNameByDescription(d.getClassNameB(), moduleDescriptionB, modules, projectClasses, project)) {
-						found = true;
-						break;
-					}
-				}
-			}
-			if (!found) {
-				architecturalDrifts.add(new AbsenceArchitecturalDrift(this, className, moduleDescriptionB));
-			}
 		}
-		
-		//TODO: Colocar para access, create, declare, handle, and depend
+		if (!found) {
+			architecturalDrifts.add(new AbsenceArchitecturalDrift(this, className, moduleDescriptionB));
+		}
 
 		return architecturalDrifts;
 	}
