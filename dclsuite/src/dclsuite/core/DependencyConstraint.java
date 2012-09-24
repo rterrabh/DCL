@@ -10,10 +10,6 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 
 import dclsuite.dependencies.Dependency;
-import dclsuite.dependencies.DeriveDependency;
-import dclsuite.dependencies.ExtendDependency;
-import dclsuite.dependencies.ImplementDependency;
-import dclsuite.dependencies.ThrowDependency;
 import dclsuite.enums.Constraint;
 import dclsuite.enums.ConstraintType;
 import dclsuite.util.DCLUtil;
