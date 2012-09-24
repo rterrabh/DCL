@@ -34,11 +34,16 @@ public enum Constraint {
 	CANNOT_THROW("cannot-throw",ConstraintType.CANNOT, DependencyType.THROW), 
 	CANNOT_DEPEND("cannot-depend",ConstraintType.CANNOT, DependencyType.DEPEND),
 	
-	MUST_EXTEND("must-extend",ConstraintType.MUST, DependencyType.EXTEND),
-	MUST_IMPLEMENT("must-implement",ConstraintType.MUST, DependencyType.IMPLEMENT),
-	MUST_DERIVE("must-derive",ConstraintType.MUST, DependencyType.DERIVE),
+	MUST_ACCESS("must-access",ConstraintType.MUST, DependencyType.ACCESS), //New
 	MUST_USEANNOTATION("must-useannotation",ConstraintType.MUST, DependencyType.USEANNOTATION),
-	MUST_THROW("must-throw",ConstraintType.MUST, DependencyType.THROW); 
+	MUST_CREATE("must-create",ConstraintType.MUST, DependencyType.CREATE), //New
+	MUST_DECLARE("must-declare",ConstraintType.MUST, DependencyType.DECLARE), //New
+	MUST_DERIVE("must-derive",ConstraintType.MUST, DependencyType.DERIVE), 
+	MUST_EXTEND("must-extend",ConstraintType.MUST, DependencyType.EXTEND),
+	MUST_HANDLE("must-handle",ConstraintType.MUST, DependencyType.HANDLE), //New
+	MUST_IMPLEMENT("must-implement",ConstraintType.MUST, DependencyType.IMPLEMENT),
+	MUST_THROW("must-throw",ConstraintType.MUST, DependencyType.THROW),
+	MUST_DEPEND("must-depend",ConstraintType.MUST, DependencyType.DEPEND); //New
 	
 	private final String value;
 	private final ConstraintType constraintType;

@@ -9,7 +9,6 @@ import java.util.Set;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 
-import dclsuite.dependencies.AnnotateDependency;
 import dclsuite.dependencies.Dependency;
 import dclsuite.dependencies.DeriveDependency;
 import dclsuite.dependencies.ExtendDependency;
@@ -161,7 +160,7 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 			if (!found) {
 				architecturalDrifts.add(new AbsenceArchitecturalDrift(this, className, moduleDescriptionB));
 			}
-		} else if (dependencyClass.isAssignableFrom(AnnotateDependency.class)) {
+		} else {
 			boolean found = false;
 			for (Dependency d : dependencies) {
 				if (dependencyClass.isAssignableFrom(d.getClass())) {
@@ -175,6 +174,8 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 				architecturalDrifts.add(new AbsenceArchitecturalDrift(this, className, moduleDescriptionB));
 			}
 		}
+		
+		//TODO: Colocar para access, create, declare, handle, and depend
 
 		return architecturalDrifts;
 	}
@@ -284,6 +285,18 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 		public String getInfoMessage() {
 			switch (this.violatedConstraint.getConstraint().getDependencyType()) {
 
+			case ACCESS:
+				return "The access of fiels or methods of " + this.violatedConstraint.getModuleDescriptionB()
+						+ " is required for this location w.r.t. the architecture";
+			case DECLARE:
+				return "The declaration of " + this.violatedConstraint.getModuleDescriptionB()
+						+ " is required for this location w.r.t. the architecture";
+			case HANDLE:
+				return "The access or declaration (handling) of " + this.violatedConstraint.getModuleDescriptionB()
+						+ " is required for this location w.r.t. the architecture";
+			case CREATE:
+				return "The creation of " + this.violatedConstraint.getModuleDescriptionB()
+						+ " is required for this location w.r.t. the architecture";
 			case THROW:
 				return "The throwing of " + this.violatedConstraint.getModuleDescriptionB()
 						+ " is required for this location w.r.t. the architecture";
@@ -299,11 +312,6 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 				return "The dependency with " + this.violatedConstraint.getModuleDescriptionB()
 						+ " is required for this location w.r.t. the architecture";
 			}
-			// return "The class " + this.classNameA + " must " +
-			// this.violatedConstraint.getConstraint().getDependencyType().getValue()
-			// + " "
-			// + this.violatedConstraint.getModuleDescriptionB()
-			// + " w.r.t. the architecture";
 		}
 
 		@Override
