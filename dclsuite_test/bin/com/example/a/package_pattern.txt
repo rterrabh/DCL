@@ -1,0 +1,7 @@
+In this package, follow the following guidelines for test assurance:
+
+- Classes should start with "A" followed by a two digit number. For example: A01, A02, A03, etc.
+- Methods in these classes should start with "f" followed by a number. For example: f1, f2, f3, etc.
+
+- All violations should happen in classes in this package. For example, MA cannot-access MB and
+  there is a class AXX (in MA) that accesses a field or invokes a method of a class BXX (in MB).

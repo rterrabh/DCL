@@ -1,0 +1,4 @@
+In this package, follow the following guidelines for test assurance:
+
+- Classes should start with "B" followed by a two digit number. For example: B01, B02, B03, etc.
+- Methods in these classes should start with "g" followed by a number. For example: g1, g2, g3, etc.
