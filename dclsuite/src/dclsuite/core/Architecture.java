@@ -72,7 +72,7 @@ public class Architecture {
 			 * DCLUtil.hasClassNameByDescription
 			 */
 
-			this.dependencyConstraints = DCLParser.parseDependencyConstraints(project, dcFile.getContents());
+			this.dependencyConstraints = DCLParser.parseDependencyConstraints(dcFile.getContents());
 		} catch (ParseException e) {
 			throw e;
 		} catch (Throwable e) {
@@ -182,12 +182,12 @@ public class Architecture {
 
 		return set;
 	}
-	
+
 	public Set<String> getUsedClasses(final String className, DependencyType dependencyType) {
-		if (dependencyType == null){
+		if (dependencyType == null) {
 			return getUsedClasses(className);
 		}
-		
+
 		Set<String> set = new HashSet<String>();
 
 		for (Dependency d : this.getDependencies(className)) {
@@ -212,7 +212,7 @@ public class Architecture {
 	}
 
 	public Set<String> getUniverseOfUsedClasses(DependencyType dependencyType) {
-		if (dependencyType == null){
+		if (dependencyType == null) {
 			return getUniverseOfUsedClasses();
 		}
 		Set<String> set = new HashSet<String>();

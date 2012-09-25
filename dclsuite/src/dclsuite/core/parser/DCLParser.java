@@ -10,8 +10,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.core.resources.IProject;
-
 import dclsuite.core.DependencyConstraint;
 import dclsuite.enums.Constraint;
 import dclsuite.exception.ParseException;
@@ -60,8 +58,8 @@ public class DCLParser {
 	 * @throws IOException
 	 *             Error on read the file
 	 */
-	public static final Collection<DependencyConstraint> parseDependencyConstraints(final IProject project, final InputStream in)
-			throws IOException, ParseException {
+	public static final Collection<DependencyConstraint> parseDependencyConstraints(final InputStream in) throws IOException,
+			ParseException {
 		final List<DependencyConstraint> dependencyConstraints = new LinkedList<DependencyConstraint>();
 
 		LineNumberReader lnr = new LineNumberReader(new InputStreamReader(in));
