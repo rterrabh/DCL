@@ -21,7 +21,7 @@ import dclsuite.dependencies.AccessMethodDependency;
 public class ExampleDivergenceTestCase extends DCLTestCase { 
 
 	public void test01() throws Exception {
-		List<ArchitecturalDrift> violations = this.validateSystem("MA cannot-access MB"); //Define the constraint to be validated
+		List<ArchitecturalDrift> violations = this.validateSystem("com.example.a.A01 cannot-access com.example.b.B01"); //Define the constraint to be validated
 		
 		assertEquals(1, violations.size()); //Check the number of violations (usually only one violation for constraint)
 		ArchitecturalDrift ad = violations.get(0);
