@@ -2,4 +2,4 @@ In this package, follow the following guidelines for test assurance:
 
 - Classes should be subclasses of an Exception type, e.g., Exception
 - Classes should start with "Ex" followed by a two digit number. For example: Ex01, Ex02, Ex03, etc.
-- Methods in these classes should start with "h" followed by a number. For example: h1, h2, h3, etc.
+- Methods in these classes should start with "ex" followed by a number. For example: ex1, ex2, ex3, etc.
