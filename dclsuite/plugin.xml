@@ -43,6 +43,26 @@
                id="dclsuite.addRemoveNatureAction">
          </action>
       </objectContribution>
+      <objectContribution
+            id="dclsuite.contribution1"
+            objectClass="org.eclipse.ui.IEditorInput"
+            nameFilter="*.java">
+         <menu
+               id="dclsuite.menu1"
+               label="Similarity"
+               path="additions">
+            <separator
+                  name="group1">
+            </separator>
+         </menu>
+         <action
+               class="dclsuite.builder.SimilarityAction"
+               enablesFor="1"
+               id="dclsuite.similarityAction"
+               label="Calculate similarities"
+               menubarPath="dclsuite.menu1/group1">
+         </action>
+      </objectContribution>
    </extension>
    <extension
          id="violation"
