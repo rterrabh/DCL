@@ -8,8 +8,8 @@ public class JaccardCoefficientStrategy implements ICoefficientStrategy {
 	}
 	
 	@Override
-	public double calculate(double p, double q, double r, double s) {
-		return p / (p + q + r);
+	public double calculate(int p, int q, int r, int s) {
+		return ((double) p) / (p + q + r);
 	}
 
 }

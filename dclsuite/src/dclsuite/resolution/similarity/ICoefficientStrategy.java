@@ -4,6 +4,6 @@ public interface ICoefficientStrategy {
 
 	String getName();
 	
-	double calculate (double p, double q, double r, double s);
+	double calculate (int p, int q, int r, int s);
 	
 }

@@ -8,8 +8,8 @@ public class SorensensCoefficientStrategy implements ICoefficientStrategy {
 	}
 	
 	@Override
-	public double calculate(double p, double q, double r, double s) {
-		return (2 * p) / ( (p+q) + (p+r) );
+	public double calculate(int p, int q, int r, int s) {
+		return (2.0 * p) / ( (p+q) + (p+r) );
 	}
 
 }

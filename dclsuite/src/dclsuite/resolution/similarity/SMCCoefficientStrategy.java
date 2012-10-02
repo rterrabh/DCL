@@ -8,8 +8,8 @@ public class SMCCoefficientStrategy implements ICoefficientStrategy {
 	}
 	
 	@Override
-	public double calculate(double p, double q, double r, double s) {
-		return (p + s) / (p + q + r + s);
+	public double calculate(int p, int q, int r, int s) {
+		return ((double) (p + s)) / (p + q + r + s);
 	}
 
 }

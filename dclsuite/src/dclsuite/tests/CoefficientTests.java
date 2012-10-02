@@ -12,7 +12,7 @@ import dclsuite.resolution.similarity.SMCCoefficientStrategy;
 import dclsuite.resolution.similarity.SorensensCoefficientStrategy;
 
 public class CoefficientTests extends TestCase{
-	double p, q, r, s;
+	int p, q, r, s;
 
 	@Override
 	protected void setUp() throws Exception {
