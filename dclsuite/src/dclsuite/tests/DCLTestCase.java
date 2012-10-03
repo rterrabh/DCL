@@ -34,7 +34,6 @@ public abstract class DCLTestCase extends TestCase {
 		this.javaProject = JavaCore.create(project);
 		this.architecture = new Architecture(project);
 
-		this.architecture.getModules().clear();
 		this.architecture
 				.getModules()
 				.putAll(DCLParser
@@ -46,7 +45,7 @@ public abstract class DCLTestCase extends TestCase {
 		architecture.getDependencyConstraints().addAll(
 				DCLParser.parseDependencyConstraints(new ByteArrayInputStream(dependencyContraintToBeValidated.getBytes())));
 
-		assertEquals(5, this.architecture.getModules().size());
+		assertEquals(6, this.architecture.getModules().size());
 		assertEquals(1, this.architecture.getDependencyConstraints().size());
 
 		for (String className : architecture.getProjectClasses()) {
