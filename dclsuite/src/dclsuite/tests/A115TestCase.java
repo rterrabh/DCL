@@ -18,10 +18,10 @@ import dclsuite.dependencies.DeclareFieldDependency;
  *    MEX refers to classes of com.example.ex.*
  * @author Ricardo Terra
  */
-public class A101TestCase extends DCLTestCase { 
+public class A115TestCase extends DCLTestCase { 
 
 	public void test01() throws Exception {
-		List<ArchitecturalDrift> violations = this.validateSystem("com.example.a.A101 can-declare-only com.example.b.B101"); //Define the constraint to be validated
+		List<ArchitecturalDrift> violations = this.validateSystem("com.example.a.A115 cannot-declare com.example.b.B115"); //Define the constraint to be validated
 		
 		assertEquals(1, violations.size()); //Check the number of violations (usually only one violation for constraint)
 		ArchitecturalDrift ad = violations.get(0);
@@ -34,10 +34,10 @@ public class A101TestCase extends DCLTestCase {
 
 		
 		//Check each attribute of the violation
-		assertEquals("com.example.a.A101",declareFieldDependency.getClassNameA());
-		assertEquals("com.example.c.C101",declareFieldDependency.getClassNameB());
+		assertEquals("com.example.a.A115",declareFieldDependency.getClassNameA());
+		assertEquals("com.example.b.B115",declareFieldDependency.getClassNameB());
 		
-		assertEquals("fieldA2",declareFieldDependency.getFieldName());
+		assertEquals("fieldA",declareFieldDependency.getFieldName());
 	}
 
 }

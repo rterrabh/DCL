@@ -4,7 +4,7 @@ import java.util.List;
 
 import dclsuite.core.DependencyConstraint.ArchitecturalDrift;
 import dclsuite.core.DependencyConstraint.DivergenceArchitecturalDrift;
-import dclsuite.dependencies.DeclareFieldDependency;
+import dclsuite.dependencies.DeclareReturnDependency;
 
 /**
  * An example of a DCLTestCase 
@@ -18,10 +18,10 @@ import dclsuite.dependencies.DeclareFieldDependency;
  *    MEX refers to classes of com.example.ex.*
  * @author Ricardo Terra
  */
-public class A101TestCase extends DCLTestCase { 
+public class A114TestCase extends DCLTestCase { 
 
 	public void test01() throws Exception {
-		List<ArchitecturalDrift> violations = this.validateSystem("com.example.a.A101 can-declare-only com.example.b.B101"); //Define the constraint to be validated
+		List<ArchitecturalDrift> violations = this.validateSystem("only com.example.c.C114 can-declare com.example.b.B114"); //Define the constraint to be validated
 		
 		assertEquals(1, violations.size()); //Check the number of violations (usually only one violation for constraint)
 		ArchitecturalDrift ad = violations.get(0);
@@ -29,15 +29,15 @@ public class A101TestCase extends DCLTestCase {
 		assertEquals(DivergenceArchitecturalDrift.class, ad.getClass()); //Check the type of violation (divergence or absence)
 		DivergenceArchitecturalDrift dad = (DivergenceArchitecturalDrift) ad;
 		
-		assertEquals(DeclareFieldDependency.class, dad.getForbiddenDependency().getClass()); //Check the type of dependency
-		DeclareFieldDependency declareFieldDependency = (DeclareFieldDependency) dad.getForbiddenDependency();
+		assertEquals(DeclareReturnDependency.class, dad.getForbiddenDependency().getClass()); //Check the type of dependency
+		DeclareReturnDependency declareReturnDependency = (DeclareReturnDependency) dad.getForbiddenDependency();
 
 		
 		//Check each attribute of the violation
-		assertEquals("com.example.a.A101",declareFieldDependency.getClassNameA());
-		assertEquals("com.example.c.C101",declareFieldDependency.getClassNameB());
+		assertEquals("com.example.a.A114",declareReturnDependency.getClassNameA());
+		assertEquals("com.example.b.B114",declareReturnDependency.getClassNameB());
 		
-		assertEquals("fieldA2",declareFieldDependency.getFieldName());
+		assertEquals("f",declareReturnDependency.getMethodName());
 	}
 
 }
