@@ -5,13 +5,12 @@ import java.util.List;
 import java.util.Set;
 
 import com.example.b.B105;
+import com.example.c.C105;
 
+@SuppressWarnings("unused")
 public class A105 {
-	
-	public static void main(String[] args) {
-		List<B105> l = new ArrayList<B105>();
-		
-		List<Set<B105>> l2 = new ArrayList<Set<B105>>();
+	public void f() {
+		List<B105> l1 = new ArrayList<B105>();
+		List<C105> l2 = new ArrayList<C105>();
 	}
-	
 }
