@@ -21,7 +21,7 @@ import dclsuite.dependencies.AccessDependency;
 public class ExampleAbsenceTestCase extends DCLTestCase { 
 
 	public void test01() throws Exception {
-		List<ArchitecturalDrift> violations = this.validateSystem("com.example.a.A02 must-access com.example.b.B02"); //Define the constraint to be validated
+		List<ArchitecturalDrift> violations = this.validateSystem("com.example.a.ExampleA002 must-access com.example.b.ExampleB002"); //Define the constraint to be validated
 		
 		assertEquals(1, violations.size()); //Check the number of violations (usually only one violation for constraint)
 		ArchitecturalDrift ad = violations.get(0);
@@ -32,8 +32,8 @@ public class ExampleAbsenceTestCase extends DCLTestCase {
 		assertEquals(AccessDependency.class, aad.getViolatedConstraint().getConstraint().getDependencyType().getDependencyClass() ); //Check the type of dependency
 		
 		//Check each attribute of the violation
-		assertEquals("com.example.a.A02",aad.getClassNameA());
-		assertEquals("com.example.b.B02",aad.getModuleNameB());		
+		assertEquals("com.example.a.ExampleA002",aad.getClassNameA());
+		assertEquals("com.example.b.ExampleB002",aad.getModuleNameB());		
 	}
 
 }
