@@ -3,7 +3,7 @@ package dclsuite.tests;
 import java.util.List;
 
 import dclsuite.core.DependencyConstraint.ArchitecturalDrift;
-import dclsuite.core.DependencyConstraint.DivergenceArchitecturalDrift;
+//import dclsuite.core.DependencyConstraint.DivergenceArchitecturalDrift;
 //import dclsuite.dependencies./*Missing implementation*/;
 
 /**

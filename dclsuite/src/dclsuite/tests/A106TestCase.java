@@ -27,7 +27,7 @@ public class A106TestCase extends DCLTestCase {
 		ArchitecturalDrift ad = violations.get(0);
 		
 		assertEquals(DivergenceArchitecturalDrift.class, ad.getClass()); //Check the type of violation (divergence or absence)
-		DivergenceArchitecturalDrift dad = (DivergenceArchitecturalDrift) ad;
+		//DivergenceArchitecturalDrift dad = (DivergenceArchitecturalDrift) ad;
 		
 		//assertEquals(Declare[]Dependency.class, dad.getForbiddenDependency().getClass()); //Check the type of dependency
 		//Declare[]Dependency declare[]Dependency = (Declare[]Dependency) dad.getForbiddenDependency();
