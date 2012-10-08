@@ -18,10 +18,13 @@ import dclsuite.enums.ConstraintType;
 import dclsuite.enums.DependencyType;
 import dclsuite.resolution.similarity.ModuleSimilarity.CoverageStrategy;
 import dclsuite.util.DCLUtil;
+import dclsuite.util.FormatUtil;
+import dclsuite.util.Statistics;
 
 public class SuitableModule {
-	private static final int MOVE_SUGGESTIONS = 2;
-	private static final boolean DEBUG = true;
+	/* Number of Move Suggestions that the algorithm will return */
+	private static final int MOVE_SUGGESTIONS = 999999;
+	private static final boolean DEBUG = false;
 
 	private static final ICoefficientStrategy[] coefficientStrategies = { new JaccardCoefficientStrategy(), new SMCCoefficientStrategy(),
 			new SorensensCoefficientStrategy(), new MountfordCoefficientStrategy(), new BaroniUrbaniCoefficientStrategy() };
@@ -30,6 +33,7 @@ public class SuitableModule {
 	private SuitableModule() {
 	}
 
+	/* Original Method */
 	public static Set<ModuleSimilarity> calculate(IProject project, final Architecture architecture, final String originClassName,
 			final DependencyType dependencyType, final String targetClassName, final ConstraintType constraintType) {
 
@@ -40,8 +44,54 @@ public class SuitableModule {
 			suitableModules.addAll(calculate(project, architecture, originClassName, targetClassName, constraintType, coefficientStrategy,
 					dependencyType));
 		}
-				
+
 		return new TreeSet<ModuleSimilarity>(suitableModules);
+	}
+
+	public static StringBuilder calculateAll(IProject project, final Architecture architecture, final String originClassName,
+			final DependencyType dependencyType, final String targetClassName, final ConstraintType constraintType) {
+
+		StringBuilder strBuilder = new StringBuilder("Class under analysis: " + originClassName + "\n\n");
+		
+		String targetModule = null;
+		String resume = "";
+
+		for (ICoefficientStrategy strategy : coefficientStrategies) {
+			Set<ModuleSimilarity> suitableModules = calculate(project, architecture, originClassName, targetClassName, constraintType,
+					strategy, null);
+			strBuilder.append(strategy.getName() + ":\n");
+			int i = 0;
+			for (ModuleSimilarity ms : suitableModules) {
+				strBuilder.append(FormatUtil.formatInt(++i) + ": " + ms.getModuleDescription() + "\t"
+						+ FormatUtil.formatDouble(ms.getSimilarity()) + "\n");
+				if (ms.getModuleDescription().equals(targetModule)) {
+					resume += i + "\t" + FormatUtil.formatDouble(ms.getSimilarity()) + "\t";
+				}
+			}
+			strBuilder.append("\n\n\n");
+		}
+
+		strBuilder.append("\n\n\n");
+		strBuilder.append(resume + "\t");
+		
+		
+		
+		for (ICoefficientStrategy strategy : coefficientStrategies) {
+			Set<ModuleSimilarity> suitableModules = calculate(project, architecture, originClassName, targetClassName, constraintType,
+					strategy, null);
+			
+			double array[] = new double[suitableModules.size()];
+			int i = 0;
+			for (ModuleSimilarity ms : suitableModules){
+				array[i++] = ms.getSimilarity();
+			}
+			
+			Statistics st = new Statistics(array);
+			
+			strBuilder.append(FormatUtil.formatDouble(st.getMin()) + "\t" + FormatUtil.formatDouble(st.getMax()) + "\t" + FormatUtil.formatDouble(st.getAverage()) + "\t" + FormatUtil.formatDouble(st.getStandardDeviation()) + "\t");
+		}
+		
+		return strBuilder;
 	}
 
 	private static Set<ModuleSimilarity> calculate(IProject project, final Architecture architecture, final String originClassName,

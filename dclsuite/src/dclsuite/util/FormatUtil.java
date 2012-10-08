@@ -11,6 +11,11 @@ public class FormatUtil {
         return df.format(d);
 	} 
 	
+	public static String formatInt(int i){
+        DecimalFormat df = new DecimalFormat("##00");
+        return df.format(i);
+	} 
+	
 	
 	
 }
