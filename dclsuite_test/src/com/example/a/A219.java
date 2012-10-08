@@ -1,6 +1,10 @@
 package com.example.a;
 
-import com.example.b.B21;
+import com.example.b.B219;
 
+@SuppressWarnings ("unused")
 public class A219 {
+	public  static void f() {
+		B219 objA = new B219();
+	}
 }
