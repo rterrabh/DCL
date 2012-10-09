@@ -4,7 +4,7 @@ import com.example.b.B219;
 
 @SuppressWarnings ("unused")
 public class A219 {
-	public  static void f() {
+	public void f() {
 		B219 objA = new B219();
 	}
 }
