@@ -1,0 +1,6 @@
+In this package, follow the following guidelines for test assurance:
+
+- Classes should start with "D" followed by a three digit number. For example: D001, D002, D003, etc.
+- The first digit indicates the kind of constraint, as follows:
+	0 - Access
+	1 - Declare
