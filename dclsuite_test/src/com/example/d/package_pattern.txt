@@ -4,3 +4,7 @@ In this package, follow the following guidelines for test assurance:
 - The first digit indicates the kind of constraint, as follows:
 	0 - Access
 	1 - Declare
+	
+- Objects in these classes should start with "obj" followed by the A, B, C or D, depending on the module that will use the object.
+
+- Fields in these classes should start with "field" followed by the A, B, C or D, depending on the module that will use the field.

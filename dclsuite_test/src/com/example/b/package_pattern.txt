@@ -4,4 +4,8 @@ In this package, follow the following guidelines for test assurance:
 - The first digit indicates the kind of constraint, as follows:
 	0 - Access
 	1 - Declare
-- Methods in these classes should should be called "g". When there is more than one method, the name should be followed by a number. For example: g1, g2, g3, etc.
+- Methods in these classes should be called "g". When there is more than one method, the name should be followed by a number. For example: g1, g2, g3, etc.
+
+- Objects in these classes should start with "obj" followed by the A, B, C or D, depending on the module that will use the object.
+
+- Fields in these classes should start with "field" followed by the A, B, C or D, depending on the module that will use the field.
