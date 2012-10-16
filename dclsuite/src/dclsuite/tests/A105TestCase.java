@@ -4,7 +4,7 @@ import java.util.List;
 
 import dclsuite.core.DependencyConstraint.ArchitecturalDrift;
 import dclsuite.core.DependencyConstraint.DivergenceArchitecturalDrift;
-//import dclsuite.dependencies./*Missing implementation*/;
+import dclsuite.dependencies.DeclareLocalVariableDependency;
 
 /**
  * An example of a DCLTestCase 
@@ -23,26 +23,23 @@ public class A105TestCase extends DCLTestCase {
 	public void test01() throws Exception {
 		List<ArchitecturalDrift> violations = this.validateSystem("com.example.a.A105 can-declare-only com.example.b.B105"); //Define the constraint to be validated
 		
-		assertEquals(2, violations.size()); //Check the number of violations (usually only one violation for constraint)
+		assertEquals(1, violations.size()); //Check the number of violations (usually only one violation for constraint)
 		ArchitecturalDrift ad = violations.get(0);
 		
 		assertEquals(DivergenceArchitecturalDrift.class, ad.getClass()); //Check the type of violation (divergence or absence)
-		//DivergenceArchitecturalDrift dad = (DivergenceArchitecturalDrift) ad;
+		DivergenceArchitecturalDrift dad = (DivergenceArchitecturalDrift) ad;
 		
-		//assertEquals(Declare[]Dependency.class, dad.getForbiddenDependency().getClass()); //Check the type of dependency
-		//Declare[]Dependency declare[]Dependency = (Declare[]Dependency) dad.getForbiddenDependency();
+		assertEquals(DeclareLocalVariableDependency.class, dad.getForbiddenDependency().getClass()); //Check the type of dependency
+		DeclareLocalVariableDependency declareLocalVariableDependency = (DeclareLocalVariableDependency) dad.getForbiddenDependency();
 
 		
 		//Check each attribute of the violation
-		//assertEquals("com.example.a.A105",declare[]Dependency.getClassNameA());
-		//assertEquals("com.example.c.C105",declare[]Dependency.getClassNameB());
+		assertEquals("com.example.a.A105",declareLocalVariableDependency.getClassNameA());
+		assertEquals("com.example.c.C105",declareLocalVariableDependency.getClassNameB());
 		
-		//assertEquals("f",declare[]Dependency.getMethodName());
+		assertEquals("l2",declareLocalVariableDependency.getFieldName());
+		
+		assertEquals("f",declareLocalVariableDependency.getMethodName());
 	}
 
 }
-
-
-/*
- * [!!!] Test changed to accept violations.size = 2. [!!!]
- */

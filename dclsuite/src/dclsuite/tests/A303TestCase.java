@@ -3,8 +3,6 @@ package dclsuite.tests;
 import java.util.List;
 
 import dclsuite.core.DependencyConstraint.ArchitecturalDrift;
-import dclsuite.core.DependencyConstraint.DivergenceArchitecturalDrift;
-import dclsuite.dependencies.ExtendIndirectDependency;
 
 /**
  * An example of a DCLTestCase 
@@ -23,19 +21,7 @@ public class A303TestCase extends DCLTestCase {
 	public void test01() throws Exception {
 		List<ArchitecturalDrift> violations = this.validateSystem("com.example.a.A303 can-extend-only com.example.d.D303, com.example.c.C303, $java"); //Define the constraint to be validated
 		
-		assertEquals(1, violations.size()); //Check the number of violations (usually only one violation for constraint)
-		ArchitecturalDrift ad = violations.get(0);
-		
-		assertEquals(DivergenceArchitecturalDrift.class, ad.getClass()); //Check the type of violation (divergence or absence)
-		DivergenceArchitecturalDrift dad = (DivergenceArchitecturalDrift) ad;
-		
-		assertEquals(ExtendIndirectDependency.class, dad.getForbiddenDependency().getClass()); //Check the type of dependency
-		ExtendIndirectDependency extendIndirectDependency = (ExtendIndirectDependency) dad.getForbiddenDependency();
-
-		
-		//Check each attribute of the violation
-		assertEquals("com.example.a.A303",extendIndirectDependency.getClassNameA());
-		assertEquals("com.example.b.B303",extendIndirectDependency.getClassNameB());
-	}
+		assertEquals(0, violations.size()); //Check the number of violations (usually only one violation for constraint)
+		}
 
 }

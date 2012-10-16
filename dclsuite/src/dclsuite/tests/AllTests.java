@@ -13,7 +13,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	
 	A101TestCase.class, A102TestCase.class, A103TestCase.class, A104TestCase.class, A105TestCase.class, A106TestCase.class, A107TestCase.class,
 	A108TestCase.class, A109TestCase.class, A110TestCase.class, A111TestCase.class, A112TestCase.class, A113TestCase.class, A114TestCase.class,
-	A115TestCase.class, A116TestCase.class, A117TestCase.class, A118TestCase.class, A119TestCase.class, A120TestCase.class, A121TestCase.class, 
+	A115TestCase.class, A116TestCase.class, A117TestCase.class, A118TestCase.class, A119TestCase.class, A120TestCase.class, A120bTestCase.class, A120cTestCase.class, A120dTestCase.class, A121TestCase.class, 
 	A122TestCase.class, A123TestCase.class, A124TestCase.class, A125TestCase.class, A126TestCase.class, A127TestCase.class, A128TestCase.class,
 	
 	A201TestCase.class, A202TestCase.class, A203TestCase.class, A204TestCase.class, A205TestCase.class, A206TestCase.class, A207TestCase.class, A208TestCase.class, A209TestCase.class, A210TestCase.class,
@@ -29,7 +29,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	A401TestCase.class, A402TestCase.class, A403TestCase.class,
 	A404TestCase.class, A405TestCase.class, A406TestCase.class,
 	A407TestCase.class, A408TestCase.class, A409TestCase.class,
-	A410TestCase.class, A411TestCase.class, A412TestCase.class,
+	A410TestCase.class, A410bTestCase.class, A411TestCase.class, A412TestCase.class,
 	
 	A501TestCase.class, A502TestCase.class, A503TestCase.class, A504TestCase.class, A505TestCase.class, A506TestCase.class, A507TestCase.class,
 	A508TestCase.class, A509TestCase.class, A510TestCase.class, A511TestCase.class, A512TestCase.class, A513TestCase.class, A514TestCase.class,

@@ -3,6 +3,8 @@ package dclsuite.tests;
 import java.util.List;
 
 import dclsuite.core.DependencyConstraint.ArchitecturalDrift;
+import dclsuite.core.DependencyConstraint.DivergenceArchitecturalDrift;
+import dclsuite.dependencies.AnnotateFieldDependency;
 
 /**
  * An example of a DCLTestCase 
@@ -21,7 +23,19 @@ public class A506TestCase extends DCLTestCase {
 	public void test01() throws Exception {
 		List<ArchitecturalDrift> violations = this.validateSystem("com.example.a.A506 can-useannotation-only com.example.b.B506, java.lang.SuppressWarnings"); //Define the constraint to be validated
 		
-		assertEquals(0, violations.size()); //Check the number of violations (usually only one violation for constraint)
+		assertEquals(1, violations.size()); //Check the number of violations (usually only one violation for constraint)
+		ArchitecturalDrift ad = violations.get(0);
+		
+		assertEquals(DivergenceArchitecturalDrift.class, ad.getClass()); //Check the type of violation (divergence or absence)
+		DivergenceArchitecturalDrift dad = (DivergenceArchitecturalDrift) ad;
+		
+		assertEquals(AnnotateFieldDependency.class, dad.getForbiddenDependency().getClass()); //Check the type of dependency
+		AnnotateFieldDependency annotateFieldDependency = (AnnotateFieldDependency) dad.getForbiddenDependency();
+
+		
+		//Check each attribute of the violation
+		assertEquals("com.example.a.A506",annotateFieldDependency.getClassNameA());
+		assertEquals("com.example.b.b506",annotateFieldDependency.getClassNameB());
 	}
 
 }

@@ -36,6 +36,9 @@ public class A206TestCase extends DCLTestCase {
 		//Check each attribute of the violation
 		assertEquals("com.example.a.A206",createMethodDependency.getClassNameA());
 		assertEquals("com.example.c.C206",createMethodDependency.getClassNameB());
+		
+		assertEquals("'com.example.a.A206' contains the method 'f' that creates an object of 'com.example.c.C206'",createMethodDependency.toString());
+		
 	}
 
 }

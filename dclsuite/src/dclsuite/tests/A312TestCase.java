@@ -3,6 +3,8 @@ package dclsuite.tests;
 import java.util.List;
 
 import dclsuite.core.DependencyConstraint.ArchitecturalDrift;
+import dclsuite.core.DependencyConstraint.DivergenceArchitecturalDrift;
+import dclsuite.dependencies.ExtendDirectDependency;
 
 /**
  * An example of a DCLTestCase 
@@ -21,8 +23,8 @@ public class A312TestCase extends DCLTestCase {
 	public void test01() throws Exception {
 		List<ArchitecturalDrift> violations = this.validateSystem("com.example.a.A312 cannot-extend com.example.b.B312"); //Define the constraint to be validated
 		
-		assertEquals(0, violations.size()); //Check the number of violations (usually only one violation for constraint)
-		/*ArchitecturalDrift ad = violations.get(0);
+		assertEquals(1, violations.size()); //Check the number of violations (usually only one violation for constraint)
+		ArchitecturalDrift ad = violations.get(0);
 		
 		assertEquals(DivergenceArchitecturalDrift.class, ad.getClass()); //Check the type of violation (divergence or absence)
 		DivergenceArchitecturalDrift dad = (DivergenceArchitecturalDrift) ad;
@@ -33,7 +35,7 @@ public class A312TestCase extends DCLTestCase {
 		
 		//Check each attribute of the violation
 		assertEquals("com.example.a.A312",extendDirectDependency.getClassNameA());
-		assertEquals("com.example.b.B312",extendDirectDependency.getClassNameB());*/
+		assertEquals("com.example.b.B312",extendDirectDependency.getClassNameB());
 	}
 
 }

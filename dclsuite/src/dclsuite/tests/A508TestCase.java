@@ -4,6 +4,7 @@ import java.util.List;
 
 import dclsuite.core.DependencyConstraint.ArchitecturalDrift;
 import dclsuite.core.DependencyConstraint.DivergenceArchitecturalDrift;
+import dclsuite.dependencies.AnnotateClassDependency;
 
 /**
  * An example of a DCLTestCase 
@@ -26,15 +27,15 @@ public class A508TestCase extends DCLTestCase {
 		ArchitecturalDrift ad = violations.get(0);
 		
 		assertEquals(DivergenceArchitecturalDrift.class, ad.getClass()); //Check the type of violation (divergence or absence)
-		/*DivergenceArchitecturalDrift dad = (DivergenceArchitecturalDrift) ad;
+		DivergenceArchitecturalDrift dad = (DivergenceArchitecturalDrift) ad;
 		
-		assertEquals(AnnotateMethodDependency.class, dad.getForbiddenDependency().getClass()); //Check the type of dependency
-		AnnotateMethodDependency annotateMethodDependency = (AnnotateMethodDependency) dad.getForbiddenDependency();
+		assertEquals(AnnotateClassDependency.class, dad.getForbiddenDependency().getClass()); //Check the type of dependency
+		AnnotateClassDependency annotateClassDependency = (AnnotateClassDependency) dad.getForbiddenDependency();
 
 		
 		//Check each attribute of the violation
-		assertEquals("com.example.a.A508",annotateMethodDependency.getClassNameA());
-		assertEquals("com.example.b.B508",annotateMethodDependency.getClassNameB());*/
+		assertEquals("com.example.a.A508",annotateClassDependency.getClassNameA());
+		assertEquals("com.example.b.B508",annotateClassDependency.getClassNameB());
 	}
 
 }

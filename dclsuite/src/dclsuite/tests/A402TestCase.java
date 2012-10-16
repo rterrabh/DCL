@@ -3,8 +3,6 @@ package dclsuite.tests;
 import java.util.List;
 
 import dclsuite.core.DependencyConstraint.ArchitecturalDrift;
-import dclsuite.core.DependencyConstraint.DivergenceArchitecturalDrift;
-import dclsuite.dependencies.ImplementIndirectDependency;
 
 /**
  * An example of a DCLTestCase 
@@ -23,19 +21,7 @@ public class A402TestCase extends DCLTestCase {
 	public void test01() throws Exception {
 		List<ArchitecturalDrift> violations = this.validateSystem("com.example.a.A402 can-implement-only com.example.c.C402"); //Define the constraint to be validated
 		
-		assertEquals(1, violations.size()); //Check the number of violations (usually only one violation for constraint)
-		ArchitecturalDrift ad = violations.get(0);
-		
-		assertEquals(DivergenceArchitecturalDrift.class, ad.getClass()); //Check the type of violation (divergence or absence)
-		DivergenceArchitecturalDrift dad = (DivergenceArchitecturalDrift) ad;
-		
-		assertEquals(ImplementIndirectDependency.class, dad.getForbiddenDependency().getClass()); //Check the type of dependency
-		ImplementIndirectDependency implementIndirectDependency = (ImplementIndirectDependency) dad.getForbiddenDependency();
-
-		
-		//Check each attribute of the violation
-		assertEquals("com.example.a.A402",implementIndirectDependency.getClassNameA());
-		assertEquals("com.example.b.B402",implementIndirectDependency.getClassNameB());
+		assertEquals(0, violations.size()); //Check the number of violations (usually only one violation for constraint)
 	}
 
 }
