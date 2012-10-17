@@ -49,22 +49,21 @@ public class SuitableModule {
 	}
 
 	public static StringBuilder calculateAll(IProject project, final Architecture architecture, final String originClassName,
-			final DependencyType dependencyType, final String targetClassName, final ConstraintType constraintType) {
+			final DependencyType dependencyType, final String expectedModule) {
 
 		StringBuilder strBuilder = new StringBuilder("Class under analysis: " + originClassName + "\n\n");
 		
-		String targetModule = null;
 		String resume = "";
 
 		for (ICoefficientStrategy strategy : coefficientStrategies) {
-			Set<ModuleSimilarity> suitableModules = calculate(project, architecture, originClassName, targetClassName, constraintType,
-					strategy, null);
+			Set<ModuleSimilarity> suitableModules = calculate(project, architecture, originClassName, null, null,
+					strategy, dependencyType);
 			strBuilder.append(strategy.getName() + ":\n");
 			int i = 0;
 			for (ModuleSimilarity ms : suitableModules) {
 				strBuilder.append(FormatUtil.formatInt(++i) + ": " + ms.getModuleDescription() + "\t"
 						+ FormatUtil.formatDouble(ms.getSimilarity()) + "\n");
-				if (ms.getModuleDescription().equals(targetModule)) {
+				if (ms.getModuleDescription().equals(expectedModule)) {
 					resume += i + "\t" + FormatUtil.formatDouble(ms.getSimilarity()) + "\t";
 				}
 			}
@@ -77,7 +76,7 @@ public class SuitableModule {
 		
 		
 		for (ICoefficientStrategy strategy : coefficientStrategies) {
-			Set<ModuleSimilarity> suitableModules = calculate(project, architecture, originClassName, targetClassName, constraintType,
+			Set<ModuleSimilarity> suitableModules = calculate(project, architecture, originClassName, null, null,
 					strategy, null);
 			
 			double array[] = new double[suitableModules.size()];
@@ -159,7 +158,7 @@ public class SuitableModule {
 
 	private static void adjustModuleSimilarity(IProject project, final Architecture architecture, final Map<String, Double> modules,
 			String classB, final String respectiveModuleName, double similarity) {
-		if (similarity != 0) {
+		if (!Double.isNaN(similarity) && !Double.isInfinite(similarity)) { /* Avoid NaN values */
 			/* Packages */
 			if (!modules.containsKey(respectiveModuleName)) {
 				modules.put(respectiveModuleName, similarity);
