@@ -17,6 +17,19 @@ import dclsuite.core.Architecture;
 import dclsuite.enums.ConstraintType;
 import dclsuite.enums.DependencyType;
 import dclsuite.resolution.similarity.ModuleSimilarity.CoverageStrategy;
+import dclsuite.resolution.similarity.coefficients.BaroniUrbaniCoefficientStrategy;
+import dclsuite.resolution.similarity.coefficients.HamannCoefficientStrategy;
+import dclsuite.resolution.similarity.coefficients.ICoefficientStrategy;
+import dclsuite.resolution.similarity.coefficients.JaccardCoefficientStrategy;
+import dclsuite.resolution.similarity.coefficients.OchiaiCoefficientStrategy;
+import dclsuite.resolution.similarity.coefficients.PhiBinaryDistance;
+import dclsuite.resolution.similarity.coefficients.RogersTanimotoCoefficientStrategy;
+import dclsuite.resolution.similarity.coefficients.RussellRaoCoefficientStrategy;
+import dclsuite.resolution.similarity.coefficients.SMCCoefficientStrategy;
+import dclsuite.resolution.similarity.coefficients.SokalBinaryDistanceCoefficientStrategy;
+import dclsuite.resolution.similarity.coefficients.SokalSneathCoefficientStrategy;
+import dclsuite.resolution.similarity.coefficients.SorensonCoefficientStrategy;
+import dclsuite.resolution.similarity.coefficients.YuleCoefficientStrategy;
 import dclsuite.util.DCLUtil;
 import dclsuite.util.FormatUtil;
 import dclsuite.util.Statistics;
@@ -27,7 +40,11 @@ public class SuitableModule {
 	private static final boolean DEBUG = false;
 
 	private static final ICoefficientStrategy[] coefficientStrategies = { new JaccardCoefficientStrategy(), new SMCCoefficientStrategy(),
-			new SorensensCoefficientStrategy(), new MountfordCoefficientStrategy(), new BaroniUrbaniCoefficientStrategy() };
+			new YuleCoefficientStrategy(), new HamannCoefficientStrategy(), new SorensonCoefficientStrategy(),
+			new RogersTanimotoCoefficientStrategy(), new SokalSneathCoefficientStrategy(), new RussellRaoCoefficientStrategy(),
+			new BaroniUrbaniCoefficientStrategy(), new SokalBinaryDistanceCoefficientStrategy(), new OchiaiCoefficientStrategy(),
+			new PhiBinaryDistance() };
+
 	private static final ICoefficientStrategy coefficientStrategy = coefficientStrategies[0];
 
 	private SuitableModule() {
@@ -38,64 +55,99 @@ public class SuitableModule {
 			final DependencyType dependencyType, final String targetClassName, final ConstraintType constraintType) {
 
 		Set<ModuleSimilarity> suitableModules = calculate(project, architecture, originClassName, targetClassName, constraintType,
-				coefficientStrategy, null);
+				coefficientStrategy, null, CoverageStrategy.ALL_DEPENDENCIES);
 
-		if (constraintType != ConstraintType.MUST) {
-			suitableModules.addAll(calculate(project, architecture, originClassName, targetClassName, constraintType, coefficientStrategy,
-					dependencyType));
-		}
+		/**
+		 * In MUST violations, there is no DEPENDENCY TYPE with a specific TYPE.
+		 * However, maybe A has no JPA annotations, but it has other
+		 * annotations.
+		 */
+		// if (constraintType != ConstraintType.MUST) {
+		suitableModules.addAll(calculate(project, architecture, originClassName, targetClassName, constraintType, coefficientStrategy,
+				dependencyType, CoverageStrategy.PARTICULAR_DEPENDENCY));
+		// }
 
 		return new TreeSet<ModuleSimilarity>(suitableModules);
 	}
 
+	/**
+	 * 
+	 * @param project
+	 * @param architecture
+	 * @param originClassName
+	 * @param dependencyType
+	 * @param expectedModule
+	 * @return
+	 */
 	public static StringBuilder calculateAll(IProject project, final Architecture architecture, final String originClassName,
-			final DependencyType dependencyType, final String expectedModule) {
-
+			final DependencyType dependencyType, final String expectedModule, CoverageStrategy coverageStrategy) {
+		boolean printResume = true;
 		StringBuilder strBuilder = new StringBuilder("Class under analysis: " + originClassName + "\n\n");
-		
-		String resume = "";
+
+		StringBuilder resume = new StringBuilder();
 
 		for (ICoefficientStrategy strategy : coefficientStrategies) {
-			Set<ModuleSimilarity> suitableModules = calculate(project, architecture, originClassName, null, null,
-					strategy, dependencyType);
+			Set<ModuleSimilarity> suitableModules = calculate(project, architecture, originClassName, null, null, strategy, dependencyType,
+					coverageStrategy);
 			strBuilder.append(strategy.getName() + ":\n");
-			int i = 0;
-			for (ModuleSimilarity ms : suitableModules) {
-				strBuilder.append(FormatUtil.formatInt(++i) + ": " + ms.getModuleDescription() + "\t"
-						+ FormatUtil.formatDouble(ms.getSimilarity()) + "\n");
-				if (ms.getModuleDescription().equals(expectedModule)) {
-					resume += i + "\t" + FormatUtil.formatDouble(ms.getSimilarity()) + "\t";
+
+			if (suitableModules != null) {
+				int i = 0;
+				for (ModuleSimilarity ms : suitableModules) {
+					strBuilder.append(FormatUtil.formatInt(++i) + ": " + ms.getModuleDescription() + "\t"
+							+ FormatUtil.formatDouble(ms.getSimilarity()) + "\n");
+					if (ms.getModuleDescription().equals(expectedModule)
+							&& !strategy.getClass().equals(SokalBinaryDistanceCoefficientStrategy.class)) {
+						resume.append(i + "\t" + FormatUtil.formatDouble(ms.getSimilarity()) + "\t");
+					}
+
+					/*
+					 * Handling End of Range that corresponds maximum similarity
+					 * of Sokal Binary Distance
+					 */
+					if (ms.getModuleDescription().equals(expectedModule)
+							&& strategy.getClass().equals(SokalBinaryDistanceCoefficientStrategy.class)) {
+						resume.append(suitableModules.size() - i + 1 + "\t" + FormatUtil.formatDouble(ms.getSimilarity()) + "\t");
+					}
 				}
+			} else {
+				strBuilder.append("Impossible to measure the similarity: |A| = 0, i.e., a = 0.");
+				printResume = false;
 			}
 			strBuilder.append("\n\n\n");
 		}
 
-		strBuilder.append("\n\n\n");
-		strBuilder.append(resume + "\t");
-		
-		
-		
-		for (ICoefficientStrategy strategy : coefficientStrategies) {
-			Set<ModuleSimilarity> suitableModules = calculate(project, architecture, originClassName, null, null,
-					strategy, null);
-			
-			double array[] = new double[suitableModules.size()];
-			int i = 0;
-			for (ModuleSimilarity ms : suitableModules){
-				array[i++] = ms.getSimilarity();
+		if (printResume) {
+			strBuilder.append("\n\n\n");
+			resume.append("\t");
+
+			for (ICoefficientStrategy strategy : coefficientStrategies) {
+				Set<ModuleSimilarity> suitableModules = calculate(project, architecture, originClassName, null, null, strategy,
+						dependencyType, coverageStrategy);
+
+				double array[] = new double[suitableModules.size()];
+				int i = 0;
+				for (ModuleSimilarity ms : suitableModules) {
+					array[i++] = ms.getSimilarity();
+				}
+
+				Statistics st = new Statistics(array);
+
+				resume.append(FormatUtil.formatDouble(st.getMin()) + "\t" + FormatUtil.formatDouble(st.getMax()) + "\t"
+						+ FormatUtil.formatDouble(st.getAverage()) + "\t" + FormatUtil.formatDouble(st.getStandardDeviation()) + "\t");
 			}
-			
-			Statistics st = new Statistics(array);
-			
-			strBuilder.append(FormatUtil.formatDouble(st.getMin()) + "\t" + FormatUtil.formatDouble(st.getMax()) + "\t" + FormatUtil.formatDouble(st.getAverage()) + "\t" + FormatUtil.formatDouble(st.getStandardDeviation()) + "\t");
+
+			resume.append("\n\n");
+
+			strBuilder.insert(0, resume);
 		}
-		
+
 		return strBuilder;
 	}
 
 	private static Set<ModuleSimilarity> calculate(IProject project, final Architecture architecture, final String originClassName,
 			final String targetClassName, final ConstraintType constraintType, final ICoefficientStrategy coefficientStrategy,
-			final DependencyType dependencyType) {
+			final DependencyType dependencyType, CoverageStrategy coverageStrategy) {
 
 		final Map<String, Double> similarityModule = new LinkedHashMap<String, Double>();
 
@@ -103,8 +155,17 @@ public class SuitableModule {
 		 * If dependencyType is null, the functions above will consider all
 		 * dependencies
 		 */
-		final Set<String> dependenciesClassA = architecture.getUsedClasses(originClassName, dependencyType);
-		final Set<String> dependenciesProject = architecture.getUniverseOfUsedClasses(dependencyType);
+		final Set<String> dependenciesClassA = getDependenciesToBeAnalyzed(architecture, originClassName, dependencyType, coverageStrategy);
+
+		/*
+		 * Also, if dependenciesClassA was empty, we do not calculate the
+		 * suitable module.
+		 */
+		if (dependenciesClassA.isEmpty()) {
+			return null;
+		}
+
+		final Set<String> dependenciesProject = getDependenciesToBeAnalyzed(architecture, dependencyType, coverageStrategy);
 
 		for (String classB : architecture.getProjectClasses()) {
 			/* Ignoring the class under analysis */
@@ -115,7 +176,7 @@ public class SuitableModule {
 			 * If dependencyType is null, the function above will consider all
 			 * dependencies
 			 */
-			final Set<String> dependenciesClassB = architecture.getUsedClasses(classB, dependencyType);
+			final Set<String> dependenciesClassB = getDependenciesToBeAnalyzed(architecture, classB, dependencyType, coverageStrategy);
 
 			final String respectiveModuleName = DCLUtil.getPackageFromClassName(classB) + ".*";
 
@@ -156,9 +217,14 @@ public class SuitableModule {
 		return result;
 	}
 
+	/**
+	 * Method adjusts the similarity of the module every time we calculate the
+	 * similarity for a class.
+	 */
 	private static void adjustModuleSimilarity(IProject project, final Architecture architecture, final Map<String, Double> modules,
 			String classB, final String respectiveModuleName, double similarity) {
-		if (!Double.isNaN(similarity) && !Double.isInfinite(similarity)) { /* Avoid NaN values */
+		/* In order to avoid NaN values */
+		if (!Double.isNaN(similarity) && !Double.isInfinite(similarity)) {
 			/* Packages */
 			if (!modules.containsKey(respectiveModuleName)) {
 				modules.put(respectiveModuleName, similarity);
@@ -180,4 +246,29 @@ public class SuitableModule {
 		}
 	}
 
+	private static Set<String> getDependenciesToBeAnalyzed(final Architecture architecture, final String originClassName,
+			final DependencyType dependencyType, final CoverageStrategy coverageStrategy) {
+		switch (coverageStrategy) {
+		case ALL_DEPENDENCIES:
+			return architecture.getUsedClasses(originClassName, DependencyType.DEPEND);
+		case PARTICULAR_DEPENDENCY:
+			return architecture.getUsedClasses(originClassName, dependencyType);
+		case ONLY_TYPES:
+			return architecture.getUsedClasses(originClassName);
+		}
+		return null;
+	}
+
+	private static Set<String> getDependenciesToBeAnalyzed(final Architecture architecture, final DependencyType dependencyType,
+			final CoverageStrategy coverageStrategy) {
+		switch (coverageStrategy) {
+		case ALL_DEPENDENCIES:
+			return architecture.getUniverseOfUsedClasses(DependencyType.DEPEND);
+		case PARTICULAR_DEPENDENCY:
+			return architecture.getUniverseOfUsedClasses(dependencyType);
+		case ONLY_TYPES:
+			return architecture.getUniverseOfUsedClasses();
+		}
+		return null;
+	}
 }

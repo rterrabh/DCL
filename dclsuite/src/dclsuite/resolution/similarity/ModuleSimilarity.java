@@ -1,5 +1,6 @@
 package dclsuite.resolution.similarity;
 
+import dclsuite.resolution.similarity.coefficients.ICoefficientStrategy;
 import dclsuite.util.FormatUtil;
 
 public class ModuleSimilarity implements Comparable<ModuleSimilarity>{
@@ -81,13 +82,15 @@ public class ModuleSimilarity implements Comparable<ModuleSimilarity>{
 	}
 	
 	public static enum CoverageStrategy {
-		PARTICULAR_DEPENDENCY, ALL_DEPENDENCIES;
+		PARTICULAR_DEPENDENCY, ALL_DEPENDENCIES, ONLY_TYPES;
 		
 		public String getType() {
 			if (this==PARTICULAR_DEPENDENCY){
 				return "PD";	
 			}else if (this==ALL_DEPENDENCIES){
 				return "AD";	
+			}else if (this==ONLY_TYPES){
+				return "T";	
 			}
 			return null;
 		};

@@ -30,6 +30,7 @@ import dclsuite.dependencies.Dependency;
 import dclsuite.enums.DependencyType;
 import dclsuite.exception.ParseException;
 import dclsuite.resolution.similarity.SuitableModule;
+import dclsuite.resolution.similarity.ModuleSimilarity.CoverageStrategy;
 import dclsuite.util.ArchitectureUtils;
 import dclsuite.util.DCLPersistence;
 import dclsuite.util.DCLUtil;
@@ -68,9 +69,10 @@ public class SimilarityCalculationHandler extends AbstractHandler {
 
 				ElementListSelectionDialog dialog = new ElementListSelectionDialog(shell, new LabelProvider());
 				dialog.setMultipleSelection(false);
-				dialog.setElements(new String[] { "access", "declare", "create", "throw", "extend", "implement", "useannotation", "*" });
+				dialog.setElements(new String[] { "T", "dep[access,T]", "dep[declare,T]", "dep[create,T]", "dep[throw,T]", "dep[extend,T]",
+						"dep[implement,T]", "dep[useannotation,T]", "dep[*,T]" });
 				dialog.setTitle("Which kind of dependencies?");
-				dialog.setInitialSelections(new String[] { "*" });
+				dialog.setInitialSelections(new String[] { "dep[*,T]" });
 				// User pressed cancel
 				if (dialog.open() != Window.OK) {
 					return null;
@@ -85,12 +87,16 @@ public class SimilarityCalculationHandler extends AbstractHandler {
 				String targetModule = moduleDialog.getValue();
 
 				StringBuilder strBuilder = null;
-				if (result.equals("*")) {
+				if (result.equals("dep[*,T]")) {
 					strBuilder = SuitableModule.calculateAll(project, architecture, classNameA, null, ("".equals(targetModule) ? null
-							: targetModule));
+							: targetModule), CoverageStrategy.ALL_DEPENDENCIES);
+				} else if (result.equals("T")) {
+					strBuilder = SuitableModule.calculateAll(project, architecture, classNameA, null, ("".equals(targetModule) ? null
+							: targetModule),CoverageStrategy.ONLY_TYPES);
 				} else {
 					strBuilder = SuitableModule.calculateAll(project, architecture, classNameA,
-							DependencyType.valueOf(result.toUpperCase()), ("".equals(targetModule) ? null : targetModule));
+							DependencyType.valueOf(result.toUpperCase().substring(result.indexOf('[') + 1, result.indexOf(','))),
+							("".equals(targetModule) ? null : targetModule), CoverageStrategy.PARTICULAR_DEPENDENCY);
 				}
 
 				final IFile simFile = project.getFile("similarity.txt");

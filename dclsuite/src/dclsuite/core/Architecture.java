@@ -184,15 +184,22 @@ public class Architecture {
 	}
 
 	public Set<String> getUsedClasses(final String className, DependencyType dependencyType) {
+		/* In this case, it only considers the type */
 		if (dependencyType == null) {
 			return getUsedClasses(className);
 		}
 
 		Set<String> set = new HashSet<String>();
 
+		/*
+		 * Here, two cases: 
+		 * if (dependencyType == DEPEND) -> dep[*,T] 
+		 * if (dependencyType == other) -> dep[other,T] 
+		 * For example: dep[access,T]
+		 */
 		for (Dependency d : this.getDependencies(className)) {
-			if (d.getDependencyType().equals(dependencyType)) {
-				set.add(d.getClassNameB());
+			if (dependencyType.equals(DependencyType.DEPEND) || d.getDependencyType().equals(dependencyType)) {
+				set.add("dep[" + d.getDependencyType().getValue() + "," + d.getClassNameB() + "]");	
 			}
 		}
 
@@ -217,10 +224,16 @@ public class Architecture {
 		}
 		Set<String> set = new HashSet<String>();
 
+		/*
+		 * Here, two cases: 
+		 * if (dependencyType == DEPEND) -> dep[*,T] 
+		 * if (dependencyType == other) -> dep[other,T] 
+		 * For example: dep[access,T]
+		 */
 		for (Collection<Dependency> col : projectClasses.values()) {
 			for (Dependency d : col) {
-				if (d.getDependencyType().equals(dependencyType)) {
-					set.add(d.getClassNameB());
+				if (dependencyType.equals(DependencyType.DEPEND) || d.getDependencyType().equals(dependencyType)) {
+					set.add("dep[" + d.getDependencyType().getValue() + "," + d.getClassNameB() + "]");	
 				}
 			}
 		}
