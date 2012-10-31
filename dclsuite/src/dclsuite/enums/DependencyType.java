@@ -12,7 +12,7 @@ import dclsuite.dependencies.ImplementDependency;
 import dclsuite.dependencies.ThrowDependency;
 
 public enum DependencyType {
-	ACCESS("access", AccessDependency.class), USEANNOTATION("annotate", AnnotateDependency.class), CREATE("create",
+	ACCESS("access", AccessDependency.class), USEANNOTATION("useannotation", AnnotateDependency.class), CREATE("create",
 			CreateDependency.class), DECLARE("declare", DeclareDependency.class), DERIVE("derive",
 			DeriveDependency.class), EXTEND("extend", ExtendDependency.class), HANDLE("handle", HandleDependency.class), IMPLEMENT(
 			"implement", ImplementDependency.class), THROW("throw", ThrowDependency.class), DEPEND("depend",
