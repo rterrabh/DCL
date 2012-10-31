@@ -27,6 +27,9 @@ public final class DCLPersistence {
 		IFolder folder = project.getFolder(DCLDATA_FOLDER);
 		if (!folder.exists()) {
 			folder.create(false, true, null);
+			folder.setHidden(true);
+		} else {
+			folder.setHidden(true);
 		}
 		IFile storeFile = folder.getFile(className);
 		if (storeFile.exists()) {
@@ -47,8 +50,8 @@ public final class DCLPersistence {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static Collection<Dependency> load(final IProject project, final String className) throws CoreException,
-			IOException, ClassNotFoundException {
+	public static Collection<Dependency> load(final IProject project, final String className) throws CoreException, IOException,
+			ClassNotFoundException {
 		IFile storeFile = project.getFile(DCLDATA_FOLDER + File.separator + className);
 		if (storeFile.exists()) {
 			ObjectInputStream in = null;
