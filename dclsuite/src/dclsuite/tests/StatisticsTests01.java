@@ -46,7 +46,7 @@ public class StatisticsTests01 extends TestCase {
 	}
 
 	@Test
-	public void testStardandDeviation() {
+	public void testStandardDeviation() {
 		Assert.assertEquals(2, this.statistics.getStandardDeviation(), 0);
 	}
 	

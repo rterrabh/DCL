@@ -7,12 +7,18 @@ import org.junit.Test;
 
 import dclsuite.util.Statistics;
 
-public class StatisticsTests02 extends TestCase {
+/**
+ * Luis, favor apagar esse comentario e calcular MANUALMENTE os valores
+ * de testMin, testMax, etc.
+ * Por exemplo, no testMin, trocar 170 por 0.863
+ * @author Luis Miranda
+ */
+public class StatisticsTests04 extends TestCase {
 	private Statistics statistics;
 
 	@Override
 	protected void setUp() throws Exception {
-		this.statistics = new Statistics(new double[] { 600, 470, 170, 430, 300 });
+		this.statistics = new Statistics(new double[] { 0.92, 0.91, 0.89, 0.88, 0.887, 0.8812, 0.863 });
 	}
 
 	@Test
