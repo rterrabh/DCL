@@ -7,12 +7,6 @@ import org.junit.Test;
 
 import dclsuite.util.Statistics;
 
-/**
- * Luis, favor apagar esse comentario e calcular MANUALMENTE os valores
- * de testMin, testMax, etc.
- * Por exemplo, no testMin, trocar 170 por 0.863
- * @author Luis Miranda
- */
 public class StatisticsTests04 extends TestCase {
 	private Statistics statistics;
 
@@ -23,37 +17,37 @@ public class StatisticsTests04 extends TestCase {
 
 	@Test
 	public void testMin() {
-		Assert.assertEquals(170, this.statistics.getMin(), 0);
+		Assert.assertEquals(0.863, this.statistics.getMin(), 0);
 	}
 
 	@Test
 	public void testMax() {
-		Assert.assertEquals(600, this.statistics.getMax(), 0);
+		Assert.assertEquals(0.92, this.statistics.getMax(), 0);
 	}
 	
 	@Test
 	public void testAverage() {
-		Assert.assertEquals(394, this.statistics.getAverage() , 0);
+		Assert.assertEquals(0.890171428571428, this.statistics.getAverage() , 0.0001);
 	}
 	
 	@Test
 	public void testSum() {
-		Assert.assertEquals(1970, this.statistics.getSum() , 0);
+		Assert.assertEquals(6.2312, this.statistics.getSum() , 0.0001);
 	}
 	
 	@Test
 	public void testSize() {
-		Assert.assertEquals(5, this.statistics.getSize());
+		Assert.assertEquals(7, this.statistics.getSize());
 	}
 	
 	@Test
 	public void testVariance() {
-		Assert.assertEquals(21704, this.statistics.getVariance(), 0);
+		Assert.assertEquals(0.000316462040816, this.statistics.getVariance(), 0.0001);
 	}
 
 	@Test
 	public void testStandardDeviation() {
-		Assert.assertEquals(147.3227, this.statistics.getStandardDeviation(), 0.0001);
+		Assert.assertEquals(0.0177893800009, this.statistics.getStandardDeviation(), 0.0001);
 	}
 	
 }

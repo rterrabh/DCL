@@ -7,6 +7,9 @@ import org.junit.Test;
 
 import dclsuite.util.Statistics;
 
+/**
+ * @author Luis Miranda
+ */
 public class StatisticsTests02 extends TestCase {
 	private Statistics statistics;
 

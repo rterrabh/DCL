@@ -2,11 +2,23 @@ package dclsuite.tests;
 
 import junit.framework.TestCase;
 
+import org.junit.Assert;
+import org.junit.Test;
+
+import dclsuite.resolution.similarity.coefficients.BaroniUrbaniCoefficientStrategy;
+import dclsuite.resolution.similarity.coefficients.JaccardCoefficientStrategy;
+import dclsuite.resolution.similarity.coefficients.OchiaiCoefficientStrategy;
+import dclsuite.resolution.similarity.coefficients.PhiBinaryDistance;
+import dclsuite.resolution.similarity.coefficients.RogersTanimotoCoefficientStrategy;
+import dclsuite.resolution.similarity.coefficients.RussellRaoCoefficientStrategy;
+import dclsuite.resolution.similarity.coefficients.SMCCoefficientStrategy;
+import dclsuite.resolution.similarity.coefficients.SokalBinaryDistanceCoefficientStrategy;
+import dclsuite.resolution.similarity.coefficients.SokalSneathCoefficientStrategy;
+import dclsuite.resolution.similarity.coefficients.SorensonCoefficientStrategy;
+import dclsuite.resolution.similarity.coefficients.YuleCoefficientStrategy;
+import dclsuite.resolution.similarity.coefficients.HamannCoefficientStrategy;
+
 /**
- * Luis, favor apagar esse comentario e calcular MANUALMENTE os valores
- * de todos os coeficientes. E também colocar novos testes, por exemplo:
- * testYule()
- * testHamann()
  * @author Luis Miranda
  */
 public class CoefficientTests03 extends TestCase {
@@ -20,5 +32,63 @@ public class CoefficientTests03 extends TestCase {
 		d = 0;
 	}
 
+	@Test
+	public void testJaccard() {
+		Assert.assertEquals(0.1363, new JaccardCoefficientStrategy().calculate(a, b, c, d), 1e-3);
+	}
 	
+	@Test
+	public void testSMC() {
+		Assert.assertEquals(0.1363, new SMCCoefficientStrategy().calculate(a, b, c, d), 1e-3);
+	}
+	
+	@Test
+	public void testYule() {
+		Assert.assertEquals(-1.0, new YuleCoefficientStrategy().calculate(a, b, c, d), 1e-3);
+	}
+	
+	@Test
+	public void testHamann() {
+		Assert.assertEquals(-0.7272, new HamannCoefficientStrategy().calculate(a, b, c, d), 1e-3);
+	}
+	
+	@Test
+	public void testSorenson() {
+		Assert.assertEquals(0.24, new SorensonCoefficientStrategy().calculate(a, b, c, d), 1e-3);
+	}
+	
+	@Test
+	public void testRogersTanimoto() {
+		Assert.assertEquals(0.0731, new RogersTanimotoCoefficientStrategy().calculate(a, b, c, d), 1e-3);
+	}
+	
+	@Test
+	public void testSokalSneath() {
+		Assert.assertEquals(0.24, new SokalSneathCoefficientStrategy().calculate(a, b, c, d), 1e-3);
+	}
+	
+	@Test
+	public void testRussellRao() {
+		Assert.assertEquals(0.1363, new RussellRaoCoefficientStrategy().calculate(a, b, c, d), 1e-3);
+	}
+		
+	@Test
+	public void testBaroniUrbani() {
+		Assert.assertEquals(0.1363, new BaroniUrbaniCoefficientStrategy().calculate(a, b, c, d), 1e-3);
+	}
+	
+	@Test
+	public void testSokalBinaryDistance() {
+		Assert.assertEquals(0.9293, new SokalBinaryDistanceCoefficientStrategy().calculate(a, b, c, d), 1e-3);
+	}
+	
+	@Test
+	public void testOchiai() {
+		Assert.assertEquals(0.2449, new OchiaiCoefficientStrategy().calculate(a, b, c, d), 1e-3);
+	}
+	
+	@Test
+	public void testPhiBinary() {
+		Assert.assertEquals(-0.7483, new PhiBinaryDistance().calculate(a, b, c, d), 1e-3);
+	}
 }
