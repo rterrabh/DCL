@@ -10,7 +10,7 @@ public class HamannCoefficientStrategy implements ICoefficientStrategy {
 	
 	@Override
 	public double calculate(int a, int b, int c, int d) {
-		return ((double) a+d - b+c) / (a+d + b+c);
+		return (((double) a+d) - (b+c)) / (a+d + b+c);
 	}
 
 }
