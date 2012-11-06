@@ -42,12 +42,12 @@ public class StatisticsTests03 extends TestCase {
 	
 	@Test
 	public void testVariance() {
-		Assert.assertEquals(71600.3117428571, this.statistics.getVariance(), 0.0001);
+		Assert.assertEquals(83533.6970, this.statistics.getVariance(), 0.0001);
 	}
 
 	@Test
 	public void testStandardDeviation() {
-		Assert.assertEquals(267.582345723437, this.statistics.getStandardDeviation(), 0.0001);
+		Assert.assertEquals(289.0219, this.statistics.getStandardDeviation(), 0.0001);
 	}
 	
 }
