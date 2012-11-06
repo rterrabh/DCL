@@ -34,7 +34,7 @@ public class Statistics {
 		for (double d : array) {
 			this.variance += Math.pow(d - this.average, 2);
 		}
-		this.variance /= this.size;
+		this.variance /= (this.size-1);
 
 		this.standardDeviation = Math.sqrt(variance);
 	}
