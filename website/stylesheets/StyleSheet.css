@@ -18,15 +18,25 @@ body {
    	font-size: 15px;
 	color: #666;
 	text-align:center;
+	text-decoration:none;
 }
 
-div#Title_Header {
+.Title_Header {
 	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-   	font-size: 22px;
-	font-weight:bold;
-	color: #666;
+   	font-size: 28px;
+	color: #444;
 	text-align:center;
+	text-decoration:none;
 }
+
+.Header {
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+   	font-size: 17px;
+	color: #999;
+	text-align:center;
+	text-decoration:none;
+}
+
 
 /*Layout de título dos painéis*/
 .Titulo {
@@ -66,6 +76,30 @@ div#Box {
 	border-bottom-style:solid;
 	border-right-color:#999;
 	border-right-width:2px;
+	border-right-style:solid;
+	padding:0;
+}
+
+/*Bordas da página*/
+div#BoxFooter {
+	width:800px;
+	height:auto;
+	margin:0 auto;
+	margin-top:0.3em;
+	padding-right:40px; 
+	text-align:right;
+	background-color:#DDD;
+	border-top-color:#999;
+	border-top-width:0px;
+	border-top-style:solid;
+	border-left-color:#999;
+	border-left-width:0px;
+	border-left-style:solid;
+	border-bottom-color:#999;
+	border-bottom-width:0px;
+	border-bottom-style:solid;
+	border-right-color:#999;
+	border-right-width:0px;
 	border-right-style:solid;
 	padding:0;
 }
