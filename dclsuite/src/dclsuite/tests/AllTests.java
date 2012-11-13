@@ -6,7 +6,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses({StatisticsTests01.class, StatisticsTests02.class, StatisticsTests03.class, StatisticsTests04.class,
-		CoefficientTests01.class, CoefficientTests02.class, CoefficientTests03.class, ExampleDivergenceTestCase.class,
+		CoefficientTests01.class, CoefficientTests02.class, CoefficientTests03.class/*, ExampleDivergenceTestCase.class,
 		ExampleAbsenceTestCase.class,
 		
 		A001TestCase.class, A002TestCase.class, A003TestCase.class, A004TestCase.class, A005TestCase.class,
@@ -40,7 +40,7 @@ import org.junit.runners.Suite.SuiteClasses;
 		A507TestCase.class, A508TestCase.class, A509TestCase.class, A510TestCase.class, A511TestCase.class, A512TestCase.class,
 		A513TestCase.class, A514TestCase.class, A515TestCase.class, A516TestCase.class, A517TestCase.class, A518TestCase.class,
 		A519TestCase.class, A520TestCase.class, A521TestCase.class, A522TestCase.class, A523TestCase.class, A524TestCase.class,
-		A525TestCase.class, A526TestCase.class, A527TestCase.class, A528TestCase.class
+		A525TestCase.class, A526TestCase.class, A527TestCase.class, A528TestCase.class*/
 
 })
 public class AllTests {
