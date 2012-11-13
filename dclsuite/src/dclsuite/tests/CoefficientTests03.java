@@ -110,7 +110,7 @@ public class CoefficientTests03 extends TestCase {
 	
 	@Test
 	public void testKulczynski() {
-		Assert.assertEquals(1.0, new KulczynskiCoefficientStrategy().calculate(a, b, c, d), 1e-3);
+		Assert.assertEquals(0.25, new KulczynskiCoefficientStrategy().calculate(a, b, c, d), 1e-3);
 	}
 	
 	@Test
@@ -120,7 +120,7 @@ public class CoefficientTests03 extends TestCase {
 	
 	@Test
 	public void testSokalSneath4() {
-		Assert.assertEquals(0.5, new SokalSneath4CoefficientStrategy().calculate(a, b, c, d), 1e-3);
+		Assert.assertEquals(0.125, new SokalSneath4CoefficientStrategy().calculate(a, b, c, d), 1e-3);
 	}
 	
 	@Test
