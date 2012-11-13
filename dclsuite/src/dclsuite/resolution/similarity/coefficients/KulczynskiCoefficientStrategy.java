@@ -9,7 +9,7 @@ public class KulczynskiCoefficientStrategy implements ICoefficientStrategy {
 
 	@Override
 	public double calculate(int a, int b, int c, int d) {
-		return Math.sqrt(((double) a) / (a + b) + ((double) a) / (a + c));
+		return (((double) a) / (a + b) + ((double) a) / (a + c)) / 2.0;
 	}
 
 }

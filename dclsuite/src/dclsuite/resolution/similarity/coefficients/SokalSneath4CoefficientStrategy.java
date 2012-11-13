@@ -9,6 +9,6 @@ public class SokalSneath4CoefficientStrategy implements ICoefficientStrategy {
 
 	@Override
 	public double calculate(int a, int b, int c, int d) {
-		return Math.pow((((double) a) / (a + b) + ((double) a) / (a + c) + ((double) d) / (b + d) + ((double) d) / (c + d)), 0.25);
+		return ((((double) a) / (a + b) + ((double) a) / (a + c) + ((double) d) / (b + d) + ((double) d) / (c + d))) / 4.0;
 	}
 }
