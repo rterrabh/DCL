@@ -4,7 +4,7 @@ import java.util.List;
 
 import dclsuite.core.DependencyConstraint.ArchitecturalDrift;
 import dclsuite.core.DependencyConstraint.DivergenceArchitecturalDrift;
-import dclsuite.dependencies.AnnotateFieldDependency;
+import dclsuite.dependencies.AnnotateFormalParameterDependency;
 
 /**
  * An example of a DCLTestCase 
@@ -29,13 +29,15 @@ public class A507TestCase extends DCLTestCase {
 		assertEquals(DivergenceArchitecturalDrift.class, ad.getClass()); //Check the type of violation (divergence or absence)
 		DivergenceArchitecturalDrift dad = (DivergenceArchitecturalDrift) ad;
 		
-		assertEquals(AnnotateFieldDependency.class, dad.getForbiddenDependency().getClass()); //Check the type of dependency
-		AnnotateFieldDependency annotateFieldDependency = (AnnotateFieldDependency) dad.getForbiddenDependency();
+		assertEquals(AnnotateFormalParameterDependency.class, dad.getForbiddenDependency().getClass()); //Check the type of dependency
+		AnnotateFormalParameterDependency annotateFormalParamenterDependency = (AnnotateFormalParameterDependency) dad.getForbiddenDependency();
 
 		
 		//Check each attribute of the violation
-		assertEquals("com.example.a.A507",annotateFieldDependency.getClassNameA());
-		assertEquals("com.example.b.B507",annotateFieldDependency.getClassNameB());
+		assertEquals("com.example.a.A507",annotateFormalParamenterDependency.getClassNameA());
+		assertEquals("com.example.c.C507",annotateFormalParamenterDependency.getClassNameB());
+		assertEquals("f",annotateFormalParamenterDependency.getMethodNameA());
+		assertEquals("arg",annotateFormalParamenterDependency.getVariableNameA());
 	}
 
 }

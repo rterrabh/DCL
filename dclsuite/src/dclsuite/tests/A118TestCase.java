@@ -36,9 +36,9 @@ public class A118TestCase extends DCLTestCase {
 		
 		//Check each attribute of the violation
 		assertEquals("com.example.a.A118",declareReturnDependency.getClassNameA());
-		assertEquals("com.example.c.C118",declareReturnDependency.getClassNameB());
+		assertEquals("com.example.b.B118",declareReturnDependency.getClassNameB());
 		
-		assertEquals("f2",declareReturnDependency.getMethodName());
+		assertEquals("f",declareReturnDependency.getMethodName());
 	}
 
 }

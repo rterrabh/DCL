@@ -10,6 +10,7 @@ public enum ViolationProperties {
 	CLASS_NAME_A("classNameA","Source classname"),
 	METHOD_NAME_A("methodNameA","Source class method name"),
 	FIELD_NAME_A("fieldNameA","Source class field name"),
+	VARIABLE_NAME_A("variableNameA","Source class variable name"),
 	MODULE_DESCRIPTION_A("moduleDescriptionA","Source Module Description"),
 	MODULE_DESCRIPTION_B("moduleDescriptionB","Target Module Description"),
 	CLASS_NAME_B("classNameB","Target classname"),

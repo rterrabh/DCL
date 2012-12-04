@@ -4,7 +4,7 @@ import java.util.List;
 
 import dclsuite.core.DependencyConstraint.ArchitecturalDrift;
 import dclsuite.core.DependencyConstraint.DivergenceArchitecturalDrift;
-import dclsuite.dependencies.DeclareLocalVariableDependency;
+import dclsuite.dependencies.DeclareParameterizedTypeDependency;
 
 /**
  * An example of a DCLTestCase 
@@ -21,25 +21,22 @@ import dclsuite.dependencies.DeclareLocalVariableDependency;
 public class A120cTestCase extends DCLTestCase { 
 
 	public void test01() throws Exception {
-		List<ArchitecturalDrift> violations = this.validateSystem("com.example.a.A120c cannot-declare com.example.b.B120c"); //Define the constraint to be validated
+		List<ArchitecturalDrift> violations = this.validateSystem("com.example.a.A120c cannot-declare com.example.b.B120"); //Define the constraint to be validated
 		
 		assertEquals(1, violations.size()); //Check the number of violations (usually only one violation for constraint)
+		
 		ArchitecturalDrift ad = violations.get(0);
 		
 		assertEquals(DivergenceArchitecturalDrift.class, ad.getClass()); //Check the type of violation (divergence or absence)
 		DivergenceArchitecturalDrift dad = (DivergenceArchitecturalDrift) ad;
 		
-		assertEquals(DeclareLocalVariableDependency.class, dad.getForbiddenDependency().getClass()); //Check the type of dependency
-		DeclareLocalVariableDependency declareLocalVariableDependency = (DeclareLocalVariableDependency) dad.getForbiddenDependency();
-
+		assertEquals(DeclareParameterizedTypeDependency.class, dad.getForbiddenDependency().getClass()); //Check the type of dependency
+		DeclareParameterizedTypeDependency declareParameterizedTypeDependency = (DeclareParameterizedTypeDependency) dad.getForbiddenDependency();
 		
 		//Check each attribute of the violation
-		assertEquals("com.example.a.A112",declareLocalVariableDependency.getClassNameA());
-		assertEquals("com.example.b.B120c",declareLocalVariableDependency.getClassNameB());
-		
-		assertEquals("l2",declareLocalVariableDependency.getFieldName());
-		
-		assertEquals("f",declareLocalVariableDependency.getMethodName());
+		assertEquals("com.example.a.A120c",declareParameterizedTypeDependency.getClassNameA());
+		assertEquals("com.example.b.B120",declareParameterizedTypeDependency.getClassNameB());
+		assertNull(declareParameterizedTypeDependency.getMethodNameA());
 	}
 
 }

@@ -37,7 +37,7 @@ public class A111TestCase extends DCLTestCase {
 		assertEquals("com.example.a.A111",declareReturnDependency.getClassNameA());
 		assertEquals("com.example.b.B111",declareReturnDependency.getClassNameB());
 		
-		assertEquals("f2",declareReturnDependency.getMethodName());
+		assertEquals("f",declareReturnDependency.getMethodName());
 	}
 
 }

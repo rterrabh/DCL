@@ -10,6 +10,8 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 
 import dclsuite.dependencies.Dependency;
+import dclsuite.dependencies.ExtendIndirectDependency;
+import dclsuite.dependencies.ImplementIndirectDependency;
 import dclsuite.enums.Constraint;
 import dclsuite.enums.ConstraintType;
 import dclsuite.util.DCLUtil;
@@ -74,6 +76,11 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 				if (d.getClassNameB().equals(d.getClassNameA())) {
 					continue;
 				}
+				/* We disregard indirect dependencies to divergences */
+				if (d instanceof ExtendIndirectDependency || d instanceof ImplementIndirectDependency){
+					continue;
+				}
+				
 				if (DCLUtil.hasClassNameByDescription(d.getClassNameB(), moduleDescriptionB, modules, projectClasses, project)) {
 					architecturalDrifts.add(new DivergenceArchitecturalDrift(this, d));
 				}
@@ -94,6 +101,10 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 		for (Dependency d : dependencies) {
 			if (dependencyClass.isAssignableFrom(d.getClass())) {
 				if (d.getClassNameB().equals(d.getClassNameA())) {
+					continue;
+				}
+				/* We disregard indirect dependencies to divergences */
+				if (d instanceof ExtendIndirectDependency || d instanceof ImplementIndirectDependency){
 					continue;
 				}
 				if (!DCLUtil.hasClassNameByDescription(d.getClassNameB(), moduleDescriptionB, modules, projectClasses, project)) {

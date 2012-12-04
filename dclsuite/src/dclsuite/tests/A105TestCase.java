@@ -4,7 +4,7 @@ import java.util.List;
 
 import dclsuite.core.DependencyConstraint.ArchitecturalDrift;
 import dclsuite.core.DependencyConstraint.DivergenceArchitecturalDrift;
-import dclsuite.dependencies.DeclareLocalVariableDependency;
+import dclsuite.dependencies.DeclareParameterizedTypeDependency;
 
 /**
  * An example of a DCLTestCase 
@@ -21,25 +21,35 @@ import dclsuite.dependencies.DeclareLocalVariableDependency;
 public class A105TestCase extends DCLTestCase { 
 
 	public void test01() throws Exception {
-		List<ArchitecturalDrift> violations = this.validateSystem("com.example.a.A105 can-declare-only com.example.b.B105"); //Define the constraint to be validated
+		List<ArchitecturalDrift> violations = this.validateSystem("com.example.a.A105 can-declare-only com.example.b.B105, java.util.*"); //Define the constraint to be validated
 		
-		assertEquals(1, violations.size()); //Check the number of violations (usually only one violation for constraint)
+		assertEquals(2, violations.size()); //Check the number of violations (usually only one violation for constraint)
+		
 		ArchitecturalDrift ad = violations.get(0);
 		
 		assertEquals(DivergenceArchitecturalDrift.class, ad.getClass()); //Check the type of violation (divergence or absence)
 		DivergenceArchitecturalDrift dad = (DivergenceArchitecturalDrift) ad;
 		
-		assertEquals(DeclareLocalVariableDependency.class, dad.getForbiddenDependency().getClass()); //Check the type of dependency
-		DeclareLocalVariableDependency declareLocalVariableDependency = (DeclareLocalVariableDependency) dad.getForbiddenDependency();
-
+		assertEquals(DeclareParameterizedTypeDependency.class, dad.getForbiddenDependency().getClass()); //Check the type of dependency
+		DeclareParameterizedTypeDependency declareParameterizedTypeDependency = (DeclareParameterizedTypeDependency) dad.getForbiddenDependency();
 		
 		//Check each attribute of the violation
-		assertEquals("com.example.a.A105",declareLocalVariableDependency.getClassNameA());
-		assertEquals("com.example.c.C105",declareLocalVariableDependency.getClassNameB());
+		assertEquals("com.example.a.A105",declareParameterizedTypeDependency.getClassNameA());
+		assertEquals("com.example.c.C105",declareParameterizedTypeDependency.getClassNameB());
+		assertEquals("f",declareParameterizedTypeDependency.getMethodNameA());
 		
-		assertEquals("l2",declareLocalVariableDependency.getFieldName());
+		ad = violations.get(1);
 		
-		assertEquals("f",declareLocalVariableDependency.getMethodName());
+		assertEquals(DivergenceArchitecturalDrift.class, ad.getClass()); //Check the type of violation (divergence or absence)
+		dad = (DivergenceArchitecturalDrift) ad;
+		
+		assertEquals(DeclareParameterizedTypeDependency.class, dad.getForbiddenDependency().getClass()); //Check the type of dependency
+		declareParameterizedTypeDependency = (DeclareParameterizedTypeDependency) dad.getForbiddenDependency();
+		
+		//Check each attribute of the violation
+		assertEquals("com.example.a.A105",declareParameterizedTypeDependency.getClassNameA());
+		assertEquals("com.example.c.C105",declareParameterizedTypeDependency.getClassNameB());
+		assertEquals("f",declareParameterizedTypeDependency.getMethodNameA());
 	}
 
 }
