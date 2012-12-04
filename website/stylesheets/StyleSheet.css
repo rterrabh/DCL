@@ -104,6 +104,11 @@ div#BoxFooter {
 	padding:0;
 }
 
+.example-content {
+	font-family: Courier New, verdana,helvetica,sans-serif;
+	font-size: 12.0px; 
+}
+
 a {
 	outline: 0;
 }
