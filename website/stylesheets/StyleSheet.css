@@ -57,6 +57,15 @@ body {
 	line-height:22px;
 }
 
+.Buttons {
+	font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+   	font-size: 12px;
+	color: #666;
+	text-decoration:none;
+	vertical-align: middle;
+}
+
+
 /*Bordas da página*/
 div#Box {
 	width:800px;
@@ -80,7 +89,6 @@ div#Box {
 	padding:0;
 }
 
-/*Bordas da página*/
 div#BoxFooter {
 	width:800px;
 	height:auto;
@@ -111,4 +119,11 @@ div#BoxFooter {
 
 a {
 	outline: 0;
+}
+
+span.reddit_button{
+   margin-left: 25px;
+   font-size: 10px;
+   text-decoration:none;
+   outline: 0;
 }
