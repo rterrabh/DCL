@@ -42,6 +42,13 @@
                enablesFor="1"
                id="dclsuite.addRemoveNatureAction">
          </action>
+         <action
+               label="Calculate Similarity"
+               class="dclsuite.builder.SimilarityCalculationAction"
+               menubarPath="additions"
+               enablesFor="1"
+               id="dclsuite.similarityCalculationAction">
+         </action>
       </objectContribution>
    </extension>
    <extension
