@@ -11,4 +11,14 @@ public class RelativeMatchingCoefficientStrategy implements ICoefficientStrategy
 	public double calculate(int a, int b, int c, int d) {
 		return (((double) a) + Math.sqrt(a * d)) / (a + b + c + d + Math.sqrt(a * d));
 	}
+	
+	@Override
+	public double getMinimumValue() {
+		return 0;
+	}
+
+	@Override
+	public double getMaximumValue() {
+		return 1;
+	}
 }

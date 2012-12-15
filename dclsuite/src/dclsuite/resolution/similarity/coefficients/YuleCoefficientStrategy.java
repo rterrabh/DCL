@@ -13,4 +13,14 @@ public class YuleCoefficientStrategy implements ICoefficientStrategy {
 		return ((double) a*d - b*c) / (a*d + b*c);
 	}
 
+	@Override
+	public double getMinimumValue() {
+		return -1;
+	}
+
+	@Override
+	public double getMaximumValue() {
+		return 1;
+	}
+	
 }

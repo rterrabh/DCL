@@ -17,4 +17,7 @@ public interface ICoefficientStrategy {
 	 */
 	double calculate (int a, int b, int c, int d);
 	
+	double getMinimumValue();
+	
+	double getMaximumValue();
 }

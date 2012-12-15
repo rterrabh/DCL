@@ -11,4 +11,14 @@ public class SokalSneath4CoefficientStrategy implements ICoefficientStrategy {
 	public double calculate(int a, int b, int c, int d) {
 		return ((((double) a) / (a + b) + ((double) a) / (a + c) + ((double) d) / (b + d) + ((double) d) / (c + d))) / 4.0;
 	}
+	
+	@Override
+	public double getMinimumValue() {
+		return 0;
+	}
+
+	@Override
+	public double getMaximumValue() {
+		return 1;
+	}
 }

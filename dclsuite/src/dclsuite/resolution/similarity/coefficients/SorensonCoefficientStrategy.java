@@ -13,4 +13,14 @@ public class SorensonCoefficientStrategy implements ICoefficientStrategy {
 		return (2.0 * a) / ( (a+b) + (a+c) );
 	}
 
+	@Override
+	public double getMinimumValue() {
+		return 0;
+	}
+
+	@Override
+	public double getMaximumValue() {
+		return 1;
+	}
+	
 }

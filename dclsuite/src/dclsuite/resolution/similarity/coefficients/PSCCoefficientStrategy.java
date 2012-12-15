@@ -12,4 +12,14 @@ public class PSCCoefficientStrategy implements ICoefficientStrategy {
 		return Math.pow(a,2) / ((b+a) * (c+a));
 	}
 
+	@Override
+	public double getMinimumValue() {
+		return 0;
+	}
+
+	@Override
+	public double getMaximumValue() {
+		return 1;
+	}
+	
 }

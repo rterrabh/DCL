@@ -12,5 +12,15 @@ public class BaroniUrbaniCoefficientStrategy implements ICoefficientStrategy {
 	public double calculate(int a, int b, int c, int d) {
 		return (Math.sqrt(a * d) + a) / (Math.sqrt(a * d) + a + b + c);
 	}
+	
+	@Override
+	public double getMinimumValue() {
+		return 0;
+	}
+
+	@Override
+	public double getMaximumValue() {
+		return 1;
+	}
 
 }

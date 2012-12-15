@@ -11,5 +11,15 @@ public class DotProductCoefficientStrategy implements ICoefficientStrategy {
 	public double calculate(int a, int b, int c, int d) {
 		return ((double) a) / (b + c + (2 * a));
 	}
+	
+	@Override
+	public double getMinimumValue() {
+		return 0;
+	}
+
+	@Override
+	public double getMaximumValue() {
+		return 1;
+	}
 
 }
