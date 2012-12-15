@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 
+import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -27,6 +28,7 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 
+import dclsuite.builder.DCLBuilder;
 import dclsuite.dependencies.Dependency;
 
 public final class DCLUtil {
@@ -37,6 +39,19 @@ public final class DCLUtil {
 	private DCLUtil() {
 	}
 
+	
+	public static boolean isDclEnabled(IProject project) throws CoreException{
+		ICommand[] commands = project.getDescription().getBuildSpec();
+		
+		boolean flag = false;
+		for (ICommand c : commands) {
+			if (c.getBuilderName().equals(DCLBuilder.BUILDER_ID)) {
+				flag = true;
+			}
+		}
+		return flag;
+	}
+	
 	/**
 	 * DCL2 Adjust the name of the class to make the identification easier It is
 	 * done by converting all "/" to "."
@@ -149,6 +164,22 @@ public final class DCLUtil {
 		return result;
 	}
 
+	@Deprecated
+	public static Collection<IFile> getJavaClasses(final IProject project) throws CoreException {
+		final Collection<IFile> result = new LinkedList<IFile>();
+		project.accept(new IResourceVisitor() {
+
+			@Override
+			public boolean visit(IResource resource) {
+				if (resource instanceof IFile && resource.getName().endsWith(".java")) {
+					result.add((IFile)resource);
+				}
+				return true;
+			}
+		});
+		return result;
+	}
+	
 	/**
 	 * DCL2 The method returns the respective IFile of a java source file
 	 * 
