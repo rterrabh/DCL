@@ -2,7 +2,6 @@ package dclsuite.builder;
 
 import java.util.Iterator;
 
-import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.runtime.CoreException;
@@ -12,6 +11,8 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
+
+import dclsuite.util.DCLUtil;
 
 public class ToggleNatureAction implements IObjectActionDelegate {
 
@@ -66,15 +67,7 @@ public class ToggleNatureAction implements IObjectActionDelegate {
 							action.setEnabled(false);
 						}
 						
-						ICommand[] commands = project.getDescription().getBuildSpec();
-
-						boolean flag = false;
-						for (ICommand c : commands) {
-							if (c.getBuilderName().equals(DCLBuilder.BUILDER_ID)) {
-								flag = true;
-							}
-						}
-						if (flag) {
+						if (DCLUtil.isDclEnabled(project)) {
 							action.setText("Disable dclcheck");
 						} else {
 							action.setText("Enable dclcheck");
