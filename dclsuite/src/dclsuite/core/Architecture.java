@@ -240,5 +240,78 @@ public class Architecture {
 
 		return set;
 	}
+	
+	
+	
+	
+	public List<String> getUsedClasses2(final String className) {
+		List<String> list = new ArrayList<String>();
+
+		for (Dependency d : this.getDependencies(className)) {
+			list.add(d.getClassNameB());
+		}
+
+		return list;
+	}
+
+	public List<String> getUsedClasses2(final String className, DependencyType dependencyType) {
+		/* In this case, it only considers the type */
+		if (dependencyType == null) {
+			return getUsedClasses2(className);
+		}
+
+		List<String> list = new ArrayList<String>();
+
+		/*
+		 * Here, two cases: 
+		 * if (dependencyType == DEPEND) -> dep[*,T] 
+		 * if (dependencyType == other) -> dep[other,T] 
+		 * For example: dep[access,T]
+		 */
+		for (Dependency d : this.getDependencies(className)) {
+			if (dependencyType.equals(DependencyType.DEPEND) || d.getDependencyType().equals(dependencyType)) {
+				list.add("dep[" + d.getDependencyType().getValue() + "," + d.getClassNameB() + "]");	
+			}
+		}
+
+		return list;
+	}
+
+	public List<String> getUniverseOfUsedClasses2() {
+		List<String> list = new ArrayList<String>();
+
+		for (Collection<Dependency> col : projectClasses.values()) {
+			for (Dependency d : col) {
+				list.add(d.getClassNameB());
+			}
+		}
+
+		return list;
+	}
+
+	public List<String> getUniverseOfUsedClasses2(DependencyType dependencyType) {
+		if (dependencyType == null) {
+			return getUniverseOfUsedClasses2();
+		}
+		List<String> list = new ArrayList<String>();
+
+		/*
+		 * Here, two cases: 
+		 * if (dependencyType == DEPEND) -> dep[*,T] 
+		 * if (dependencyType == other) -> dep[other,T] 
+		 * For example: dep[access,T]
+		 */
+		for (Collection<Dependency> col : projectClasses.values()) {
+			for (Dependency d : col) {
+				if (dependencyType.equals(DependencyType.DEPEND) || d.getDependencyType().equals(dependencyType)) {
+					list.add("dep[" + d.getDependencyType().getValue() + "," + d.getClassNameB() + "]");	
+				}
+			}
+		}
+
+		return list;
+	}
+	
+	
 
 }

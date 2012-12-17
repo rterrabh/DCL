@@ -1,6 +1,6 @@
 package dclsuite.resolution.similarity;
 
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -40,7 +40,6 @@ import dclsuite.resolution.similarity.coefficients.SorensonCoefficientStrategy;
 import dclsuite.resolution.similarity.coefficients.YuleCoefficientStrategy;
 import dclsuite.util.DCLUtil;
 import dclsuite.util.FormatUtil;
-import dclsuite.util.Statistics;
 
 public class SuitableModuleAirp {
 	private static final ICoefficientStrategy[] coefficientStrategies = { new JaccardCoefficientStrategy(), new SMCCoefficientStrategy(),
@@ -53,12 +52,12 @@ public class SuitableModuleAirp {
 
 	/* Number of Move Suggestions that the algorithm will return */
 	private final int moveSuggestions;
-	private final Map<String, Set<String>> cacheDependenciesByClass;
-	private Set<String> cacheUniverseOfDependencies;
+	private final Map<String, Collection<String>> cacheDependenciesByClass;
+	private Collection<String> cacheUniverseOfDependencies;
 
 	public SuitableModuleAirp(int moveSuggestions) {
 		this.moveSuggestions = moveSuggestions;
-		this.cacheDependenciesByClass = new HashMap<String, Set<String>>();
+		this.cacheDependenciesByClass = new HashMap<String, Collection<String>>();
 		this.cacheUniverseOfDependencies = null;
 	}
 
@@ -119,11 +118,13 @@ public class SuitableModuleAirp {
 				array[i++] = ms.getSimilarity();
 			}
 
-			Statistics st = new Statistics(array);
-
-			resume.append(FormatUtil.formatDouble(st.getMin()) + "\t" + FormatUtil.formatDouble(st.getMax()) + "\t"
-					+ FormatUtil.formatDouble(st.getAverage()) + "\t" + FormatUtil.formatDouble(st.getStandardDeviation()) + "\t" + "\""
-					+ Arrays.toString(st.getArray()) + "\"\t");
+			// Statistics st = new Statistics(array);
+			//
+			// resume.append(FormatUtil.formatDouble(st.getMin()) + "\t" +
+			// FormatUtil.formatDouble(st.getMax()) + "\t"
+			// + FormatUtil.formatDouble(st.getAverage()) + "\t" +
+			// FormatUtil.formatDouble(st.getStandardDeviation()) + "\t" + "\""
+			// + Arrays.toString(st.getArray()) + "\"\t");
 		}
 
 		return resume;
@@ -147,7 +148,7 @@ public class SuitableModuleAirp {
 		 * If dependencyType is null, the functions above will consider all
 		 * dependencies
 		 */
-		final Set<String> dependenciesClassA = getDependenciesToBeAnalyzed(architecture, originClassName, dependencyType, coverageStrategy);
+		final Collection<String> dependenciesClassA = getDependenciesToBeAnalyzed(architecture, originClassName, dependencyType, coverageStrategy);
 
 		/*
 		 * Also, if dependenciesClassA was empty, we do not calculate the
@@ -157,7 +158,7 @@ public class SuitableModuleAirp {
 			return null;
 		}
 
-		final Set<String> dependenciesProject = getDependenciesToBeAnalyzed(architecture, dependencyType, coverageStrategy);
+		final Collection<String> dependenciesProject = getDependenciesToBeAnalyzed(architecture, dependencyType, coverageStrategy);
 
 		for (String classB : architecture.getProjectClasses()) {
 			/* Ignoring the class under analysis */
@@ -168,7 +169,7 @@ public class SuitableModuleAirp {
 			 * If dependencyType is null, the function above will consider all
 			 * dependencies
 			 */
-			final Set<String> dependenciesClassB = this.getDependenciesToBeAnalyzed(architecture, classB, dependencyType, coverageStrategy);
+			final Collection<String> dependenciesClassB = this.getDependenciesToBeAnalyzed(architecture, classB, dependencyType, coverageStrategy);
 
 			final String respectiveModuleName = DCLUtil.getPackageFromClassName(classB) + ".*";
 
@@ -239,7 +240,7 @@ public class SuitableModuleAirp {
 		}
 	}
 
-	private Set<String> getDependenciesToBeAnalyzed(final Architecture architecture, final String originClassName,
+	private Collection<String> getDependenciesToBeAnalyzed(final Architecture architecture, final String originClassName,
 			final DependencyType dependencyType, final CoverageStrategy coverageStrategy) {
 		if (cacheDependenciesByClass.containsKey(originClassName)) {
 			return cacheDependenciesByClass.get(originClassName);
@@ -248,16 +249,22 @@ public class SuitableModuleAirp {
 		switch (coverageStrategy) {
 		case ALL_DEPENDENCIES:
 			cacheDependenciesByClass.put(originClassName, architecture.getUsedClasses(originClassName, DependencyType.DEPEND));
+			this.filterCollection(cacheDependenciesByClass.get(originClassName), DependencyType.DEPEND);
+			break;
 		case PARTICULAR_DEPENDENCY:
 			cacheDependenciesByClass.put(originClassName, architecture.getUsedClasses(originClassName, dependencyType));
+			this.filterCollection(cacheDependenciesByClass.get(originClassName), dependencyType);
+			break;
 		case ONLY_TYPES:
 			cacheDependenciesByClass.put(originClassName, architecture.getUsedClasses(originClassName));
-		}
+			this.filterCollection(cacheDependenciesByClass.get(originClassName), null);
+			break;
+		}		
 
 		return cacheDependenciesByClass.get(originClassName);
 	}
 
-	private Set<String> getDependenciesToBeAnalyzed(final Architecture architecture, final DependencyType dependencyType,
+	private Collection<String> getDependenciesToBeAnalyzed(final Architecture architecture, final DependencyType dependencyType,
 			final CoverageStrategy coverageStrategy) {
 		if (cacheUniverseOfDependencies != null) {
 			return cacheUniverseOfDependencies;
@@ -266,11 +273,90 @@ public class SuitableModuleAirp {
 		switch (coverageStrategy) {
 		case ALL_DEPENDENCIES:
 			cacheUniverseOfDependencies = architecture.getUniverseOfUsedClasses(DependencyType.DEPEND);
+			this.filterCollection(cacheUniverseOfDependencies, DependencyType.DEPEND);
+			break;
 		case PARTICULAR_DEPENDENCY:
 			cacheUniverseOfDependencies = architecture.getUniverseOfUsedClasses(dependencyType);
+			this.filterCollection(cacheUniverseOfDependencies, dependencyType);
+			break;
 		case ONLY_TYPES:
 			cacheUniverseOfDependencies = architecture.getUniverseOfUsedClasses();
+			this.filterCollection(cacheUniverseOfDependencies, null);
+			break;
 		}
+
 		return cacheUniverseOfDependencies;
 	}
+	
+	private void filterCollection(Collection<String> set, DependencyType dependencyType){
+		String typesToDisregard[] = new String[] { "boolean", "char", "byte", "short", "int", "long", "float", "double",
+				"java.lang.Boolean", "java.lang.Character", "java.lang.Byte", "java.lang.Short", "java.lang.Integer", "java.lang.Long",
+				"java.lang.Float", "java.lang.Double", "java.lang.String", "java.lang.Object",
+				"java.lang.Boolean[]", "java.lang.Character[]", "java.lang.Byte[]", "java.lang.Short[]", "java.lang.Integer[]", "java.lang.Long[]",
+				"java.lang.Float[]", "java.lang.Double[]", "java.lang.String[]", "java.lang.Object[]"};
+
+		for (String type : typesToDisregard) {
+			if (dependencyType==null){
+				set.remove(type);
+			}else if (dependencyType == DependencyType.DEPEND){
+				for (DependencyType d : DependencyType.values()){
+					set.remove("dep[" + d.getValue() + "," + type + "]");
+				}
+			}else{
+				set.remove("dep[" + dependencyType.getValue() + "," + type + "]");
+			}
+		}
+	}
+	
+	@SuppressWarnings("unused")	
+	private Collection<String> getDependenciesToBeAnalyzed2(final Architecture architecture, final String originClassName,
+			final DependencyType dependencyType, final CoverageStrategy coverageStrategy) {
+		if (cacheDependenciesByClass.containsKey(originClassName)) {
+			return cacheDependenciesByClass.get(originClassName);
+		}
+
+		switch (coverageStrategy) {
+		case ALL_DEPENDENCIES:
+			cacheDependenciesByClass.put(originClassName, architecture.getUsedClasses2(originClassName, DependencyType.DEPEND));
+			this.filterCollection(cacheDependenciesByClass.get(originClassName), DependencyType.DEPEND);
+			break;
+		case PARTICULAR_DEPENDENCY:
+			cacheDependenciesByClass.put(originClassName, architecture.getUsedClasses2(originClassName, dependencyType));
+			this.filterCollection(cacheDependenciesByClass.get(originClassName), dependencyType);
+			break;
+		case ONLY_TYPES:
+			cacheDependenciesByClass.put(originClassName, architecture.getUsedClasses2(originClassName));
+			this.filterCollection(cacheDependenciesByClass.get(originClassName), null);
+			break;
+		}		
+
+		return cacheDependenciesByClass.get(originClassName);
+	}
+
+	@SuppressWarnings("unused")
+	private Collection<String> getDependenciesToBeAnalyzed2(final Architecture architecture, final DependencyType dependencyType,
+			final CoverageStrategy coverageStrategy) {
+		if (cacheUniverseOfDependencies != null) {
+			return cacheUniverseOfDependencies;
+		}
+
+		switch (coverageStrategy) {
+		case ALL_DEPENDENCIES:
+			cacheUniverseOfDependencies = architecture.getUniverseOfUsedClasses2(DependencyType.DEPEND);
+			this.filterCollection(cacheUniverseOfDependencies, DependencyType.DEPEND);
+			break;
+		case PARTICULAR_DEPENDENCY:
+			cacheUniverseOfDependencies = architecture.getUniverseOfUsedClasses2(dependencyType);
+			this.filterCollection(cacheUniverseOfDependencies, dependencyType);
+			break;
+		case ONLY_TYPES:
+			cacheUniverseOfDependencies = architecture.getUniverseOfUsedClasses2();
+			this.filterCollection(cacheUniverseOfDependencies, null);
+			break;
+		}
+
+		return cacheUniverseOfDependencies;
+	}
+	
+	
 }

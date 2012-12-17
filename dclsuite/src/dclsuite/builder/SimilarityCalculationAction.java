@@ -1,9 +1,10 @@
 package dclsuite.builder;
 
-import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -24,9 +25,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
-import org.eclipse.ui.ide.IDE;
 
 import dclsuite.Activator;
 import dclsuite.core.Architecture;
@@ -37,6 +36,7 @@ import dclsuite.resolution.similarity.SuitableModuleAirp;
 import dclsuite.util.ArchitectureUtils;
 import dclsuite.util.DCLPersistence;
 import dclsuite.util.DCLUtil;
+import dclsuite.util.DateUtil;
 
 public class SimilarityCalculationAction implements IObjectActionDelegate {
 
@@ -134,7 +134,10 @@ public class SimilarityCalculationAction implements IObjectActionDelegate {
 
 			long inicioGeral = System.currentTimeMillis();
 			int i = 0;
+
+			String filename = "result_" + strategy + "_" + project.getName() + "_" + DateUtil.dateToStr(new Date(), "yyyyMMdd'_'HHmmss") + ".txt";
 			
+			PrintWriter out = new PrintWriter(new FileOutputStream("/NoBackup/" + filename));
 			
 			SuitableModuleAirp airp = new SuitableModuleAirp(Integer.MAX_VALUE);
 			
@@ -167,18 +170,21 @@ public class SimilarityCalculationAction implements IObjectActionDelegate {
 				System.out.printf("it took %.3f seconds.\n", (System.currentTimeMillis() - inicio) / 1000.0);
 				result.append("\n");
 				
-				//System.gc();
+				out.write(result.toString());
+				result.delete(0, result.length());
+				System.gc();
 			}
 
 			System.out.printf("Total time: %.3f seconds.\n", (System.currentTimeMillis() - inicioGeral) / 1000.0);
+			out.close();
 			
-			final IFile simFile = project.getFile("similarity.txt");
-			simFile.delete(true, null);
-			InputStream source = new ByteArrayInputStream(result.toString().getBytes());
-			simFile.create(source, true, null);
+//			final IFile simFile = project.getFile("similarity.txt");
+//			simFile.delete(true, null);
+//			InputStream source = new ByteArrayInputStream(result.toString().getBytes());
+//			simFile.create(source, true, null);
 
-			IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), simFile);
-
+			//IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(), simFile);
+			
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
