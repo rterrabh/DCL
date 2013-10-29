@@ -1,8 +1,10 @@
 package dclsuite.util;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -218,34 +220,31 @@ public final class DCLUtil {
 	/**
 	 * DCL2 Method responsible to log error
 	 * 
-	 * @param project
-	 *            Project where the error occurs
-	 * @param e
-	 *            Thrown exception
-	 * @throws CoreException
 	 */
-	public static String logError(IProject project, Throwable e) {
-		final IFile dcFile = project.getFile("dclcheck_" + DateUtil.dateToStr(new Date(), "yyyyMMdd-HHmmss") + "_error.log");
-
-		/* Return file name created */
-		StringBuilder str = new StringBuilder();
-		str.append(e.toString() + "\n");
-		if (e.getStackTrace() != null) {
-			for (StackTraceElement ste : e.getStackTrace()) {
-				str.append("\t" + ste.toString() + "\n");
-			}
+	public static String logError(IProject project, Throwable thrownExeption) {
+		if (project == null) {
+			throw new NullPointerException("project cant be null");
+		}
+		if (thrownExeption == null) {
+			throw new NullPointerException("thrownExeption cant be null");
 		}
 
-		InputStream source = new ByteArrayInputStream(str.toString().getBytes());
+		final IFile logErrorFile = project.getFile("dclcheck_"
+				+ DateUtil.dateToStr(new Date(), "yyyyMMdd-HHmmss")
+				+ "_error.log");
+
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		thrownExeption.printStackTrace(new PrintWriter(outputStream, true));
+		InputStream source = new ByteArrayInputStream(
+				outputStream.toByteArray());
 		try {
-			dcFile.create(source, false, null);
-			// IDE.openEditor(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage(),
-			// dcFile);
-		} catch (CoreException e1) {
-			e1.printStackTrace();
+			logErrorFile.create(source, false, null);
+			source.close();
+			outputStream.close();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
-		return dcFile.getName();
-
+		return logErrorFile.getName();
 	}
 
 	/**
