@@ -3,7 +3,7 @@
    <description name="DCL Update Site" url="http://www.dclsuite.org/update">
       The DCLsuite (DCLcheck and DCLfix) is publicly available from this site.
    </description>
-   <feature url="features/dclsuite_feature_1.2.0.jar" id="dclsuite_feature" version="1.2.0">
+   <feature url="features/dclsuite_feature_1.2.1.jar" id="dclsuite_feature" version="1.2.1">
       <category name="new_category_1"/>
    </feature>
    <category-def name="new_category_1" label="Architecture Conformance Tools"/>
