@@ -157,10 +157,14 @@ public final class DCLUtil {
 			public boolean visit(IResource resource) {
 				if (resource instanceof IFile && resource.getName().endsWith(".java")) {
 					ICompilationUnit unit = ((ICompilationUnit) JavaCore.create((IFile) resource));
-					final String className = DCLUtil.getClassName(unit);
-					result.add(className);
+					if (unit.isOpen()){
+						final String className = DCLUtil.getClassName(unit);
+						result.add(className);
+						return true;
+					}
 				}
-				return true;
+				return false;
+				
 			}
 		});
 		return result;
@@ -305,7 +309,7 @@ public final class DCLUtil {
 	// // writer.println("Estabilished Dependencies: " + numDepEst);
 	// // writer.println("Violated Dependencies: " +
 	// // architecturalDrifts.size());
-	// // writer.println("Architectural Conformação: "
+	// // writer.println("Architectural Conformacao: "
 	// // + (numDepEst - architecturalDrifts.size()) / numDepEst);
 	//
 	// if (architecturalDrifts != null && !architecturalDrifts.isEmpty()) {

@@ -174,10 +174,16 @@ public class DCLBuilder extends IncrementalProjectBuilder {
 		if (resource instanceof IFile && resource.getName().endsWith(".java")) {
 			final IFile file = (IFile) resource;
 			MarkerUtils.deleteMarkers(file);
-
+			
 			final ICompilationUnit unit = ((ICompilationUnit) JavaCore.create((IFile) resource));
+			
+			 /* We only consider the units linked to source-folders */
+			if (!unit.isOpen()){
+				return;
+			}
+			
 			final String className = DCLUtil.getClassName(unit);
-
+			
 			try {
 				final Collection<Dependency> dependencies;
 				if (reextractDependencies) {
