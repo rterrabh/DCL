@@ -42,13 +42,13 @@
                enablesFor="1"
                id="dclsuite.addRemoveNatureAction">
          </action>
-         <action
+         <!--action
                label="Calculate Similarity"
                class="dclsuite.builder.SimilarityCalculationAction"
                menubarPath="additions"
                enablesFor="1"
                id="dclsuite.similarityCalculationAction">
-         </action>
+         </action-->
       </objectContribution>
    </extension>
    <extension
@@ -139,7 +139,7 @@
           commandId="dclsuite.commands.simCommand">
     </handler>
  </extension>
- <extension
+ <!--extension
        point="org.eclipse.ui.menus">
     <menuContribution
           locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
@@ -153,5 +153,5 @@
           </command>
        </toolbar>
     </menuContribution>
- </extension>
+ </extension-->
 </plugin>
