@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import dclsuite.builder.DCLBuilder;
 import dclsuite.dependencies.Dependency;
+import dclsuite.exception.DCLException;
 
 public final class DCLUtil {
 	public static final String NOME_APLICACAO = ".: dclsuite :.";
@@ -442,7 +443,7 @@ public final class DCLUtil {
 	 *            List of classes
 	 * @return List of dependencies
 	 */
-	public static Collection<Dependency> getDependenciesUsingAST(ICompilationUnit unit) throws CoreException, IOException {
+	public static Collection<Dependency> getDependenciesUsingAST(ICompilationUnit unit) throws CoreException, IOException, DCLException {
 		final Collection<Dependency> dependencies = new LinkedList<Dependency>();
 
 		dclsuite.ast.DCLDeepDependencyVisitor cv = new dclsuite.ast.DCLDeepDependencyVisitor(unit);

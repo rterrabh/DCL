@@ -203,10 +203,10 @@ public class DCLBuilder extends IncrementalProjectBuilder {
 						}
 					}
 				}
-			} catch (IOException e) {
+			} catch (Exception e) {
 				MarkerUtils.addErrorMarker(this.getProject(), "There was a problem in extracting dependencies from " + className);
 				throw new CoreException(Status.CANCEL_STATUS);
-			}
+			} 
 		}
 	}
 

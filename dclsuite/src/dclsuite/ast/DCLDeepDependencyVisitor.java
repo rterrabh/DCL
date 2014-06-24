@@ -54,6 +54,7 @@ import dclsuite.dependencies.ExtendIndirectDependency;
 import dclsuite.dependencies.ImplementDirectDependency;
 import dclsuite.dependencies.ImplementIndirectDependency;
 import dclsuite.dependencies.ThrowDependency;
+import dclsuite.exception.DCLException;
 
 public class DCLDeepDependencyVisitor extends ASTVisitor {
 	private List<Dependency> dependencies;
@@ -62,19 +63,23 @@ public class DCLDeepDependencyVisitor extends ASTVisitor {
 	private CompilationUnit fullClass;
 	private String className;
 
-	public DCLDeepDependencyVisitor(ICompilationUnit unit) {
-		this.dependencies = new ArrayList<Dependency>();
-		this.unit = unit;
-
-		this.className = unit.getParent().getElementName() + "." + unit.getElementName().substring(0, unit.getElementName().length() - 5);
-		ASTParser parser = ASTParser.newParser(AST.JLS4); // It was JSL3, but it
-															// is now deprecated
-		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-		parser.setSource(unit);
-		parser.setResolveBindings(true);
-
-		this.fullClass = (CompilationUnit) parser.createAST(null); // parse
-		this.fullClass.accept(this);
+	public DCLDeepDependencyVisitor(ICompilationUnit unit) throws DCLException {
+		try{
+			this.dependencies = new ArrayList<Dependency>();
+			this.unit = unit;
+	
+			this.className = unit.getParent().getElementName() + "." + unit.getElementName().substring(0, unit.getElementName().length() - 5);
+			ASTParser parser = ASTParser.newParser(AST.JLS4); // It was JSL3, but it
+																// is now deprecated
+			parser.setKind(ASTParser.K_COMPILATION_UNIT);
+			parser.setSource(unit);
+			parser.setResolveBindings(true);
+	
+			this.fullClass = (CompilationUnit) parser.createAST(null); // parse
+			this.fullClass.accept(this);
+		} catch(Exception e){
+			throw new DCLException(e,unit);
+		}
 	}
 
 	public final List<Dependency> getDependencies() {
@@ -90,7 +95,7 @@ public class DCLDeepDependencyVisitor extends ASTVisitor {
 		if (!node.isLocalTypeDeclaration() && !node.isMemberTypeDeclaration()) { // Para
 																					// evitar
 																					// fazer
-																					// v‡rias
+																					// vï¿½rias
 																					// vezes
 			try {
 				IType type = (IType) unit.getTypes()[0];
@@ -129,7 +134,8 @@ public class DCLDeepDependencyVisitor extends ASTVisitor {
 							break;
 						case ASTNode.PARAMETERIZED_TYPE:
 							ParameterizedType pt = (ParameterizedType) it;
-							if (t.getFullyQualifiedName().equals(pt.getType().resolveBinding().getBinaryName())) {
+							if (t!= null && t.getFullyQualifiedName() != null && pt != null && pt.getType() != null && pt.getType().resolveBinding() != null &&
+									t.getFullyQualifiedName().equals(pt.getType().resolveBinding().getBinaryName())) {
 								if (!type.isInterface()) {
 									this.dependencies.add(new ImplementDirectDependency(this.className, t.getFullyQualifiedName(),
 											fullClass.getLineNumber(pt.getStartPosition()), pt.getStartPosition(), pt.getLength()));
