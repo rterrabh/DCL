@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
@@ -184,6 +185,12 @@ public class DCLBuilder extends IncrementalProjectBuilder {
 			
 			final String className = DCLUtil.getClassName(unit);
 			
+			/* We only consider the units without compilation errors*/
+			if (file.findMaxProblemSeverity(IMarker.PROBLEM, true, IResource.DEPTH_INFINITE)==IMarker.SEVERITY_ERROR){
+				//MarkerUtils.addErrorMarker(this.getProject(), "DCLcheck has not verified class " + className + " because it contains compilation errors.");
+				return;
+			}
+			
 			try {
 				final Collection<Dependency> dependencies;
 				if (reextractDependencies) {
@@ -205,7 +212,9 @@ public class DCLBuilder extends IncrementalProjectBuilder {
 				}
 			} catch (Exception e) {
 				MarkerUtils.addErrorMarker(this.getProject(), "There was a problem in extracting dependencies from " + className);
-				throw new CoreException(Status.CANCEL_STATUS);
+				CoreException ce = new CoreException(Status.CANCEL_STATUS);
+				ce.setStackTrace(e.getStackTrace());
+				throw ce;
 			} 
 		}
 	}
