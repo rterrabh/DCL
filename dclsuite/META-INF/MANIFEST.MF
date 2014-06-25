@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: dclsuite
 Bundle-SymbolicName: dclsuite; singleton:=true
-Bundle-Version: 1.2.2
+Bundle-Version: 1.2.3
 Bundle-Activator: dclsuite.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
