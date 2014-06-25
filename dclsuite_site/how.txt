@@ -14,7 +14,7 @@
    5.2. Add the new one (e.g., 1.1.1)
    5.3. Build All
    
-6. FTP to http://www.dclsuite.org/update
+6. FTP to http://www.dclsuite.org/update (run sync.script)
    site.xml
    artifacts.jar
    content.jar

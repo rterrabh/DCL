@@ -1,0 +1,9 @@
+rm -r -f ~/Dropbox/Projetos/dcl/website/update/* 
+
+cp ~/Dropbox/Projetos/dcl/dclsuite_site/index.html ~/Dropbox/Projetos/dcl/website/update/
+cp ~/Dropbox/Projetos/dcl/dclsuite_site/site.xml ~/Dropbox/Projetos/dcl/website/update/
+cp ~/Dropbox/Projetos/dcl/dclsuite_site/*.jar ~/Dropbox/Projetos/dcl/website/update/
+cp -r ~/Dropbox/Projetos/dcl/dclsuite_site/features ~/Dropbox/Projetos/dcl/website/update/
+cp -r ~/Dropbox/Projetos/dcl/dclsuite_site/plugins ~/Dropbox/Projetos/dcl/website/update/
+
+rsync -ravzup --delete --exclude '.DS_Store' --exclude 'sync.script' -e ssh ~/Dropbox/Projetos/dcl/website/ terra@aserg.labsoft.dcc.ufmg.br:/var/www/dclsuite
