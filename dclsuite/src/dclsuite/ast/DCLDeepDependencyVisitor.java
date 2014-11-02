@@ -13,11 +13,13 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
+import org.eclipse.jdt.core.dom.CastExpression;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.InstanceofExpression;
 import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
@@ -43,7 +45,9 @@ import dclsuite.dependencies.AnnotateMethodDependency;
 import dclsuite.dependencies.AnnotateVariableDependency;
 import dclsuite.dependencies.CreateFieldDependency;
 import dclsuite.dependencies.CreateMethodDependency;
+import dclsuite.dependencies.DeclareCastDependency;
 import dclsuite.dependencies.DeclareFieldDependency;
+import dclsuite.dependencies.DeclareInstanceOfDependency;
 import dclsuite.dependencies.DeclareLocalVariableDependency;
 import dclsuite.dependencies.DeclareParameterDependency;
 import dclsuite.dependencies.DeclareParameterizedTypeDependency;
@@ -486,5 +490,38 @@ public class DCLDeepDependencyVisitor extends ASTVisitor {
 
 		return result;
 	}
+	
+	@Override
+	public boolean visit(CastExpression node) {
+		Type t = node.getType();
+		this.dependencies.add(new DeclareCastDependency(this.className, this.getTargetClassName(t
+				.resolveBinding()), fullClass.getLineNumber(t.getStartPosition()), t.getStartPosition(), t.getLength()));
+		
+		return super.visit(node);
+	}
 
+	@Override
+	public boolean visit(InstanceofExpression node) {
+		ITypeBinding typeBinding = node.getRightOperand().resolveBinding();
+		ASTNode relevantParent = getRelevantParent(node);
+
+		switch (relevantParent.getNodeType()) {
+		case ASTNode.METHOD_DECLARATION:
+			MethodDeclaration md = (MethodDeclaration) relevantParent;
+			this.dependencies.add(new DeclareInstanceOfDependency(this.className, this.getTargetClassName(typeBinding), 
+					fullClass.getLineNumber(node.getRightOperand().getStartPosition()), node.getRightOperand().getStartPosition(), 
+					node.getRightOperand().getLength(),
+					md.getName().getIdentifier()));
+			break;
+		case ASTNode.INITIALIZER:
+			this.dependencies.add(new DeclareInstanceOfDependency(this.className, this.getTargetClassName(typeBinding), 
+					fullClass.getLineNumber(node.getRightOperand().getStartPosition()), node.getRightOperand().getStartPosition(), 
+					node.getRightOperand().getLength(),
+					"initializer static block"));
+			break;
+		}
+		return super.visit(node);
+		
+	}
+	
 }
