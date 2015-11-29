@@ -469,25 +469,26 @@ public class DCLDeepDependencyVisitor extends ASTVisitor {
 
 	private String getTargetClassName(ITypeBinding type) {
 		String result = "";
-		if (!type.isAnonymous() && type.getQualifiedName() != null && !type.getQualifiedName().isEmpty()) {
-			result = type.getQualifiedName();
-		} else if (type.isLocal() && type.getName() != null && !type.getName().isEmpty()) {
-			result = type.getName();
-		} else if (!type.getSuperclass().getQualifiedName().equals("java.lang.Object") || type.getInterfaces() == null
-				|| type.getInterfaces().length == 0) {
-			result = type.getSuperclass().getQualifiedName();
-		} else if (type.getInterfaces() != null && type.getInterfaces().length == 1) {
-			result = type.getInterfaces()[0].getQualifiedName();
+		if (type != null){
+			if (!type.isAnonymous() && type.getQualifiedName() != null && !type.getQualifiedName().isEmpty()) {
+				result = type.getQualifiedName();
+			} else if (type.isLocal() && type.getName() != null && !type.getName().isEmpty()) {
+				result = type.getName();
+			} else if (!type.getSuperclass().getQualifiedName().equals("java.lang.Object") || type.getInterfaces() == null
+					|| type.getInterfaces().length == 0) {
+				result = type.getSuperclass().getQualifiedName();
+			} else if (type.getInterfaces() != null && type.getInterfaces().length == 1) {
+				result = type.getInterfaces()[0].getQualifiedName();
+			}
+	
+			if (result.equals("")) {
+				throw new RuntimeException("AST Parser error.");
+			} else if (result.endsWith("[]")) {
+				result = result.substring(0, result.length() - 2);
+			} else if (result.matches(".*<.*>")) {
+				result = result.replaceAll("<.*>", "");
+			}
 		}
-
-		if (result.equals("")) {
-			throw new RuntimeException("AST Parser error.");
-		} else if (result.endsWith("[]")) {
-			result = result.substring(0, result.length() - 2);
-		} else if (result.matches(".*<.*>")) {
-			result = result.replaceAll("<.*>", "");
-		}
-
 		return result;
 	}
 	

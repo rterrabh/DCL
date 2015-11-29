@@ -1,20 +1,20 @@
-1. git add . (perhaps)
-   git commit -a
-   git push 
+1. Open all "dclsuite" projects
 
-2. Open all "dclsuite" projects
-
-3. Change the version of dclsuite (plugin.xml) and dclsuite_feature (feature.xml)
+2. Change the version of dclsuite (plugin.xml) and dclsuite_feature (feature.xml)
    - e.g., 1.1.0 to 1.1.1
 
-4. In dclsuite_site, delete artifacts.jar, content.jar, /features, and /plugins.
+3. In dclsuite_site, delete artifacts.jar, content.jar, /features, and /plugins.
 
-5. Go "dclsuite_site/site.xml"
+4. Go "dclsuite_site/site.xml"
    5.1. Erase the old feature (e.g., 1.1.0)
    5.2. Add the new one (e.g., 1.1.1)
    5.3. Build All
+
+5. git add . (perhaps)
+   git commit -a
+   git push 
    
-6. FTP to http://www.dclsuite.org/update (run sync.script)
+6. FTP to http://aserg.labsoft.dcc.ufmg.br/dclsuite/update (run sync.script)
    site.xml
    artifacts.jar
    content.jar

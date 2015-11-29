@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <description name="DCL Update Site" url="http://www.dclsuite.org/update">
+   <description name="DCL Update Site" url="http://aserg.labsoft.dcc.ufmg.br/dclsuite/update">
       The DCLsuite (DCLcheck and DCLfix) is publicly available from this site.
    </description>
-   <feature url="features/dclsuite_feature_1.2.4.jar" id="dclsuite_feature" version="1.2.4"/>
+   <feature url="features/dclsuite_feature_1.2.5.jar" id="dclsuite_feature" version="1.2.5">
+      <category name="new_category_1"/>
+   </feature>
    <category-def name="new_category_1" label="Architecture Conformance Tools"/>
 </site>
