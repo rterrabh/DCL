@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Status;
 
 import dclsuite.dependencies.Dependency;
 import dclsuite.dependencies.ExtendIndirectDependency;
@@ -30,34 +31,40 @@ public class DependencyConstraint implements Comparable<DependencyConstraint> {
 
 	public List<ArchitecturalDrift> validate(String className, final Map<String, String> modules, Set<String> projectClasses,
 			Collection<Dependency> dependencies, IProject project) throws CoreException {
-		switch (this.constraint.getConstraintType()) {
-		case ONLY_CAN:
-			if (DCLUtil.hasClassNameByDescription(className, moduleDescriptionA, modules, projectClasses, project)) {
-				return null;
+		try{
+			switch (this.constraint.getConstraintType()) {
+			case ONLY_CAN:
+				if (DCLUtil.hasClassNameByDescription(className, moduleDescriptionA, modules, projectClasses, project)) {
+					return null;
+				}
+				return this.validateCannot(className, moduleDescriptionB, this.constraint.getDependencyType().getDependencyClass(), modules,
+						projectClasses, dependencies, project);
+	
+			case CANNOT:
+				if (!DCLUtil.hasClassNameByDescription(className, moduleDescriptionA, modules, projectClasses, project)) {
+					return null;
+				}
+				return this.validateCannot(className, moduleDescriptionB, this.constraint.getDependencyType().getDependencyClass(), modules,
+						projectClasses, dependencies, project);
+	
+			case CAN_ONLY:
+				if (!DCLUtil.hasClassNameByDescription(className, moduleDescriptionA, modules, projectClasses, project)) {
+					return null;
+				}
+				return this.validateCanOnly(className, moduleDescriptionB, this.constraint.getDependencyType().getDependencyClass(), modules,
+						projectClasses, dependencies, project);
+	
+			case MUST:
+				if (!DCLUtil.hasClassNameByDescription(className, moduleDescriptionA, modules, projectClasses, project)) {
+					return null;
+				}
+				return this.validateMust(className, moduleDescriptionB, this.constraint.getDependencyType().getDependencyClass(), modules,
+						projectClasses, dependencies, project);
 			}
-			return this.validateCannot(className, moduleDescriptionB, this.constraint.getDependencyType().getDependencyClass(), modules,
-					projectClasses, dependencies, project);
-
-		case CANNOT:
-			if (!DCLUtil.hasClassNameByDescription(className, moduleDescriptionA, modules, projectClasses, project)) {
-				return null;
-			}
-			return this.validateCannot(className, moduleDescriptionB, this.constraint.getDependencyType().getDependencyClass(), modules,
-					projectClasses, dependencies, project);
-
-		case CAN_ONLY:
-			if (!DCLUtil.hasClassNameByDescription(className, moduleDescriptionA, modules, projectClasses, project)) {
-				return null;
-			}
-			return this.validateCanOnly(className, moduleDescriptionB, this.constraint.getDependencyType().getDependencyClass(), modules,
-					projectClasses, dependencies, project);
-
-		case MUST:
-			if (!DCLUtil.hasClassNameByDescription(className, moduleDescriptionA, modules, projectClasses, project)) {
-				return null;
-			}
-			return this.validateMust(className, moduleDescriptionB, this.constraint.getDependencyType().getDependencyClass(), modules,
-					projectClasses, dependencies, project);
+		}catch(Exception e){
+			CoreException ce = new CoreException(Status.CANCEL_STATUS);
+			ce.setStackTrace(e.getStackTrace());
+			throw ce;
 		}
 
 		return null;

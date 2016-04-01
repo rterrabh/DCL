@@ -2,7 +2,7 @@
 <feature
       id="dclsuite_feature"
       label="dclsuite"
-      version="1.2.5">
+      version="1.2.6">
 
    <description>
       Dependency Constraint Language

@@ -15,7 +15,6 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.JavaCore;
 
@@ -83,7 +82,8 @@ public class DCLBuilder extends IncrementalProjectBuilder {
 			monitor.subTask(className);
 			Collection<Dependency> dependencies = DCLPersistence.load(this.getProject(), className);
 			if (dependencies == null) {
-				throw new CoreException(null);
+				MarkerUtils.addErrorMarker(this.getProject(), "No dependencies for class " + className);
+				//throw new CoreException(null);
 			}
 			architecture.updateDependencies(className, dependencies);
 			monitor.worked(1);
@@ -179,7 +179,7 @@ public class DCLBuilder extends IncrementalProjectBuilder {
 			final ICompilationUnit unit = ((ICompilationUnit) JavaCore.create((IFile) resource));
 			
 			 /* We only consider the units linked to source-folders */
-			if (!unit.isOpen()){
+			if (unit.getOpenable()==null){
 				return;
 			}
 			
@@ -212,9 +212,10 @@ public class DCLBuilder extends IncrementalProjectBuilder {
 				}
 			} catch (Exception e) {
 				MarkerUtils.addErrorMarker(this.getProject(), "There was a problem in extracting dependencies from " + className);
-				CoreException ce = new CoreException(Status.CANCEL_STATUS);
-				ce.setStackTrace(e.getStackTrace());
-				throw ce;
+				e.printStackTrace();
+//				CoreException ce = new CoreException(Status.CANCEL_STATUS);
+//				ce.setStackTrace(e.getStackTrace());
+//				throw ce;
 			} 
 		}
 	}
