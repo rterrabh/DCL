@@ -6,9 +6,9 @@
 3. In dclsuite_site, delete artifacts.jar, content.jar, /features, and /plugins.
 
 4. Go "dclsuite_site/site.xml"
-   5.1. Erase the old feature (e.g., 1.1.0)
-   5.2. Add the new one (e.g., 1.1.1)
-   5.3. Build All
+   4.1. Erase the old feature (e.g., 1.1.0)
+   4.2. Add the new one (e.g., 1.1.1)
+   4.3. Build All
 
 5. git add . (perhaps)
    git commit -a
