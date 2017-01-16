@@ -27,24 +27,28 @@ public class DCLParser {
 	 *             Error on read the file
 	 * @return Map moduleName -> moduleDescription
 	 */
-	public static final Map<String, String> parseModules(final InputStream in) throws IOException {
+	public static final Map<String, String> parseModules(final InputStream in) throws IOException, ParseException {
 		final Map<String, String> moduleDescriptions = new HashMap<String, String>();
 
 		LineNumberReader lnr = new LineNumberReader(new InputStreamReader(in));
-
+		
 		while (lnr.ready()) {
 			String line = lnr.readLine().trim();
-			if (line.startsWith("%")) {
-				continue;
-			} else if (line == null || line.trim().equals("")) {
-				continue;
-			} else if (line.startsWith("module")) {
-				String[] split = line.substring(7).split(":");
-				String moduleName = split[0].trim();
-				String moduleDescription = split[1].trim();
-				moduleDescriptions.put(moduleName, moduleDescription);
+			try {
+				if (line.startsWith("%")) {
+					continue;
+				} else if (line == null || line.trim().equals("")) {
+					continue;
+				} else if (line.startsWith("module")) {
+					String[] split = line.substring(7).split(":");
+					String moduleName = split[0].trim();
+					String moduleDescription = split[1].trim();
+					moduleDescriptions.put(moduleName, moduleDescription);
+				}
+			} catch (Exception e) {
+				throw new ParseException(e, line, lnr.getLineNumber());
 			}
-		}
+		}		
 
 		return moduleDescriptions;
 	}
