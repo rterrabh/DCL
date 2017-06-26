@@ -33,6 +33,7 @@ import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Type;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 
@@ -73,7 +74,7 @@ public class DCLDeepDependencyVisitor extends ASTVisitor {
 			this.unit = unit;
 	
 			this.className = unit.getParent().getElementName() + "." + unit.getElementName().substring(0, unit.getElementName().length() - 5);
-			ASTParser parser = ASTParser.newParser(AST.JLS4); // It was JSL3, but it
+			ASTParser parser = ASTParser.newParser(AST.JLS8); // It was JSL3, but it
 																// is now deprecated
 			parser.setKind(ASTParser.K_COMPILATION_UNIT);
 			parser.setSource(unit);
@@ -281,8 +282,13 @@ public class DCLDeepDependencyVisitor extends ASTVisitor {
 
 			}
 		}
-		for (Object o : node.thrownExceptions()) {
-			Name name = (Name) o;
+		for (Object o : node.thrownExceptionTypes()) {
+			Name name = null;
+			if (Name.class.isInstance(o)) {
+				name = (Name) o;
+			} else if (SimpleType.class.isInstance(o)) {
+				name = ((SimpleType) o).getName();
+			}
 			this.dependencies.add(new ThrowDependency(this.className, this.getTargetClassName(name.resolveTypeBinding()), fullClass
 					.getLineNumber(name.getStartPosition()), name.getStartPosition(), name.getLength(), node.getName().getIdentifier()));
 		}
@@ -307,6 +313,31 @@ public class DCLDeepDependencyVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(VariableDeclarationStatement node) {
+		ASTNode relevantParent = getRelevantParent(node);
+
+		switch (relevantParent.getNodeType()) {
+		case ASTNode.METHOD_DECLARATION:
+			MethodDeclaration md = (MethodDeclaration) relevantParent;
+
+			this.dependencies.add(new DeclareLocalVariableDependency(this.className, this.getTargetClassName(node.getType()
+					.resolveBinding()), fullClass.getLineNumber(node.getStartPosition()), node.getType().getStartPosition(), node.getType()
+					.getLength(), md.getName().getIdentifier(), ((VariableDeclarationFragment) node.fragments().get(0)).getName()
+					.getIdentifier()));
+
+			break;
+		case ASTNode.INITIALIZER:
+			this.dependencies.add(new DeclareLocalVariableDependency(this.className, this.getTargetClassName(node.getType()
+					.resolveBinding()), fullClass.getLineNumber(node.getStartPosition()), node.getType().getStartPosition(), node.getType()
+					.getLength(), "initializer static block", ((VariableDeclarationFragment) node.fragments().get(0)).getName()
+					.getIdentifier()));
+			break;
+		}
+
+		return true;
+	}
+	
+	@Override
+	public boolean visit(VariableDeclarationExpression node) {
 		ASTNode relevantParent = getRelevantParent(node);
 
 		switch (relevantParent.getNodeType()) {
